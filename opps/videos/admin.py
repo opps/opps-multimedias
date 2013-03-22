@@ -4,7 +4,8 @@ import ffvideo
 from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-
+from djcelery.models import (TaskState, WorkerState,
+                 PeriodicTask, IntervalSchedule, CrontabSchedule)
 from opps.article.admin import ArticleAdmin
 
 from .models import Video
@@ -48,3 +49,10 @@ class VideoAdmin(ArticleAdmin):
 
 admin.site.register(Video, VideoAdmin)
 
+
+# Removes celery from django admin
+admin.site.unregister(TaskState)
+admin.site.unregister(WorkerState)
+admin.site.unregister(IntervalSchedule)
+admin.site.unregister(CrontabSchedule)
+admin.site.unregister(PeriodicTask)
