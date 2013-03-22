@@ -21,6 +21,11 @@ Install FFVideo dependencies:
 sudo apt-get install python-dev cython libavcodec-dev libavformat-dev libswscale-dev
 ```
 
+Install Celery dependencies:
+```
+sudo apt-get install rabbitmq-server
+```
+
 Install the opps-videos lib:
 ```
 python setup.py install
@@ -35,12 +40,19 @@ pip install opps-videos
 Configuration
 -------------
 
-Include opps.videos on your django settings
-
+Include opps.videos and djcelery on your django settings
 ```python
 INSTALLED_APPS += (
-    'opps.videos'
+    'opps.videos',
+    'djcelery',
 )
+```
+
+Add celery configuration
+```python
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'amqp://guest@localhost:5672'
 ```
 
 Add TemporaryFileUploadHandler as the default upload file handler
@@ -49,6 +61,7 @@ FILE_UPLOAD_HANDLERS = (
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 )
 ```
+
 
 Create DB tables:
 ```
