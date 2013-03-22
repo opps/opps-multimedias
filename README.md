@@ -7,7 +7,29 @@ Video Application for Opps
 Requirements
 -------------
 
-Opps
+Linux: FFVideo
+
+Python: Opps, ffvideo
+
+
+
+Installation
+-------------
+
+Install FFVideo dependencies:
+```
+sudo apt-get install python-dev cython libavcodec-dev libavformat-dev libswscale-dev
+```
+
+Install the opps-videos lib:
+```
+python setup.py install
+```
+
+or
+```
+pip install opps-videos
+```
 
 
 Configuration

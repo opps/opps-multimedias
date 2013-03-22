@@ -7,7 +7,7 @@ from opps import videos
 
 
 
-install_requires = ["opps"]
+install_requires = ["opps", "FFVideo"]
 
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Developers",
