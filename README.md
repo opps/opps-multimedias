@@ -43,6 +43,13 @@ INSTALLED_APPS += (
 )
 ```
 
+Add TemporaryFileUploadHandler as the default upload file handler
+```python
+FILE_UPLOAD_HANDLERS = (
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+)
+```
+
 Create DB tables:
 ```
 python manage.py syndb
