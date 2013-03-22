@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,7 +13,7 @@ class Video(Article):
         (HOST_UOLMAIS, 'UOL Mais'),
     )
 
-    length = models.PositiveIntegerField(_(u'Length'),
+    length = models.PositiveIntegerField(_(u'Length'), blank=True,
                                          help_text=_('Video lenght in seconds'))
     name = models.CharField(_(u'Name'), max_length='255')
     video_file = models.FileField(_(u'Video File'), upload_to='videos',
