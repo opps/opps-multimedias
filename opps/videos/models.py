@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from celery.result import AsyncResult
 
-from opps.article.models import Article
+from opps.articles.models import Article
 from .tasks import upload_video
 from .youtube import Youtube
 

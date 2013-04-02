@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields.files import FieldFile
 from djcelery.models import (TaskState, WorkerState,
                  PeriodicTask, IntervalSchedule, CrontabSchedule)
-from opps.article.admin import ArticleAdmin
+from opps.articles.admin import ArticleAdmin
 
 from .models import Video
 
@@ -49,13 +49,14 @@ class VideoAdmin(ArticleAdmin):
 
     fieldsets = (
         (_(u'Identification'), {
-            'fields': ('title', 'slug', 'get_absolute_url', 'short_url',)}),
+            'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
+                       'short_url')}),
         (_(u'Content'), {
             'fields': ('short_title', 'headline', 'video_file', 'main_image')}),
         (_(u'Metadata'), {
             'fields': ('length', 'host')}),
         (_(u'Relationships'), {
-            'fields': ('channel',)}),
+            'fields': ('channel', )}),
         (_(u'Publication'), {
             'classes': ('extrapretty'),
             'fields': ('published', 'date_available')}),
@@ -71,12 +72,3 @@ class VideoAdmin(ArticleAdmin):
             form_url, extra_context=extra_context)
 
 admin.site.register(Video, VideoAdmin)
-
-
-# Removes celery from django admin
-admin.site.unregister(TaskState)
-admin.site.unregister(WorkerState)
-admin.site.unregister(IntervalSchedule)
-admin.site.unregister(CrontabSchedule)
-admin.site.unregister(PeriodicTask)
-
