@@ -47,7 +47,7 @@ class UOLMais(VideoAPI):
 
     def upload(self, video_path, title, description, tags):
         self.authenticate()
-        self._lib.upload_video(
+        return self._lib.upload_video(
             f=open(video_path, 'rb'),
             pub_date=timezone.now(),
             title=title,
@@ -68,7 +68,8 @@ class UOLMais(VideoAPI):
                 u'description': info['description'],
                 u'thumbnail': info['thumbLarge'],
                 u'tags': tags,
-                u'embed': info['embedCode']
+                u'embed': info['embedCode'],
+                u'url': info['url']
             }
         else:
             return None
