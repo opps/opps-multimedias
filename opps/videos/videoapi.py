@@ -73,3 +73,7 @@ class UOLMais(VideoAPI):
             }
         else:
             return None
+
+
+class Youtube(VideoAPI):
+    pass
