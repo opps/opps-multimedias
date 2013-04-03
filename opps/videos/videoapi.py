@@ -14,27 +14,14 @@ class VideoAPI(object):
     def authenticate(self):
         raise NotImplementedError()
 
-    def upload(self, *args, **kwargs):
+    def upload(self, video_path, title, description, tags):
         if self.video_id:
             raise VideoAPIError('Video already uploaded')
-        self.video_id = self._upload(*args, **kwargs)
-
-    def _upload(self, video_path, title, description, tags):
-        raise NotImplementedError()
 
     def delete(self):
         if not self.video_id:
             raise VideoAPIError('Video has not been found')
-        self._delete()
-        self.video_id = None
 
-    def _delete(self):
-        raise NotImplementedError()
-
-    def get_dict(self):
+    def get_info(self):
         if not self.video_id:
             raise VideoAPIError('Video has not been found')
-        return self._get()
-
-    def _get(self):
-        raise NotImplementedError()
