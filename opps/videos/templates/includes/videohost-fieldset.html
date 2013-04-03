@@ -1,0 +1,19 @@
+{% load i18n %}
+<fieldset class="module aligned">
+  <h2>{{ videohost.get_host_display }}</h2>
+
+  <div class="form-row">
+    <div>
+      <label>{% trans "Upload Status" %}:</label>
+      <p>{{ videohost.status }}</p>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div>
+      <label>{% trans "URL" %}:</label>
+      <p>{{ videohost.url }}</p>
+    </div>
+  </div>
+
+</fieldset>
