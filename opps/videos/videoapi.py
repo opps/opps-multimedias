@@ -7,21 +7,17 @@ class VideoAPIError(exception):
 
 class VideoAPI(object):
 
-    def __init__(self, video_id=None):
-        self.video_id = video_id
+    def __init__(self):
         self.authenticate()
 
     def authenticate(self):
         raise NotImplementedError()
 
     def upload(self, video_path, title, description, tags):
-        if self.video_id:
-            raise VideoAPIError('Video already uploaded')
+        raise NotImplementedError()
 
-    def delete(self):
-        if not self.video_id:
-            raise VideoAPIError('Video has not been found')
+    def delete(self, video_id):
+        raise NotImplementedError()
 
-    def get_info(self):
-        if not self.video_id:
-            raise VideoAPIError('Video has not been found')
+    def get_info(self, video_id):
+        raise NotImplementedError()
