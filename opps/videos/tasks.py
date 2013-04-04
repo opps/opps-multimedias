@@ -17,11 +17,6 @@ def upload_video(videohost):
 @task.periodic_task(run_every=timezone.timedelta(minutes=1))
 def update_videohost():
     tasks = TaskMeta.objects.filter(status='SUCCESS', videohost__isnull=False,
-                                    videohost__updated=False)
+                                    videohost__url__isnull=True)
     for task in tasks:
-        videohost = task.videohost
-        video_info = videohost.api.get_info(videohost.host_id)
-        if video_info.has_key('url'):
-            videohost.url = video_info['url']
-            videohost.updated = True
-            videohost.save()
+        task.videohost.update()

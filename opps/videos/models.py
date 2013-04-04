@@ -15,6 +15,19 @@ from .videoapi import Youtube, UOLMais
 
 class VideoHost(models.Model):
 
+    STATUS_NOT_UPLOADED = 'notuploaded'
+    STATUS_PUBLISHED = 'published'
+    STATUS_DELETED = 'deleted'
+    STATUS_FORBIDDEN = 'forbidden'
+    STATUS_ERROR = 'error'
+    STATUS_CHOICES = (
+        (STATUS_NOT_UPLOADED, _('Not Uploaded')),
+        (STATUS_PUBLISHED, _('Published')),
+        (STATUS_DELETED, _('Deleted')),
+        (STATUS_ERROR, _('Error')),
+        (STATUS_FORBIDDEN, _('Forbidden')),
+    )
+
     HOST_YOUTUBE = 'youtube'
     HOST_UOLMAIS = 'uolmais'
     HOST_CHOICES = (
@@ -24,6 +37,9 @@ class VideoHost(models.Model):
     host = models.CharField(_('Host'), max_length=16, choices=HOST_CHOICES,
                             default=HOST_UOLMAIS,
                             help_text=_('Provider that will store the video'))
+    status = models.CharField(_('Status'), max_length=16,
+                              choices=STATUS_CHOICES,
+                              default=STATUS_NOT_UPLOADED)
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
     celery_task = models.OneToOneField('djcelery.TaskMeta', null=True,
@@ -34,7 +50,7 @@ class VideoHost(models.Model):
         return u'{} - {}'.format(self.get_host_display(), self.video)
 
     @property
-    def status(self):
+    def upload_status(self):
         if self.celery_task:
             return self.celery_task.status
         return _(u'Not Started')
@@ -59,7 +75,29 @@ class VideoHost(models.Model):
             taskmeta = TaskMeta.objects.get_or_create(task_id=result.id)[0]
             self.celery_task = taskmeta
             self.save()
+        else:
+            self.update()
 
+    def update(self):
+        # If the upload wasn't done yet we don't have to update anything
+        if self.upload_status != 'SUCCESS':
+            return
+
+        video_info = self.api.get_info(self.host_id)
+
+        changed = False
+        if video_info['status'] and video_info['status'] != self.status:
+            # Does gdata return status?
+            # Does UOL Mais returns status?
+            self.status = video_info['status']
+            changed = True
+
+        if video_info['url'] != self.url:
+            self.url = video_info['url']
+            changed = True
+
+        if changed:
+            self.save()
 
 class Video(Article):
     youtube = models.OneToOneField(VideoHost, verbose_name=_(u'Youtube'),
@@ -114,5 +152,5 @@ class Video(Article):
         if save_again:
             self.save()
 
-        #self.youtube.upload()
+        self.youtube.upload()
         self.uolmais.upload()

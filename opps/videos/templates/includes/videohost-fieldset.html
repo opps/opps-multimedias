@@ -4,8 +4,15 @@
 
   <div class="form-row">
     <div>
-      <label>{% trans "Upload Status" %}:</label>
-      <p>{{ videohost.status }}</p>
+      <label>{% trans "Status" %}:</label>
+      <p>{{ videohost.get_status_display }}</p>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div>
+      <label>{% trans "Upload" %}:</label>
+      <p>{{ videohost.upload_status }}</p>
     </div>
   </div>
 
