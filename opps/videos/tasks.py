@@ -16,7 +16,7 @@ def upload_video(videohost):
     videohost.save()
 
 
-@task.periodic_task(run_every=timezone.timedelta(minutes=1))
+@task.periodic_task(run_every=timezone.timedelta(minutes=5))
 def update_videohost():
     q = Q(status='SUCCESS', videohost__isnull=False)
     error_without_reason = Q(videohost__status='error',
