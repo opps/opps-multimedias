@@ -1,5 +1,6 @@
 
 from django.utils import timezone
+
 from celery import task
 from djcelery.models import TaskMeta
 
