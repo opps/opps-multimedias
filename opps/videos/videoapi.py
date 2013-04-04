@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+import pytz
+
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -23,7 +25,8 @@ class VideoAPI(object):
         raise NotImplementedError()
 
     def get_info(self, video_id):
-        raise NotImplementedError()
+        return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
+                             u'tags', u'embed', u'url'])
 
 
 class UOLMais(VideoAPI):
@@ -46,10 +49,15 @@ class UOLMais(VideoAPI):
         self._lib.authenticate(username, password)
 
     def upload(self, video_path, title, description, tags):
+        tags = tags or []
+        tags.append('virgula')
+
         self.authenticate()
-        return self._lib.upload_video(
+
+        saopaulo_tz = pytz.timezone('America/Sao_Paulo')
+        video_id = self._lib.upload_video(
             f=open(video_path, 'rb'),
-            pub_date=timezone.now(),
+            pub_date=timezone.localtime(timezone.now(), saopaulo_tz),
             title=title,
             description=description,
             tags=tags,
@@ -57,22 +65,25 @@ class UOLMais(VideoAPI):
             comments=UOLMaisLib.COMMENTS_NONE,
             is_hot=False
         )
+        return self.get_info(video_id)
 
     def get_info(self, video_id):
+        result = super(UOLMais, self).get_info(video_id)
+        result['id'] = video_id
+
         info = self._lib.get_by_id(video_id)
+
         if info:
             tags = u','.join([tag['description'] for tag in info['tags']])
-            return {
-                u'id': video_id,
+            result.update({
                 u'title': info['title'],
                 u'description': info['description'],
                 u'thumbnail': info['thumbLarge'],
                 u'tags': tags,
                 u'embed': info['embedCode'],
                 u'url': info['url']
-            }
-        else:
-            return None
+            })
+        return result
 
 
 class Youtube(VideoAPI):

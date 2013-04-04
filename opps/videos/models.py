@@ -6,9 +6,11 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
+from djcelery.models import TaskMeta
 from opps.articles.models import Article
-#from .tasks import upload_video
-from .youtube import Youtube
+
+from .tasks import upload_video
+from .videoapi import Youtube, UOLMais
 
 
 class VideoHost(models.Model):
@@ -24,13 +26,39 @@ class VideoHost(models.Model):
                             help_text=_('Provider that will store the video'))
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
-    celery_task = models.ForeignKey('djcelery.TaskMeta', null=True,
-                                    verbose_name=_('Celery Task ID'))
+    celery_task = models.OneToOneField('djcelery.TaskMeta', null=True,
+                                       verbose_name=_('Celery Task ID'))
+    updated = models.BooleanField(_('Updated'), default=False)
+
+    def __unicode__(self):
+        return u'{} - {}'.format(self.get_host_display(), self.video)
+
     @property
     def status(self):
         if self.celery_task:
             return self.celery_task.status
         return _(u'Not Started')
+
+    @property
+    def video(self):
+        if self.host == VideoHost.HOST_UOLMAIS:
+            return self.uolmais_video
+        elif self.host == VideoHost.HOST_YOUTUBE:
+            return self.youtube_video
+
+    @property
+    def api(self):
+        if self.host == VideoHost.HOST_UOLMAIS:
+            return UOLMais()
+        elif self.host == VideoHost.HOST_YOUTUBE:
+            return Youtube()
+
+    def upload(self):
+        if not self.celery_task:
+            result = upload_video.delay(self)
+            taskmeta = TaskMeta.objects.get_or_create(task_id=result.id)[0]
+            self.celery_task = taskmeta
+            self.save()
 
 
 class Video(Article):
@@ -47,6 +75,9 @@ class Video(Article):
                                                'until it\'s not sent to '
                                                'final hosting server '
                                                '(ie: Youtube)')))
+
+    def __unicode__(self):
+        return u'{}'.format(self.title)
 
     def _update_length(self):
         """Method used to update video length. This method is usually
@@ -80,15 +111,8 @@ class Video(Article):
             self.uolmais = VideoHost.objects.create(host=VideoHost.HOST_UOLMAIS)
             save_again = True
 
-        #if not self.youtube.celery_task:
-        #    async_res = upload_to_youtube.delay(self)
-        #    self.youtube.celery_task_id = async_res.id
-        #    save_again = True
-
-        #if not self.uolmais.celery_task:
-        #    async_res = upload_to_uolmais.delay(self)
-        #    self.youtube.celery_task_id = async_res.id
-        #    save_again = True
-
         if save_again:
             self.save()
+
+        #self.youtube.upload()
+        self.uolmais.upload()

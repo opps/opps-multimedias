@@ -12,6 +12,9 @@ from .models import Video, VideoHost
 
 
 class VideoAdminForm(forms.ModelForm):
+    headline = forms.CharField(_(u"Headline"), widget=forms.Textarea,
+                               required=True)
+
     class Meta:
         model = Video
 
@@ -51,5 +54,6 @@ class VideoAdmin(ArticleAdmin):
             'classes': ('extrapretty'),
             'fields': ('published', 'date_available')}),
     )
+
 
 admin.site.register(Video, VideoAdmin)
