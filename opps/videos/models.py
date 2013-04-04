@@ -128,6 +128,9 @@ class Video(Article):
         self.length = int(vs.duration)
 
     def save(self, *args, **kwargs):
+        if not self.published:
+            self.published = True
+
         super(Video, self).save(*args, **kwargs)
 
         # We have to save before uploading the video because

@@ -12,6 +12,7 @@ from .models import Video, VideoHost
 
 
 class VideoAdminForm(forms.ModelForm):
+
     headline = forms.CharField(_(u"Headline"), widget=forms.Textarea,
                                required=True)
 
@@ -41,6 +42,8 @@ class VideoAdmin(ArticleAdmin):
     form = VideoAdminForm
     add_form_template = 'admin/change_form.html'
     change_form_template = 'videos/admin/change_form.html'
+    readonly_fields = ArticleAdmin.readonly_fields[:]
+    readonly_fields += ['published', 'date_available']
 
     fieldsets = (
         (_(u'Identification'), {
