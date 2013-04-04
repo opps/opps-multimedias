@@ -1,4 +1,5 @@
 
+from django.db.models import Q
 from django.utils import timezone
 
 from celery import task
@@ -17,7 +18,12 @@ def upload_video(videohost):
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=1))
 def update_videohost():
-    tasks = TaskMeta.objects.filter(status='SUCCESS', videohost__isnull=False,
-                                    videohost__url__isnull=True)
+    q = Q(status='SUCCESS', videohost__isnull=False)
+    error_without_reason = Q(videohost__status='error',
+                             videohost__status_message__isnull=True)
+    no_url = Q(videohost__url__isnull=True)
+    q &= no_url | error_without_reason
+    tasks = TaskMeta.objects.filter(q)
+
     for task in tasks:
         task.videohost.update()

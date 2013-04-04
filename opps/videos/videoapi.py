@@ -2,6 +2,7 @@
 
 import pytz
 import gdata.youtube.service
+import dateutil.parser
 
 from django.conf import settings
 from django.utils import timezone
@@ -28,7 +29,8 @@ class VideoAPI(object):
 
     def get_info(self, video_id):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
-                             u'tags', u'embed', u'url', u'status'])
+                              u'tags', u'embed', u'url', u'status',
+                              u'status_msg'])
 
 
 class UOLMais(VideoAPI):
@@ -83,8 +85,12 @@ class UOLMais(VideoAPI):
                 u'thumbnail': info['thumbLarge'],
                 u'tags': tags,
                 u'embed': info['embedCode'],
-                u'url': info['url']
+                u'url': info['url'],
+                u'status': 'ok',
             })
+        else:
+            result['status'] = 'error'
+
         return result
 
 
@@ -142,32 +148,50 @@ class Youtube(VideoAPI):
 
         video_entry = gdata.youtube.YouTubeVideoEntry(media=my_media_group)
         video_entry = self.yt_service.InsertVideoEntry(video_entry, video_path)
-        video_id = video_entry.id.text.split('/')[-1]
+        return self._get_info(video_entry)
 
-        return self.get_info(video_id)
+    def _get_video_status(self, video_entry):
+        status = self.yt_service.CheckUploadStatus(video_entry)
+
+        if status is None:
+            return 'ok', None
+
+        return 'error', status[1]
+
+    def _get_video_embed(self, video_entry):
+        return '' # TODO
+
+    def _get_info(self, video_entry):
+        result = {}
+        if video_entry:
+            result.update({
+                u'id': video_entry.id.text.split('/')[-1],
+                u'title': video_entry.media.title.text,
+                u'description': video_entry.media.description.text,
+                u'thumbnail': video_entry.media.thumbnail[-1].url,
+                u'tags': video_entry.media.keywords.text,
+                u'embed': self._get_video_embed(video_entry),
+                u'url': video_entry.media.player.url,
+            })
+
+            (result['status'],
+             result['status_msg']) = self._get_video_status(video_entry)
+
+        return result
 
     def get_info(self, video_id):
+        self.authenticate()
         result = super(Youtube, self).get_info(video_id)
         result['id'] = video_id
-        result['url'] = u'http://www.youtube.com/watch?v={}'.format(video_id)
 
         try:
             video_entry = self.yt_service.GetYouTubeVideoEntry(video_id=video_id)
         except RequestError as reqerr:
-            if reqerr.message.get('reason') == 'Forbidden':
-                result.update({'status': 'forbidden'})
-            elif reqerr.message.get('reason') == 'Not Found':
+            if reqerr.args[0].get('reason') == 'Not Found':
                 result.update({'status': 'deleted'})
             else:
                 result.update({'status': 'error'})
         else:
-            if video_entry:
-                #TODO: tags = ???
-                result.update({
-                #    u'title': info['title'],
-                #    u'description': info['description'],
-                #    u'thumbnail': info['thumbLarge'],
-                #    u'tags': tags,
-                #    u'embed': info['embedCode'],
-                })
+            result.update(self._get_info(video_entry))
         return result
+

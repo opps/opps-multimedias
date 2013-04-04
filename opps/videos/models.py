@@ -15,17 +15,15 @@ from .videoapi import Youtube, UOLMais
 
 class VideoHost(models.Model):
 
-    STATUS_NOT_UPLOADED = 'notuploaded'
-    STATUS_PUBLISHED = 'published'
-    STATUS_DELETED = 'deleted'
-    STATUS_FORBIDDEN = 'forbidden'
+    STATUS_OK = 'ok'
     STATUS_ERROR = 'error'
+    STATUS_DELETED = 'deleted'
+    STATUS_NOT_UPLOADED = 'notuploaded'
     STATUS_CHOICES = (
-        (STATUS_NOT_UPLOADED, _('Not Uploaded')),
-        (STATUS_PUBLISHED, _('Published')),
-        (STATUS_DELETED, _('Deleted')),
+        (STATUS_OK, _('OK')),
         (STATUS_ERROR, _('Error')),
-        (STATUS_FORBIDDEN, _('Forbidden')),
+        (STATUS_DELETED, _('Deleted')),
+        (STATUS_NOT_UPLOADED, _('Not Uploaded')),
     )
 
     HOST_YOUTUBE = 'youtube'
@@ -45,6 +43,8 @@ class VideoHost(models.Model):
     celery_task = models.OneToOneField('djcelery.TaskMeta', null=True,
                                        verbose_name=_('Celery Task ID'))
     updated = models.BooleanField(_('Updated'), default=False)
+    status_message = models.CharField(_('Detailed Status Message'),
+                                      max_length=64, null=True)
 
     def __unicode__(self):
         return u'{} - {}'.format(self.get_host_display(), self.video)
@@ -87,9 +87,11 @@ class VideoHost(models.Model):
 
         changed = False
         if video_info['status'] and video_info['status'] != self.status:
-            # Does gdata return status?
-            # Does UOL Mais returns status?
             self.status = video_info['status']
+            changed = True
+
+        if video_info['status_msg'] != self.status_message:
+            self.status_message = video_info['status_msg']
             changed = True
 
         if video_info['url'] != self.url:

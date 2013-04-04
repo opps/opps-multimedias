@@ -5,7 +5,7 @@
   <div class="form-row">
     <div>
       <label>{% trans "Status" %}:</label>
-      <p>{{ videohost.get_status_display }}</p>
+      <p>{{ videohost.get_status_display }}{% if videohost.status_message %} ({{ videohost.status_message }}){% endif %}</p>
     </div>
   </div>
 
