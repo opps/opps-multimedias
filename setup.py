@@ -7,7 +7,7 @@ from opps import videos
 
 
 
-install_requires = ["opps", "FFVideo", "django-celery", "gdata"]
+install_requires = ["opps", "FFVideo", "django-celery", "gdata", "uolmais-api"]
 
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Developers",

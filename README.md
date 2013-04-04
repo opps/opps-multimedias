@@ -26,6 +26,11 @@ Install Celery dependencies:
 sudo apt-get install rabbitmq-server
 ```
 
+Install UOL Mais lib:
+```
+pip install -e git+git@github.com:YACOWS/Multimedia-UOLMais.git#egg=uolmais-api
+```
+
 Install the opps-videos lib:
 ```
 python setup.py install
@@ -62,11 +67,43 @@ FILE_UPLOAD_HANDLERS = (
 )
 ```
 
+Add Youtube and UOL Mais credentials:
+```python
+
+YOUTUBE_AUTH_EMAIL = 'sergio@tracy.com.br'
+YOUTUBE_AUTH_PASSWORD = 'this is my password'
+YOUTUBE_DEVELOPER_KEY = 'AI39si4JXaQthEfdVoTjpgJ5hWhK5JFgz-lkaTquXGYl8P-QLKUiwEEFasdiouIKJHDhsjk823KJKsohvBPaYPQ'
+
+UOLMAIS_USERNAME = 'sergio@tracy.com.br'
+UOLMAIS_PASSWORD = 'this is my password'
+
+```
+
 
 Create DB tables:
 ```
 python manage.py syndb
 ```
+
+
+Final Notes
+=============
+
+This Django App fully relies on Django Celery tasks. To get all it's features 
+working properly make sure celery is running with events and beat activated. 
+
+To start it use the following command:
+```
+python src/manage.py celery worker --loglevel=error --events --beat
+```
+
+To get tasks information on Django Admin UI you will also need to activate celerycam. 
+```
+python src/manage.py celerycam
+```
+
+To avoid memory leaks ensure that settings.DEBUG is set to False.
+
 
 License
 =======
