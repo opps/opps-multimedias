@@ -12,28 +12,28 @@ from uolmais_lib import UOLMaisLib
 from gdata.service import BadAuthentication, RequestError
 
 
-class VideoAPIError(Exception):
+class MediaAPIError(Exception):
     pass
 
 
-class VideoAPI(object):
+class MediaAPI(object):
 
     def authenticate(self):
         raise NotImplementedError()
 
-    def upload(self, video_path, title, description, tags):
+    def upload(self, media_path, title, description, tags):
         raise NotImplementedError()
 
-    def delete(self, video_id):
+    def delete(self, media_id):
         raise NotImplementedError()
 
-    def get_info(self, video_id):
+    def get_info(self, media_id):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
                               u'tags', u'embed', u'url', u'status',
                               u'status_msg'])
 
 
-class UOLMais(VideoAPI):
+class UOLMais(MediaAPI):
 
     def __init__(self):
         super(UOLMais, self).__init__()
@@ -52,15 +52,15 @@ class UOLMais(VideoAPI):
 
         self._lib.authenticate(username, password)
 
-    def upload(self, video_path, title, description, tags):
+    def upload(self, media_path, title, description, tags):
         tags = tags or []
         tags.append('virgula')
 
         self.authenticate()
 
         saopaulo_tz = pytz.timezone('America/Sao_Paulo')
-        video_id = self._lib.upload_video(
-            f=open(video_path, 'rb'),
+        media_id = self._lib.upload_video(
+            f=open(media_path, 'rb'),
             pub_date=timezone.localtime(timezone.now(), saopaulo_tz),
             title=title,
             description=description,
@@ -69,13 +69,13 @@ class UOLMais(VideoAPI):
             comments=UOLMaisLib.COMMENTS_NONE,
             is_hot=False
         )
-        return self.get_info(video_id)
+        return self.get_info(media_id)
 
-    def get_info(self, video_id):
-        result = super(UOLMais, self).get_info(video_id)
-        result['id'] = video_id
+    def get_info(self, media_id):
+        result = super(UOLMais, self).get_info(media_id)
+        result['id'] = media_id
 
-        info = self._lib.get_by_id(video_id)
+        info = self._lib.get_by_id(media_id)
 
         if info:
             tags = u','.join([tag['description'] for tag in info['tags']])
@@ -94,7 +94,7 @@ class UOLMais(VideoAPI):
         return result
 
 
-class Youtube(VideoAPI):
+class Youtube(MediaAPI):
 
     def __init__(self):
         self.yt_service = gdata.youtube.service.YouTubeService()
@@ -127,7 +127,7 @@ class Youtube(VideoAPI):
         # Note: SSL is not available at this time for uploads.
         self.yt_service.ssl = False
 
-    def upload(self, video_path, title, description, tags):
+    def upload(self, media_path, title, description, tags):
         tags = tags or []
         tags.append('virgula')
 
@@ -147,7 +147,7 @@ class Youtube(VideoAPI):
         )
 
         video_entry = gdata.youtube.YouTubeVideoEntry(media=my_media_group)
-        video_entry = self.yt_service.InsertVideoEntry(video_entry, video_path)
+        video_entry = self.yt_service.InsertVideoEntry(video_entry, media_path)
         return self._get_info(video_entry)
 
     def _get_video_status(self, video_entry):

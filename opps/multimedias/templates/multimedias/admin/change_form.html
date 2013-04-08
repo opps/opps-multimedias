@@ -4,7 +4,7 @@
 {% block field_sets %}
   {{ block.super }}
 
-  <!-- Video Metadata information -->
+  <!-- Media Metadata information -->
   <fieldset class="module aligned">
     <h2>Meta</h2>
 
@@ -16,7 +16,7 @@
     </div>
   </fieldset>
 
-  <!-- Video host information -->
-  {% include 'includes/videohost-fieldset.html' with videohost=original.youtube %}
-  {% include 'includes/videohost-fieldset.html' with videohost=original.uolmais %}
+  <!-- Media host information -->
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube %}
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.uolmais %}
 {% endblock %}

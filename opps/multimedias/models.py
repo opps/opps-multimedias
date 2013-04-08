@@ -1,4 +1,5 @@
 
+import os
 import ffvideo
 
 from django.db import models
@@ -9,11 +10,11 @@ from django.utils.translation import ugettext_lazy as _
 from djcelery.models import TaskMeta
 from opps.articles.models import Article
 
-from .tasks import upload_video
-from .videoapi import Youtube, UOLMais
+from .tasks import upload_media
+from .mediaapi import Youtube, UOLMais
 
 
-class VideoHost(models.Model):
+class MediaHost(models.Model):
 
     STATUS_OK = 'ok'
     STATUS_ERROR = 'error'
@@ -34,7 +35,7 @@ class VideoHost(models.Model):
     )
     host = models.CharField(_('Host'), max_length=16, choices=HOST_CHOICES,
                             default=HOST_UOLMAIS,
-                            help_text=_('Provider that will store the video'))
+                            help_text=_('Provider that will store the media'))
     status = models.CharField(_('Status'), max_length=16,
                               choices=STATUS_CHOICES,
                               default=STATUS_NOT_UPLOADED)
@@ -47,7 +48,7 @@ class VideoHost(models.Model):
                                       max_length=64, null=True)
 
     def __unicode__(self):
-        return u'{} - {}'.format(self.get_host_display(), self.video)
+        return u'{} - {}'.format(self.get_host_display(), self.media)
 
     @property
     def upload_status(self):
@@ -56,22 +57,22 @@ class VideoHost(models.Model):
         return _(u'Not Started')
 
     @property
-    def video(self):
-        if self.host == VideoHost.HOST_UOLMAIS:
-            return self.uolmais_video
-        elif self.host == VideoHost.HOST_YOUTUBE:
-            return self.youtube_video
+    def media(self):
+        if self.host == MediaHost.HOST_UOLMAIS:
+            return self.uolmais_media
+        elif self.host == MediaHost.HOST_YOUTUBE:
+            return self.youtube_media
 
     @property
     def api(self):
-        if self.host == VideoHost.HOST_UOLMAIS:
+        if self.host == MediaHost.HOST_UOLMAIS:
             return UOLMais()
-        elif self.host == VideoHost.HOST_YOUTUBE:
+        elif self.host == MediaHost.HOST_YOUTUBE:
             return Youtube()
 
     def upload(self):
         if not self.celery_task:
-            result = upload_video.delay(self)
+            result = upload_media.delay(self)
             taskmeta = TaskMeta.objects.get_or_create(task_id=result.id)[0]
             self.celery_task = taskmeta
             self.save()
@@ -83,59 +84,62 @@ class VideoHost(models.Model):
         if self.upload_status != 'SUCCESS':
             return
 
-        video_info = self.api.get_info(self.host_id)
+        media_info = self.api.get_info(self.host_id)
 
         changed = False
-        if video_info['status'] and video_info['status'] != self.status:
-            self.status = video_info['status']
+        if media_info['status'] and media_info['status'] != self.status:
+            self.status = media_info['status']
             changed = True
 
-        if video_info['status_msg'] != self.status_message:
-            self.status_message = video_info['status_msg']
+        if media_info['status_msg'] != self.status_message:
+            self.status_message = media_info['status_msg']
             changed = True
 
-        if video_info['url'] != self.url:
-            self.url = video_info['url']
+        if media_info['url'] != self.url:
+            self.url = media_info['url']
             changed = True
 
         if changed:
             self.save()
 
-class Video(Article):
-    youtube = models.OneToOneField(VideoHost, verbose_name=_(u'Youtube'),
-                                related_name=u'youtube_video',
-                                blank=True, null=True)
-    uolmais = models.OneToOneField(VideoHost, verbose_name=_(u'UOL Mais'),
-                                related_name=u'uolmais_video',
+
+def upload_dest(instance, filename):
+    return os.path.join(instance.TYPE, filename)
+
+class Media(Article):
+    uolmais = models.OneToOneField(MediaHost, verbose_name=_(u'UOL Mais'),
+                                related_name=u'uolmais_media',
                                 blank=True, null=True)
     length = models.PositiveIntegerField(_(u'Length'), null=True,
-                                         help_text=_('Video lenght in seconds'))
-    video_file = models.FileField(_(u'Video File'), upload_to='videos',
+                                         help_text=_('Lenght in seconds'))
+    media_file = models.FileField(_(u'File'), upload_to=upload_dest,
                                   help_text=_(('Temporary file stored '
                                                'until it\'s not sent to '
                                                'final hosting server '
                                                '(ie: Youtube)')))
 
+    class Meta:
+        abstract = True
+
     def __unicode__(self):
         return u'{}'.format(self.title)
 
     def _update_length(self):
-        """Method used to update video length. This method is usually
+        """Method used to update media length. This method is usually
         called just after the file upload.
 
         """
-        vs = ffvideo.VideoStream(self.video_file.path)
-        self.length = int(vs.duration)
+        raise NotImplementedError
 
     def save(self, *args, **kwargs):
         if not self.published:
             self.published = True
 
-        super(Video, self).save(*args, **kwargs)
+        super(Media, self).save(*args, **kwargs)
 
-        # We have to save before uploading the video because
-        #   the video file is only available on filesystem
-        #   after the first save.
+        # We have to save before uploading the media because
+        #   the file is only available on filesystem after
+        #   the first save.
         # If there is a way to use the temp_path outside the form
         # we could save just one time.
         # @author: Sergio Oliveira <sergio@tracy.com.br>
@@ -146,16 +150,30 @@ class Video(Article):
             self._update_length()
             save_again = True
 
-        if not self.youtube:
-            self.youtube = VideoHost.objects.create(host=VideoHost.HOST_YOUTUBE)
+        if hasattr(self, 'youtube') and not self.youtube:
+            self.youtube = MediaHost.objects.create(host=MediaHost.HOST_YOUTUBE)
             save_again = True
 
         if not self.uolmais:
-            self.uolmais = VideoHost.objects.create(host=VideoHost.HOST_UOLMAIS)
+            self.uolmais = MediaHost.objects.create(host=MediaHost.HOST_UOLMAIS)
             save_again = True
 
         if save_again:
             self.save()
 
-        self.youtube.upload()
+        if hasattr(self, 'youtube'):
+            self.youtube.upload()
+
         self.uolmais.upload()
+
+
+class Video(Media):
+    TYPE = 'video'
+
+    youtube = models.OneToOneField(MediaHost, verbose_name=_(u'Youtube'),
+                                related_name=u'youtube_media',
+                                blank=True, null=True)
+    def _update_length(self):
+        vs = ffvideo.VideoStream(self.media_file.path)
+        self.length = int(vs.duration)
+

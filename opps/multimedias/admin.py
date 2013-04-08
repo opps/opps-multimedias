@@ -8,40 +8,41 @@ from django.db.models.fields.files import FieldFile
 
 from opps.articles.admin import ArticleAdmin
 
-from .models import Video, VideoHost
+from .models import Video, MediaHost
 
 
-class VideoAdminForm(forms.ModelForm):
+class MediaAdminForm(forms.ModelForm):
 
     headline = forms.CharField(_(u"Headline"), widget=forms.Textarea,
                                required=True)
 
+    def _get_media_path(self):
+        media_file = self.cleaned_data.get('media_file')
+        if not media_file:
+            return
+
+        if isinstance(media_file, FieldFile):
+            return media_file.path
+
+        return media_file.temporary_file_path()
+
+
+class VideoAdminForm(MediaAdminForm):
     class Meta:
         model = Video
 
-    def _get_video_path(self):
-        video_file = self.cleaned_data.get('video_file')
-        if not video_file:
-            return
-
-        if isinstance(video_file, FieldFile):
-            return video_file.path
-
-        return video_file.temporary_file_path()
-
-    def clean_video_file(self):
-        video_file = self.cleaned_data['video_file']
+    def clean_media_file(self):
+        media_file = self.cleaned_data['media_file']
         try:
-            vs = ffvideo.VideoStream(self._get_video_path())
+            vs = ffvideo.VideoStream(self._get_media_path())
         except ffvideo.DecoderError:
-            raise forms.ValidationError(_('Invalid video format'))
-        return video_file
+            raise forms.ValidationError(_('Invalid media format'))
+        return media_file
 
 
-class VideoAdmin(ArticleAdmin):
-    form = VideoAdminForm
+class MediaAdmin(ArticleAdmin):
     add_form_template = 'admin/change_form.html'
-    change_form_template = 'videos/admin/change_form.html'
+    change_form_template = 'multimedias/admin/change_form.html'
     readonly_fields = ArticleAdmin.readonly_fields[:]
     readonly_fields += ['published', 'date_available']
 
@@ -50,13 +51,17 @@ class VideoAdmin(ArticleAdmin):
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
                        'short_url')}),
         (_(u'Content'), {
-            'fields': ('short_title', 'headline', 'video_file')}),
+            'fields': ('short_title', 'headline', 'media_file')}),
         (_(u'Relationships'), {
             'fields': ('channel', )}),
         (_(u'Publication'), {
             'classes': ('extrapretty'),
             'fields': ('published', 'date_available')}),
     )
+
+
+class VideoAdmin(MediaAdmin):
+    form = VideoAdminForm
 
 
 admin.site.register(Video, VideoAdmin)

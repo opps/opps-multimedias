@@ -1,25 +1,25 @@
 {% load i18n %}
 <fieldset class="module aligned">
-  <h2>{{ videohost.get_host_display }}</h2>
+  <h2>{{ mediahost.get_host_display }}</h2>
 
   <div class="form-row">
     <div>
       <label>{% trans "Status" %}:</label>
-      <p>{{ videohost.get_status_display }}{% if videohost.status_message %} ({{ videohost.status_message }}){% endif %}</p>
+      <p>{{ mediahost.get_status_display }}{% if mediahost.status_message %} ({{ mediahost.status_message }}){% endif %}</p>
     </div>
   </div>
 
   <div class="form-row">
     <div>
       <label>{% trans "Upload" %}:</label>
-      <p>{{ videohost.upload_status }}</p>
+      <p>{{ mediahost.upload_status }}</p>
     </div>
   </div>
 
   <div class="form-row">
     <div>
       <label>{% trans "URL" %}:</label>
-      <p>{{ videohost.url }}</p>
+      <p>{{ mediahost.url }}</p>
     </div>
   </div>
 
