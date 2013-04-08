@@ -1,7 +1,7 @@
-opps-videos
+opps-multimedias
 ===========
 
-Video Application for Opps
+Multimedia Application for Opps
 
 
 Requirements
@@ -31,24 +31,24 @@ Install UOL Mais lib:
 pip install -e git+git@github.com:YACOWS/Multimedia-UOLMais.git#egg=uolmais-api
 ```
 
-Install the opps-videos lib:
+Install the opps-multimedias lib:
 ```
 python setup.py install
 ```
 
 or
 ```
-pip install opps-videos
+pip install opps-multimedias
 ```
 
 
 Configuration
 -------------
 
-Include opps.videos and djcelery on your django settings
+Include opps.multimedias and djcelery on your django settings
 ```python
 INSTALLED_APPS += (
-    'opps.videos',
+    'opps.multimedias',
     'djcelery',
 )
 ```

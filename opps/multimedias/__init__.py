@@ -4,13 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 
 pkg_resources.declare_namespace(__name__)
 
-trans_app_label = _(u'Videos')
+trans_app_label = _(u'Multimedia')
 
 VERSION = (0, 1, 1)
 
 __version__ = ".".join(map(str, VERSION))
 __status__ = "Development"
-__description__ = u"Videos App for Opps CMS"
+__description__ = u"Multimedia App for Opps CMS"
 
 __author__ = u"Sergio Oliveira"
 __credits__ = []

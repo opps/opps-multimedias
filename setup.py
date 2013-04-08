@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-from opps import videos
+from opps import multimedias
 
 
 
@@ -22,17 +22,17 @@ classifiers = ["Development Status :: 4 - Beta",
 try:
     long_description = open('README.md').read()
 except:
-    long_description = videos.__description__
+    long_description = multimedias.__description__
 
-setup(name='opps-videos',
+setup(name='opps-multimedias',
         namespace_packages=['opps'],
-        version=videos.__version__,
-        description=videos.__description__,
+        version=multimedias.__version__,
+        description=multimedias.__description__,
         long_description=long_description,
         classifiers=classifiers,
-        keywords='Video upload app for opps cms',
-        author=videos.__author__,
-        author_email=videos.__email__,
+        keywords='Multimedia upload app for opps cms',
+        author=multimedias.__author__,
+        author_email=multimedias.__email__,
         packages=find_packages(exclude=('doc', 'docs',)),
         install_requires=install_requires,
         include_package_data=True,)
