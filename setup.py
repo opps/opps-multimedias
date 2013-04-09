@@ -7,7 +7,8 @@ from opps import multimedias
 
 
 
-install_requires = ["opps", "FFVideo", "django-celery", "gdata", "uolmais-api"]
+install_requires = ["opps", "FFVideo", "django-celery", "gdata", "uolmais-api",
+                    "audioread"]
 
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Developers",
