@@ -1,5 +1,6 @@
 
 import ffvideo
+import audioread
 
 from django import forms
 from django.contrib import admin
@@ -8,7 +9,7 @@ from django.db.models.fields.files import FieldFile
 
 from opps.articles.admin import ArticleAdmin
 
-from .models import Video, MediaHost
+from .models import Audio, Video, MediaHost
 
 
 class MediaAdminForm(forms.ModelForm):
@@ -36,7 +37,20 @@ class VideoAdminForm(MediaAdminForm):
         try:
             vs = ffvideo.VideoStream(self._get_media_path())
         except ffvideo.DecoderError:
-            raise forms.ValidationError(_('Invalid media format'))
+            raise forms.ValidationError(_('Invalid video format'))
+        return media_file
+
+
+class AudioAdminForm(MediaAdminForm):
+    class Meta:
+        model = Audio
+
+    def clean_media_file(self):
+        media_file = self.cleaned_data['media_file']
+        try:
+            vs = audioread.audio_open(self._get_media_path())
+        except audioread.NoBackendError:
+            raise forms.ValidationError(_('Invalid audio format'))
         return media_file
 
 
@@ -64,4 +78,9 @@ class VideoAdmin(MediaAdmin):
     form = VideoAdminForm
 
 
+class AudioAdmin(MediaAdmin):
+    form = AudioAdminForm
+
+
 admin.site.register(Video, VideoAdmin)
+admin.site.register(Audio, AudioAdmin)

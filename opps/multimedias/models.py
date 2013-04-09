@@ -1,6 +1,7 @@
 
 import os
 import ffvideo
+import audioread
 
 from django.db import models
 from django.dispatch import receiver
@@ -59,9 +60,12 @@ class MediaHost(models.Model):
     @property
     def media(self):
         if self.host == MediaHost.HOST_UOLMAIS:
-            return self.uolmais_media
+            if hasattr(self, 'uolmais_video'):
+                return self.uolmais_video
+            elif hasattr(self, 'uolmais_audio'):
+                return self.uolmais_audio
         elif self.host == MediaHost.HOST_YOUTUBE:
-            return self.youtube_media
+            return self.youtube_video
 
     @property
     def api(self):
@@ -108,7 +112,7 @@ def upload_dest(instance, filename):
 
 class Media(Article):
     uolmais = models.OneToOneField(MediaHost, verbose_name=_(u'UOL Mais'),
-                                related_name=u'uolmais_media',
+                                related_name=u'uolmais_%(class)s',
                                 blank=True, null=True)
     length = models.PositiveIntegerField(_(u'Length'), null=True,
                                          help_text=_('Lenght in seconds'))
@@ -171,9 +175,17 @@ class Video(Media):
     TYPE = 'video'
 
     youtube = models.OneToOneField(MediaHost, verbose_name=_(u'Youtube'),
-                                related_name=u'youtube_media',
+                                related_name=u'youtube_video',
                                 blank=True, null=True)
     def _update_length(self):
         vs = ffvideo.VideoStream(self.media_file.path)
         self.length = int(vs.duration)
+
+
+class Audio(Media):
+    TYPE = 'audio'
+
+    def _update_length(self):
+        af = audioread.audio_open(self.media_file.path)
+        self.length = int(af.duration)
 

@@ -9,8 +9,8 @@ from djcelery.models import TaskMeta
 @task
 def upload_media(mediahost):
     media = mediahost.media
-    media_info = mediahost.api.upload(media.media_file.path, media.title,
-                                      media.headline, [])#media.tags)
+    media_info = mediahost.api.upload(media.TYPE, media.media_file.path,
+                                      media.title, media.headline, [])#media.tags)
     mediahost.host_id = media_info['id']
     mediahost.celery_task = TaskMeta.objects.get(task_id=upload_media.request.id)
     mediahost.save()

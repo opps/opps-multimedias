@@ -21,7 +21,7 @@ class MediaAPI(object):
     def authenticate(self):
         raise NotImplementedError()
 
-    def upload(self, media_path, title, description, tags):
+    def upload(self, type, media_path, title, description, tags):
         raise NotImplementedError()
 
     def delete(self, media_id):
@@ -52,23 +52,35 @@ class UOLMais(MediaAPI):
 
         self._lib.authenticate(username, password)
 
-    def upload(self, media_path, title, description, tags):
+    def video_upload(self, *args, **kwargs):
+        return self.upload('video', *args, **kwargs)
+
+    def audio_upload(self, *args, **kwargs):
+        return self.upload('audio', *args, **kwargs)
+
+    def upload(self, type, media_path, title, description, tags):
         tags = tags or []
         tags.append('virgula')
 
         self.authenticate()
 
         saopaulo_tz = pytz.timezone('America/Sao_Paulo')
-        media_id = self._lib.upload_video(
-            f=open(media_path, 'rb'),
-            pub_date=timezone.localtime(timezone.now(), saopaulo_tz),
-            title=title,
-            description=description,
-            tags=tags,
-            visibility=UOLMaisLib.VISIBILITY_ANYONE,
-            comments=UOLMaisLib.COMMENTS_NONE,
-            is_hot=False
-        )
+        media_args = {
+            'f': open(media_path, 'rb'),
+            'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
+            'title': title,
+            'description': description,
+            'tags': tags,
+            'visibility': UOLMaisLib.VISIBILITY_ANYONE,
+            'comments': UOLMaisLib.COMMENTS_NONE,
+            'is_hot': False
+        }
+
+        if type == 'video':
+            media_id = self._lib.upload_video(**media_args)
+        elif type == 'audio':
+            media_id = self._lib.upload_audio(**media_args)
+
         return self.get_info(media_id)
 
     def get_info(self, media_id):
@@ -127,7 +139,7 @@ class Youtube(MediaAPI):
         # Note: SSL is not available at this time for uploads.
         self.yt_service.ssl = False
 
-    def upload(self, media_path, title, description, tags):
+    def upload(self, type, media_path, title, description, tags):
         tags = tags or []
         tags.append('virgula')
 
