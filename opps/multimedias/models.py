@@ -122,6 +122,13 @@ class Media(Article):
                                                'final hosting server '
                                                '(ie: Youtube)')))
 
+    posts = models.ManyToManyField(
+        'articles.Post',
+        verbose_name=_(u'Posts'),
+        related_name=u'%(class)s',
+        null=True, blank=True,
+    )
+
     class Meta:
         abstract = True
 
@@ -174,9 +181,14 @@ class Media(Article):
 class Video(Media):
     TYPE = 'video'
 
-    youtube = models.OneToOneField(MediaHost, verbose_name=_(u'Youtube'),
-                                related_name=u'youtube_video',
-                                blank=True, null=True)
+    youtube = models.OneToOneField(
+        MediaHost,
+        verbose_name=_(u'Youtube'),
+        related_name=u'youtube_video',
+        blank=True,
+        null=True
+    )
+
     def _update_length(self):
         vs = ffvideo.VideoStream(self.media_file.path)
         self.length = int(vs.duration)
@@ -188,4 +200,3 @@ class Audio(Media):
     def _update_length(self):
         af = audioread.audio_open(self.media_file.path)
         self.length = int(af.duration)
-
