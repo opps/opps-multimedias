@@ -75,13 +75,13 @@ class MediaHost(models.Model):
             return Youtube()
 
     def upload(self):
-        if not self.celery_task:
-            result = upload_media.delay(self)
+        if self.celery_task or self.host_id:
+            self.update()
+        else:
+            result = upload_video.delay(self)
             taskmeta = TaskMeta.objects.get_or_create(task_id=result.id)[0]
             self.celery_task = taskmeta
             self.save()
-        else:
-            self.update()
 
     def update(self):
         # If the upload wasn't done yet we don't have to update anything
