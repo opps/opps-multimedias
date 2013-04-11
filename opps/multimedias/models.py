@@ -78,7 +78,7 @@ class MediaHost(models.Model):
         if self.celery_task or self.host_id:
             self.update()
         else:
-            result = upload_video.delay(self)
+            result = upload_media.delay(self)
             taskmeta = TaskMeta.objects.get_or_create(task_id=result.id)[0]
             self.celery_task = taskmeta
             self.save()
