@@ -83,7 +83,7 @@ UOLMAIS_PASSWORD = 'this is my password'
 
 Create DB tables:
 ```
-python manage.py syndb
+python manage.py syncdb
 ```
 
 
