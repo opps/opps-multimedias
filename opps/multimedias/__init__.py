@@ -1,10 +1,7 @@
 
 import pkg_resources
-from django.utils.translation import ugettext_lazy as _
 
 pkg_resources.declare_namespace(__name__)
-
-trans_app_label = _(u'Multimedia')
 
 VERSION = (0, 1, 1)
 
