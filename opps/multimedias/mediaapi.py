@@ -70,7 +70,7 @@ class UOLMais(MediaAPI):
             'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
             'title': title,
             'description': description,
-            'tags': tags,
+            'tags': u','.join(tags),
             'visibility': UOLMaisLib.VISIBILITY_ANYONE,
             'comments': UOLMaisLib.COMMENTS_NONE,
             'is_hot': False
