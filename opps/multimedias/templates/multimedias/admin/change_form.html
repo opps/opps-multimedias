@@ -8,14 +8,6 @@
   <fieldset class="module aligned">
     <h2>Meta</h2>
 
-    <div class="form-row">
-      <div>
-        <label>{% trans "Length" %}:</label>
-        <p>{{ original.length }}</p>
-      </div>
-    </div>
-  </fieldset>
-
   <!-- Media host information -->
   {% if original.youtube %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube %}

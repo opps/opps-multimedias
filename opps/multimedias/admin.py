@@ -36,7 +36,7 @@ class MediaAdmin(ArticleAdmin):
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
                        'short_url')}),
         (_(u'Content'), {
-            'fields': ('short_title', 'headline', 'media_file')}),
+            'fields': ('short_title', 'headline', 'media_file', 'tags')}),
         (_(u'Relationships'), {
             'fields': ('channel', )}),
         (_(u'Publication'), {
