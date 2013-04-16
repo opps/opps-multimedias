@@ -101,7 +101,7 @@ class MediaHost(models.Model):
             self.url = media_info['url']
             changed = True
 
-        if media_info['embed'] != self.embed:
+        if media_info['embed'] and media_info['embed'] != self.embed:
             self.embed = media_info['embed']
             changed = True
 
