@@ -1,14 +1,14 @@
 import os
 
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 from djcelery.models import TaskMeta
 from opps.articles.models import Article
 
 from .tasks import upload_media
+from opps.core.models import BaseBox
+from opps.core.models import BaseConfig
 from .mediaapi import Youtube, UOLMais
 
 
@@ -114,9 +114,13 @@ def upload_dest(instance, filename):
 
 
 class Media(Article):
-    uolmais = models.OneToOneField(MediaHost, verbose_name=_(u'UOL Mais'),
-                                   related_name=u'uolmais_%(class)s',
-                                   blank=True, null=True)
+
+    uolmais = models.OneToOneField(
+        MediaHost, verbose_name=_(u'UOL Mais'),
+        related_name=u'uolmais_%(class)s',
+        blank=True,
+        null=True
+    )
     media_file = models.FileField(_(u'File'), upload_to=upload_dest,
                                   help_text=_(('Temporary file stored '
                                                'until it\'s not sent to '
@@ -182,3 +186,96 @@ class Video(Media):
 
 class Audio(Media):
     TYPE = 'audio'
+
+
+# OPPS RELATION MODELS
+class MediaBox(BaseBox):
+
+    audios = models.ManyToManyField(
+        'multimedias.Audio',
+        null=True, blank=True,
+        related_name='mediabox_audios',
+        through='multimedias.MediaBoxAudios'
+    )
+
+    videos = models.ManyToManyField(
+        'multimedias.Video',
+        null=True, blank=True,
+        related_name='mediabox_videos',
+        through='multimedias.MediaBoxVideos'
+    )
+
+    @property
+    def medias(self):
+        """
+        Return a single set of all medias in the BaseBox
+        """
+        return list(self.videos.all()) + list(self.audios.all())
+
+
+class MediaBoxAudios(models.Model):
+    mediabox = models.ForeignKey(
+        'multimedias.MediaBox',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='mediaboxaudios_mediaboxes',
+        verbose_name=_(u'Media Box'),
+    )
+    audio = models.ForeignKey(
+        'multimedias.Audio',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='mediaboxaudios_audios',
+        verbose_name=_(u'Audio'),
+    )
+
+    order = models.PositiveIntegerField(_(u'Order'), default=0)
+
+    def __unicode__(self):
+        return u"{0}-{1}".format(self.mediabox.slug, self.audio.slug)
+
+
+class MediaBoxVideos(models.Model):
+    mediabox = models.ForeignKey(
+        'multimedias.MediaBox',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='mediaboxvideos_mediaboxes',
+        verbose_name=_(u'Media Box'),
+    )
+    video = models.ForeignKey(
+        'multimedias.Video',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='mediaboxvideos_videos',
+        verbose_name=_(u'Video'),
+    )
+
+    order = models.PositiveIntegerField(_(u'Order'), default=0)
+
+    def __unicode__(self):
+        return u"{0}-{1}".format(self.mediabox.slug, self.video.slug)
+
+
+class MediaConfig(BaseConfig):
+
+    audio = models.ForeignKey(
+        'multimedias.Audio',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='mediaconfig_audios',
+        verbose_name=_(u'Audio'),
+    )
+
+    video = models.ForeignKey(
+        'multimedias.Video',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='mediaconfig_videos',
+        verbose_name=_(u'Video'),
+    )
+
+    class Meta:
+        permissions = (("developer", "Developer"),)
+        unique_together = ("key_group", "key", "site",
+                           "channel", "article", "audio", "video")

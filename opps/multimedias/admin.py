@@ -1,11 +1,12 @@
 from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields.files import FieldFile
 
 from opps.articles.admin import ArticleAdmin
 
-from .models import Audio, Video, MediaHost
+from .models import (Audio, Video, MediaBox, MediaBoxAudios,
+                     MediaBoxVideos, MediaConfig)
+from opps.core.admin import PublishableAdmin
 
 
 class MediaAdminForm(forms.ModelForm):
@@ -52,5 +53,58 @@ class AudioAdmin(MediaAdmin):
     form = AudioAdminForm
 
 
+#OPPS RELATIONS
+class MediaBoxAudiosInline(admin.TabularInline):
+    model = MediaBoxAudios
+    fk_name = 'mediabox'
+    raw_id_fields = ['audio']
+    actions = None
+    extra = 1
+    fieldsets = [(None, {
+        'classes': ('collapse',),
+        'fields': ('audio', 'order')})]
+
+
+class MediaBoxVideosInline(admin.TabularInline):
+    model = MediaBoxVideos
+    fk_name = 'mediabox'
+    raw_id_fields = ['video']
+    actions = None
+    extra = 1
+    fieldsets = [(None, {
+        'classes': ('collapse',),
+        'fields': ('video', 'order')})]
+
+
+class MediaBoxAdmin(PublishableAdmin):
+    prepopulated_fields = {"slug": ["name"]}
+    list_display = ['name', 'date_available', 'published']
+    list_filter = ['date_available', 'published']
+    inlines = [MediaBoxVideosInline, MediaBoxAudiosInline]
+    exclude = ('user',)
+    raw_id_fields = ['channel', 'article']
+
+    fieldsets = (
+        (_(u'Identification'), {
+            'fields': ('site', 'name', 'slug')}),
+        (_(u'Relationships'), {
+            'fields': (('channel', 'article'),)}),
+        (_(u'Publication'), {
+            'classes': ('extrapretty'),
+            'fields': ('published', 'date_available')}),
+    )
+
+
+class MediaConfigAdmin(PublishableAdmin):
+    list_display = ['key', 'key_group', 'channel', 'date_insert',
+                    'date_available', 'published']
+    list_filter = ["key", 'key_group', "channel", "published"]
+    search_fields = ["key", "key_group", "value"]
+    raw_id_fields = ['audio', 'video', 'channel', 'article']
+    exclude = ('user',)
+
+
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Audio, AudioAdmin)
+admin.site.register(MediaBox, MediaBoxAdmin)
+admin.site.register(MediaConfig, MediaConfigAdmin)

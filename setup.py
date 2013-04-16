@@ -6,7 +6,6 @@ from setuptools import setup, find_packages
 from opps import multimedias
 
 
-
 install_requires = ["opps", "FFVideo", "django-celery", "gdata", "uolmais-api",
                     "audioread"]
 
@@ -26,14 +25,14 @@ except:
     long_description = multimedias.__description__
 
 setup(name='opps-multimedias',
-        namespace_packages=['opps'],
-        version=multimedias.__version__,
-        description=multimedias.__description__,
-        long_description=long_description,
-        classifiers=classifiers,
-        keywords='Multimedia upload app for opps cms',
-        author=multimedias.__author__,
-        author_email=multimedias.__email__,
-        packages=find_packages(exclude=('doc', 'docs',)),
-        install_requires=install_requires,
-        include_package_data=True,)
+      namespace_packages=['opps'],
+      version=multimedias.__version__,
+      description=multimedias.__description__,
+      long_description=long_description,
+      classifiers=classifiers,
+      keywords='Multimedia upload app for opps cms',
+      author=multimedias.__author__,
+      author_email=multimedias.__email__,
+      packages=find_packages(exclude=('doc', 'docs',)),
+      install_requires=install_requires,
+      include_package_data=True,)
