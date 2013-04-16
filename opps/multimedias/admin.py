@@ -1,7 +1,3 @@
-
-import ffvideo
-import audioread
-
 from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
@@ -17,41 +13,15 @@ class MediaAdminForm(forms.ModelForm):
     headline = forms.CharField(_(u"Headline"), widget=forms.Textarea,
                                required=True)
 
-    def _get_media_path(self):
-        media_file = self.cleaned_data.get('media_file')
-        if not media_file:
-            return
-
-        if isinstance(media_file, FieldFile):
-            return media_file.path
-
-        return media_file.temporary_file_path()
-
 
 class VideoAdminForm(MediaAdminForm):
     class Meta:
         model = Video
 
-    def clean_media_file(self):
-        media_file = self.cleaned_data['media_file']
-        try:
-            vs = ffvideo.VideoStream(self._get_media_path())
-        except ffvideo.DecoderError:
-            raise forms.ValidationError(_('Invalid video format'))
-        return media_file
-
 
 class AudioAdminForm(MediaAdminForm):
     class Meta:
         model = Audio
-
-    def clean_media_file(self):
-        media_file = self.cleaned_data['media_file']
-        try:
-            vs = audioread.audio_open(self._get_media_path())
-        except audioread.NoBackendError:
-            raise forms.ValidationError(_('Invalid audio format'))
-        return media_file
 
 
 class MediaAdmin(ArticleAdmin):

@@ -1,6 +1,5 @@
 
 import os
-import ffvideo
 import audioread
 
 from django.db import models
@@ -114,8 +113,6 @@ class Media(Article):
     uolmais = models.OneToOneField(MediaHost, verbose_name=_(u'UOL Mais'),
                                 related_name=u'uolmais_%(class)s',
                                 blank=True, null=True)
-    length = models.PositiveIntegerField(_(u'Length'), null=True,
-                                         help_text=_('Lenght in seconds'))
     media_file = models.FileField(_(u'File'), upload_to=upload_dest,
                                   help_text=_(('Temporary file stored '
                                                'until it\'s not sent to '
@@ -135,13 +132,6 @@ class Media(Article):
     def __unicode__(self):
         return u'{}'.format(self.title)
 
-    def _update_length(self):
-        """Method used to update media length. This method is usually
-        called just after the file upload.
-
-        """
-        raise NotImplementedError
-
     def save(self, *args, **kwargs):
         if not self.published:
             self.published = True
@@ -156,10 +146,6 @@ class Media(Article):
         # @author: Sergio Oliveira <sergio@tracy.com.br>
 
         save_again = False
-
-        if not self.length:
-            self._update_length()
-            save_again = True
 
         if hasattr(self, 'youtube') and not self.youtube:
             self.youtube = MediaHost.objects.create(host=MediaHost.HOST_YOUTUBE)
@@ -189,14 +175,6 @@ class Video(Media):
         null=True
     )
 
-    def _update_length(self):
-        vs = ffvideo.VideoStream(self.media_file.path)
-        self.length = int(vs.duration)
-
 
 class Audio(Media):
     TYPE = 'audio'
-
-    def _update_length(self):
-        af = audioread.audio_open(self.media_file.path)
-        self.length = int(af.duration)
