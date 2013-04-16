@@ -81,9 +81,9 @@ class MediaHost(models.Model):
             self.celery_task = taskmeta
             self.save()
 
-    def update(self):
+    def update(self, force=False):
         # If the upload wasn't done yet we don't have to update anything
-        if self.upload_status != 'SUCCESS':
+        if self.upload_status != 'SUCCESS' and not force:
             return
 
         media_info = self.api.get_info(self.host_id)
