@@ -171,7 +171,7 @@ class Youtube(MediaAPI):
         return 'error', status[1]
 
     def _get_video_embed(self, video_entry):
-        return '' # TODO
+        return ''  # TODO
 
     def _get_info(self, video_entry):
         result = {}

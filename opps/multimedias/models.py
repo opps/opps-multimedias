@@ -1,10 +1,7 @@
 
 import os
-import audioread
 
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 from djcelery.models import TaskMeta
@@ -109,10 +106,14 @@ class MediaHost(models.Model):
 def upload_dest(instance, filename):
     return os.path.join(instance.TYPE, filename)
 
+
 class Media(Article):
-    uolmais = models.OneToOneField(MediaHost, verbose_name=_(u'UOL Mais'),
-                                related_name=u'uolmais_%(class)s',
-                                blank=True, null=True)
+    uolmais = models.OneToOneField(
+        MediaHost, verbose_name=_(u'UOL Mais'),
+        related_name=u'uolmais_%(class)s',
+        blank=True,
+        null=True
+    )
     media_file = models.FileField(_(u'File'), upload_to=upload_dest,
                                   help_text=_(('Temporary file stored '
                                                'until it\'s not sent to '

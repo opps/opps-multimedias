@@ -1,11 +1,10 @@
 from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields.files import FieldFile
 
 from opps.articles.admin import ArticleAdmin
 
-from .models import Audio, Video, MediaHost
+from .models import Audio, Video
 
 
 class MediaAdminForm(forms.ModelForm):
