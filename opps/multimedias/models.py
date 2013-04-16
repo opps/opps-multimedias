@@ -2,6 +2,7 @@ import os
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from djcelery.models import TaskMeta
 from opps.articles.models import Article
@@ -115,6 +116,8 @@ def upload_dest(instance, filename):
 
 class Media(Article):
 
+    TYPE = None
+
     uolmais = models.OneToOneField(
         MediaHost, verbose_name=_(u'UOL Mais'),
         related_name=u'uolmais_%(class)s',
@@ -170,6 +173,16 @@ class Media(Article):
             self.youtube.upload()
 
         self.uolmais.upload()
+
+    def get_absolute_url(self):
+        return reverse(u'multimedias:{}_detail'.format(self.TYPE), kwargs={
+            'channel__long_slug': self.channel.long_slug,
+            'slug': self.slug
+        })
+
+    def get_http_absolute_url(self):
+        return 'http://{0}{1}'.format(self.site.domain,
+                                      self.get_absolute_url())
 
 
 class Video(Media):
