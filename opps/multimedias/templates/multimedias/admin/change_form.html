@@ -17,6 +17,8 @@
   </fieldset>
 
   <!-- Media host information -->
+  {% if original.youtube %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube %}
+  {% endif %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.uolmais %}
 {% endblock %}

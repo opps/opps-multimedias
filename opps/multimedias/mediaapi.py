@@ -7,6 +7,7 @@ import dateutil.parser
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
 
 from uolmais_lib import UOLMaisLib
 from gdata.service import BadAuthentication, RequestError
@@ -91,12 +92,19 @@ class UOLMais(MediaAPI):
 
         if info:
             tags = u','.join([tag['description'] for tag in info['tags']])
+            # Embed for audio
+            if info['mediaType'] == 'P':
+                embed = render_to_string('multimedias/uolmais/audio_embed.html',
+                                         {'media_id': media_id})
+            else:
+                embed = info['embedCode']
+
             result.update({
                 u'title': info['title'],
                 u'description': info['description'],
                 u'thumbnail': info['thumbLarge'],
                 u'tags': tags,
-                u'embed': info['embedCode'],
+                u'embed': embed,
                 u'url': info['url'],
                 u'status': 'ok',
             })
@@ -170,19 +178,21 @@ class Youtube(MediaAPI):
 
         return 'error', status[1]
 
-    def _get_video_embed(self, video_entry):
-        return '' # TODO
+    def _get_video_embed(self, video_id):
+        return render_to_string('multimedias/youtube/video_embed.html',
+                                {'video_id': video_id})
 
     def _get_info(self, video_entry):
         result = {}
         if video_entry:
+            video_id = video_entry.id.text.split('/')[-1]
             result.update({
-                u'id': video_entry.id.text.split('/')[-1],
+                u'id': video_id,
                 u'title': video_entry.media.title.text,
                 u'description': video_entry.media.description.text,
                 u'thumbnail': video_entry.media.thumbnail[-1].url,
                 u'tags': video_entry.media.keywords.text,
-                u'embed': self._get_video_embed(video_entry),
+                u'embed': self._get_video_embed(video_id),
                 u'url': video_entry.media.player.url,
             })
 
@@ -206,4 +216,3 @@ class Youtube(MediaAPI):
         else:
             result.update(self._get_info(video_entry))
         return result
-

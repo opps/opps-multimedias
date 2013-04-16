@@ -1,6 +1,4 @@
-
 import os
-import audioread
 
 from django.db import models
 from django.dispatch import receiver
@@ -41,6 +39,7 @@ class MediaHost(models.Model):
                               default=STATUS_NOT_UPLOADED)
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
+    embed = models.TextField(default='')
     celery_task = models.OneToOneField('djcelery.TaskMeta', null=True,
                                        verbose_name=_('Celery Task ID'))
     updated = models.BooleanField(_('Updated'), default=False)
@@ -102,6 +101,10 @@ class MediaHost(models.Model):
             self.url = media_info['url']
             changed = True
 
+        if media_info['embed'] != self.embed:
+            self.embed = media_info['embed']
+            changed = True
+
         if changed:
             self.save()
 
@@ -109,10 +112,11 @@ class MediaHost(models.Model):
 def upload_dest(instance, filename):
     return os.path.join(instance.TYPE, filename)
 
+
 class Media(Article):
     uolmais = models.OneToOneField(MediaHost, verbose_name=_(u'UOL Mais'),
-                                related_name=u'uolmais_%(class)s',
-                                blank=True, null=True)
+                                   related_name=u'uolmais_%(class)s',
+                                   blank=True, null=True)
     media_file = models.FileField(_(u'File'), upload_to=upload_dest,
                                   help_text=_(('Temporary file stored '
                                                'until it\'s not sent to '
