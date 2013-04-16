@@ -6,8 +6,7 @@ from setuptools import setup, find_packages
 from opps import multimedias
 
 
-install_requires = ["opps", "FFVideo", "django-celery", "gdata", "uolmais-api",
-                    "audioread"]
+install_requires = ["opps", "django-celery", "gdata", "uolmais-api"]
 
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Developers",
