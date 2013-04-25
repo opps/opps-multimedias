@@ -1,0 +1,19 @@
+{{ object.content }}
+{{ object.content|safe }}
+{{ object.content|striptags }}
+{{ object.title }}
+{{ object.title|slugify }}
+{{ object.title|safe }}
+{{ object.title|striptags }}
+{{ object.headline }}
+{{ object.headline|slugify }}
+{{ object.headline|safe }}
+{{ object.headline|striptags }}
+{{ object.short_title }}
+{{ object.short_title|slugify }}
+{{ object.short_title|safe }}
+{{ object.short_title|striptags }}
+{% for tag in object.tags.all %}
+{{tag.name}}\n
+{{tag.name|slugify }}\n
+{% endfor %}
