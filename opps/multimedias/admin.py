@@ -34,7 +34,7 @@ class MediaAdmin(ArticleAdmin):
     fieldsets = (
         (_(u'Identification'), {
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
-                       'short_url')}),
+                       'short_url', 'main_image')}),
         (_(u'Content'), {
             'fields': ('short_title', 'headline', 'media_file', 'tags')}),
         (_(u'Relationships'), {
