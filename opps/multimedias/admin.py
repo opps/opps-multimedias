@@ -7,6 +7,7 @@ from opps.articles.admin import ArticleAdmin
 from .models import (Audio, Video, MediaBox, MediaBoxAudios,
                      MediaBoxVideos, MediaConfig)
 from opps.core.admin import PublishableAdmin
+from opps.core.admin import apply_opps_rules
 
 
 class MediaAdminForm(forms.ModelForm):
@@ -45,10 +46,12 @@ class MediaAdmin(ArticleAdmin):
     )
 
 
+@apply_opps_rules('multimedias')
 class VideoAdmin(MediaAdmin):
     form = VideoAdminForm
 
 
+@apply_opps_rules('multimedias')
 class AudioAdmin(MediaAdmin):
     form = AudioAdminForm
 
