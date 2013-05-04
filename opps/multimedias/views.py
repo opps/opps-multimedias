@@ -12,3 +12,13 @@ class VideoDetail(OppsDetail):
 class AudioDetail(OppsDetail):
     model = Audio
     type = 'multimedias'
+
+
+class VideoList(OppsList):
+    model = Video
+    type = 'video'
+
+
+class AudioList(OppsList):
+    model = Audio
+    type = 'audio'
