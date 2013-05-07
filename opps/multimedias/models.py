@@ -206,6 +206,16 @@ class Video(Media):
         null=True
     )
 
+    @property
+    def player(self):
+        if self.uolmais.host_id and self.uolmais.status == MediaHost.STATUS_OK:
+            player = 'http://player.mais.uol.com.br/embed_v2.swf?mediaId={}'
+            return player.format(self.uolmais.host_id)
+        if self.youtube.host_id and self.youtube.status == MediaHost.STATUS_OK:
+            player = 'http://www.youtube.com/embed/{}'
+            return player.format(self.youtube.host_id)
+        return ''
+
 
 class Audio(Media):
     TYPE = 'audio'
