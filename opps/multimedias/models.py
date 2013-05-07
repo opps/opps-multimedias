@@ -1,5 +1,6 @@
 import os
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -11,6 +12,12 @@ from .tasks import upload_media
 from opps.core.models import BaseBox
 from opps.core.models import BaseConfig
 from .mediaapi import Youtube, UOLMais
+
+app_namespace = getattr(
+    settings,
+    'OPPS_MULTIMEDIAS_URL_NAMESPACE',
+    'multimedias'
+)
 
 
 class MediaHost(models.Model):
@@ -175,10 +182,13 @@ class Media(Article):
         self.uolmais.upload()
 
     def get_absolute_url(self):
-        return reverse(u'multimedias:{}_detail'.format(self.TYPE), kwargs={
-            'channel__long_slug': self.channel.long_slug,
-            'slug': self.slug
-        })
+        return reverse(
+            u'{0}:{1}_detail'.format(app_namespace, self.TYPE),
+            kwargs={
+                'channel__long_slug': self.channel.long_slug,
+                'slug': self.slug
+            }
+        )
 
     def get_http_absolute_url(self):
         return 'http://{0}{1}'.format(self.site.domain,
