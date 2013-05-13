@@ -242,22 +242,26 @@ class MediaBox(BaseBox):
     def ordered_audios(self, field='order'):
         now = timezone.now()
         qs = self.audios.filter(
+            published=True,
+            date_available__lte=now,
             mediaboxaudios_audios__date_available__lte=now
         ).filter(
             models.Q(mediaboxaudios_audios__date_end__gte=now) |
             models.Q(mediaboxaudios_audios__date_end__isnull=True)
         )
-        return qs.order_by('mediaboxaudios_audios__order')
+        return qs.order_by('mediaboxaudios_audios__order').distinct()
 
     def ordered_videos(self, field='order'):
         now = timezone.now()
         qs = self.videos.filter(
+            published=True,
+            date_available__lte=now,
             mediaboxvideos_videos__date_available__lte=now
         ).filter(
             models.Q(mediaboxvideos_videos__date_end__gte=now) |
             models.Q(mediaboxvideos_videos__date_end__isnull=True)
         )
-        return qs.order_by('mediaboxvideos_videos__order')
+        return qs.order_by('mediaboxvideos_videos__order').distinct()
 
     @property
     def medias(self):
