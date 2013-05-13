@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils import timezone
 from opps.articles.admin import ArticleAdmin
 
 from .models import (Audio, Video, MediaBox, MediaBoxAudios,
@@ -65,7 +65,7 @@ class MediaBoxAudiosInline(admin.TabularInline):
     extra = 1
     fieldsets = [(None, {
         'classes': ('collapse',),
-        'fields': ('audio', 'order')})]
+        'fields': ('audio', 'order', 'date_available', 'date_end')})]
 
 
 class MediaBoxVideosInline(admin.TabularInline):
@@ -76,7 +76,7 @@ class MediaBoxVideosInline(admin.TabularInline):
     extra = 1
     fieldsets = [(None, {
         'classes': ('collapse',),
-        'fields': ('video', 'order')})]
+        'fields': ('video', 'order', 'date_available', 'date_end')})]
 
 
 class MediaBoxAdmin(PublishableAdmin):
@@ -96,6 +96,23 @@ class MediaBoxAdmin(PublishableAdmin):
             'classes': ('extrapretty'),
             'fields': ('published', 'date_available')}),
     )
+
+    def clean_ended_entries(self, request, queryset):
+        now = timezone.now()
+        for box in queryset:
+            endedaudios = box.mediaboxaudios_mediaboxes.filter(
+                date_end__lt=now
+            )
+            endedvideos = box.mediaboxvideos_mediaboxes.filter(
+                date_end__lt=now
+            )
+            if endedaudios:
+                endedaudios.delete()
+            if endedvideos:
+                endedvideos.delete()
+    clean_ended_entries.short_description = _(u'Clean ended media')
+
+    actions = ('clean_ended_entries',)
 
 
 class MediaConfigAdmin(PublishableAdmin):

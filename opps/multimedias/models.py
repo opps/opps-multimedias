@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
@@ -238,12 +239,32 @@ class MediaBox(BaseBox):
         through='multimedias.MediaBoxVideos'
     )
 
+    def ordered_audios(self, field='order'):
+        now = timezone.now()
+        qs = self.audios.filter(
+            mediaboxaudios_audios__date_available__lte=now
+        ).filter(
+            models.Q(mediaboxaudios_audios__date_end__gte=now) |
+            models.Q(mediaboxaudios_audios__date_end__isnull=True)
+        )
+        return qs.order_by('mediaboxaudios_audios__order')
+
+    def ordered_videos(self, field='order'):
+        now = timezone.now()
+        qs = self.videos.filter(
+            mediaboxaudios_videos__date_available__lte=now
+        ).filter(
+            models.Q(mediaboxaudios_videos__date_end__gte=now) |
+            models.Q(mediaboxaudios_videos__date_end__isnull=True)
+        )
+        return qs.order_by('mediaboxaudios_videos__order')
+
     @property
     def medias(self):
         """
         Return a single set of all medias in the BaseBox
         """
-        return list(self.videos.all()) + list(self.audios.all())
+        return list(self.ordered_videos()) + list(self.ordered_audios())
 
 
 class MediaBoxAudios(models.Model):
@@ -261,6 +282,14 @@ class MediaBoxAudios(models.Model):
         related_name='mediaboxaudios_audios',
         verbose_name=_(u'Audio'),
     )
+    date_available = models.DateTimeField(_(u"Date available"),
+                                          default=timezone.now, null=True)
+    date_end = models.DateTimeField(_(u"End date"), null=True, blank=True)
+
+    class Meta:
+        ordering = ('order',)
+        verbose_name = _('Media box audio')
+        verbose_name_plural = _('Media boxes audios')
 
     order = models.PositiveIntegerField(_(u'Order'), default=0)
 
@@ -283,6 +312,14 @@ class MediaBoxVideos(models.Model):
         related_name='mediaboxvideos_videos',
         verbose_name=_(u'Video'),
     )
+    date_available = models.DateTimeField(_(u"Date available"),
+                                          default=timezone.now, null=True)
+    date_end = models.DateTimeField(_(u"End date"), null=True, blank=True)
+
+    class Meta:
+        ordering = ('order',)
+        verbose_name = _('Media box video')
+        verbose_name_plural = _('Media boxes videos')
 
     order = models.PositiveIntegerField(_(u'Order'), default=0)
 
