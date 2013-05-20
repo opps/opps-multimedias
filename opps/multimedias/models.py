@@ -24,11 +24,13 @@ app_namespace = getattr(
 class MediaHost(models.Model):
 
     STATUS_OK = 'ok'
+    STAUTS_PROCESSING = 'processing'
     STATUS_ERROR = 'error'
     STATUS_DELETED = 'deleted'
     STATUS_NOT_UPLOADED = 'notuploaded'
     STATUS_CHOICES = (
         (STATUS_OK, _('OK')),
+        (STAUTS_PROCESSING, _('Processing')),
         (STATUS_ERROR, _('Error')),
         (STATUS_DELETED, _('Deleted')),
         (STATUS_NOT_UPLOADED, _('Not Uploaded')),
@@ -167,11 +169,15 @@ class Media(Article):
         save_again = False
 
         if hasattr(self, 'youtube') and not self.youtube:
-            self.youtube = MediaHost.objects.create(host=MediaHost.HOST_YOUTUBE)
+            self.youtube = MediaHost.objects.create(
+                host=MediaHost.HOST_YOUTUBE
+            )
             save_again = True
 
         if not self.uolmais:
-            self.uolmais = MediaHost.objects.create(host=MediaHost.HOST_UOLMAIS)
+            self.uolmais = MediaHost.objects.create(
+                host=MediaHost.HOST_UOLMAIS
+            )
             save_again = True
 
         if save_again:
