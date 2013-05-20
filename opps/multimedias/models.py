@@ -169,11 +169,15 @@ class Media(Article):
         save_again = False
 
         if hasattr(self, 'youtube') and not self.youtube:
-            self.youtube = MediaHost.objects.create(host=MediaHost.HOST_YOUTUBE)
+            self.youtube = MediaHost.objects.create(
+                host=MediaHost.HOST_YOUTUBE
+            )
             save_again = True
 
         if not self.uolmais:
-            self.uolmais = MediaHost.objects.create(host=MediaHost.HOST_UOLMAIS)
+            self.uolmais = MediaHost.objects.create(
+                host=MediaHost.HOST_UOLMAIS
+            )
             save_again = True
 
         if save_again:

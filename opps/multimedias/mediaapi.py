@@ -207,7 +207,9 @@ class Youtube(MediaAPI):
         result['id'] = video_id
 
         try:
-            video_entry = self.yt_service.GetYouTubeVideoEntry(video_id=video_id)
+            video_entry = self.yt_service.GetYouTubeVideoEntry(
+                video_id=video_id
+            )
         except RequestError as reqerr:
             if reqerr.args[0].get('reason') == 'Not Found':
                 result.update({'status': 'deleted'})
