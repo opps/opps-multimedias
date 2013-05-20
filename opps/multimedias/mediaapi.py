@@ -36,6 +36,11 @@ class MediaAPI(object):
 
 class UOLMais(MediaAPI):
 
+    SUCCESS_CODES = (10, )
+    PROCESSING_CODES = (0, 1, 2, 3, 6, 11, 12, 13, 30, 31, 32, 33)
+    REMOVED_CODES = (20, 21, 22, )
+    ERROR_CODES = (60, 70, 71, 72, 73, 74, )
+
     def __init__(self):
         super(UOLMais, self).__init__()
         self._lib = UOLMaisLib()
@@ -85,17 +90,19 @@ class UOLMais(MediaAPI):
         return self.get_info(media_id)
 
     def get_info(self, media_id):
+        self.authenticate()
         result = super(UOLMais, self).get_info(media_id)
         result['id'] = media_id
 
-        info = self._lib.get_by_id(media_id)
+        info = self._lib.get_private_info(media_id)
 
-        if info:
-            tags = u','.join([tag['description'] for tag in info['tags']])
+        if info['status'] in self.SUCCESS_CODES:
             # Embed for audio
             if info['mediaType'] == 'P':
-                embed = render_to_string('multimedias/uolmais/audio_embed.html',
-                                         {'media_id': media_id})
+                embed = render_to_string(
+                    'multimedias/uolmais/audio_embed.html',
+                    {'media_id': media_id}
+                )
             else:
                 embed = info['embedCode']
 
@@ -103,13 +110,27 @@ class UOLMais(MediaAPI):
                 u'title': info['title'],
                 u'description': info['description'],
                 u'thumbnail': info['thumbLarge'],
-                u'tags': tags,
+                u'tags': info['tags'],
                 u'embed': embed,
                 u'url': info['url'],
                 u'status': 'ok',
+                u'status_msg': info['status_description']
+            })
+        elif info['status'] in self.PROCESSING_CODES:
+            result.update({
+                u'status': 'processing',
+                u'status_msg': info['status_description']
+            })
+        elif info['status'] in self.REMOVED_CODES:
+            result.update({
+                u'status': 'deleted',
+                u'status_msg': info['status_description']
             })
         else:
-            result['status'] = 'error'
+            result.update({
+                u'status': 'error',
+                u'status_msg': info['status_description']
+            })
 
         return result
 
