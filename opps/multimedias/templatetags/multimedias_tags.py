@@ -28,7 +28,7 @@ def get_active_multimedias(number=5, channel_slug=None,
                 channel__long_slug=channel_slug
             )
         active_audios = active_audios[:number]
-        active_multimedias.extend(active_audios)
+        active_multimedias.extend(active_audios.distinct())
 
     if not type or type == 'video':
         active_videos = Video.objects.all_published()
@@ -37,7 +37,7 @@ def get_active_multimedias(number=5, channel_slug=None,
                 channel__long_slug=channel_slug
             )
         active_videos = active_videos[:number]
-        active_multimedias.extend(active_videos)
+        active_multimedias.extend(active_videos.distinct())
 
     t = template.loader.get_template(template_name)
 
