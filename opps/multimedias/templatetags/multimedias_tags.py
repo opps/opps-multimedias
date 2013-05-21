@@ -24,14 +24,18 @@ def get_active_multimedias(number=5, channel_slug=None,
     if not type or type == 'audio':
         active_audios = Audio.objects.all_published()
         if channel_slug:
-            active_audios = active_audios.filter(channel__slug=channel_slug)
+            active_audios = active_audios.filter(
+                channel__long_slug=channel_slug
+            )
         active_audios = active_audios[:number]
         active_multimedias.extend(active_audios)
 
     if not type or type == 'video':
         active_videos = Video.objects.all_published()
         if channel_slug:
-            active_videos = active_videos.filter(channel__slug=channel_slug)
+            active_videos = active_videos.filter(
+                channel__long_slug=channel_slug
+            )
         active_videos = active_videos[:number]
         active_multimedias.extend(active_videos)
 
