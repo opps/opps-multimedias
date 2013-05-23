@@ -5,13 +5,14 @@
 # Translators:
 # Ellison Leão <ellisonleao@gmail.com>, 2013
 # josene <jsene@yacows.com.br>, 2013
+# Davi Oliveira <davi@tracy.com.br>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-20 11:51-0300\n"
-"PO-Revision-Date: 2013-04-26 18:07+0000\n"
-"Last-Translator: josene <jsene@yacows.com.br>\n"
+"POT-Creation-Date: 2013-05-23 19:22-0300\n"
+"PO-Revision-Date: 2013-05-23 19:32+0000\n"
+"Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -67,124 +68,127 @@ msgstr "Parâmetro YOUTUBE_DEVELOPER_KEY  não setado."
 msgid "Incorrect Youtube username or password"
 msgstr "Nome de usuário ou senha do Youtube incorretos."
 
-#: models.py:32
+#: models.py:33
 msgid "OK"
 msgstr "OK"
 
-#: models.py:33
+#: models.py:34
+msgid "Sending"
+msgstr "Enviando"
+
+#: models.py:35
 msgid "Processing"
 msgstr "Processando"
 
-#: models.py:34
+#: models.py:36
 msgid "Error"
 msgstr "Erro"
 
-#: models.py:35
+#: models.py:37
 msgid "Deleted"
 msgstr "Apagado"
 
-#: models.py:36
+#: models.py:38
 msgid "Not Uploaded"
 msgstr "Upload não realizado"
 
-#: models.py:45
+#: models.py:48
 msgid "Host"
 msgstr "Host"
 
-#: models.py:47
+#: models.py:52
 msgid "Provider that will store the media"
 msgstr "Fornecedor que irá armazenar as mídias"
 
-#: models.py:48 templates/includes/mediahost-fieldset.html:7
+#: models.py:55 templates/includes/mediahost-fieldset.html:7
 msgid "Status"
 msgstr "Status"
 
-#: models.py:51
+#: models.py:60
 msgid "Host ID"
 msgstr "ID do Host"
 
-#: models.py:55
+#: models.py:66
 msgid "Celery Task ID"
 msgstr "ID da task do Celery"
 
-#: models.py:56
+#: models.py:68
 msgid "Updated"
 msgstr "Atualizado"
 
-#: models.py:57
+#: models.py:70
 msgid "Detailed Status Message"
 msgstr "Mensagem de status detalhada"
 
-#: models.py:67
+#: models.py:82
 msgid "Not Started"
 msgstr "Não iniciado"
 
-#: models.py:132
+#: models.py:147
 msgid "UOL Mais"
 msgstr "UOL Mais"
 
-#: models.py:137
+#: models.py:153
 msgid "File"
 msgstr "Arquivo"
 
-#: models.py:145
+#: models.py:161
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:210
+#: models.py:227
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:286 models.py:316
+#: models.py:303 models.py:333
 msgid "Media Box"
 msgstr "Box de mídia"
 
-#: models.py:293 models.py:347
+#: models.py:310 models.py:364
 msgid "Audio"
 msgstr "Áudio"
 
-#: models.py:295 models.py:325
+#: models.py:312 models.py:342
 msgid "Date available"
-msgstr ""
+msgstr "Data de publicação"
 
-#: models.py:297 models.py:327
+#: models.py:314 models.py:344
 msgid "End date"
-msgstr ""
+msgstr "Data de finalização"
 
-#: models.py:301
+#: models.py:318
 #, fuzzy
 msgid "Media box audio"
 msgstr "Box de mídia"
 
-#: models.py:302
+#: models.py:319
 msgid "Media boxes audios"
 msgstr ""
 
-#: models.py:304 models.py:334
+#: models.py:321 models.py:351
 msgid "Order"
 msgstr "Ordem"
 
-#: models.py:323 models.py:355
+#: models.py:340 models.py:372
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:331
+#: models.py:348
 #, fuzzy
 msgid "Media box video"
 msgstr "Box de mídia"
 
-#: models.py:332
+#: models.py:349
 msgid "Media boxes videos"
 msgstr ""
 
 #: templates/includes/mediahost-fieldset.html:14
-msgid "Upload"
-msgstr "Upload"
-
-#: templates/includes/mediahost-fieldset.html:21
 msgid "URL"
 msgstr "URL"
 
-#: templates/includes/mediahost-fieldset.html:28
+#: templates/includes/mediahost-fieldset.html:21
 msgid "Embed Code"
 msgstr "Código Embed"
+
+#~ msgid "Upload"
+#~ msgstr "Upload"
