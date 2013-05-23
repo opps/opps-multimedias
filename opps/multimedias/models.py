@@ -26,10 +26,12 @@ class MediaHost(models.Model):
     STATUS_OK = 'ok'
     STAUTS_PROCESSING = 'processing'
     STATUS_ERROR = 'error'
+    STATUS_SENDING = 'sending'
     STATUS_DELETED = 'deleted'
     STATUS_NOT_UPLOADED = 'notuploaded'
     STATUS_CHOICES = (
         (STATUS_OK, _('OK')),
+        (STATUS_SENDING, _('Sending')),
         (STAUTS_PROCESSING, _('Processing')),
         (STATUS_ERROR, _('Error')),
         (STATUS_DELETED, _('Deleted')),
@@ -47,7 +49,7 @@ class MediaHost(models.Model):
                             help_text=_('Provider that will store the media'))
     status = models.CharField(_('Status'), max_length=16,
                               choices=STATUS_CHOICES,
-                              default=STATUS_NOT_UPLOADED)
+                              default=STATUS_SENDING)
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
     embed = models.TextField(default='')
