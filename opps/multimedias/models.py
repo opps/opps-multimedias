@@ -44,20 +44,33 @@ class MediaHost(models.Model):
         (HOST_YOUTUBE, 'Youtube'),
         (HOST_UOLMAIS, 'UOL Mais'),
     )
-    host = models.CharField(_('Host'), max_length=16, choices=HOST_CHOICES,
-                            default=HOST_UOLMAIS,
-                            help_text=_('Provider that will store the media'))
-    status = models.CharField(_('Status'), max_length=16,
-                              choices=STATUS_CHOICES,
-                              default=STATUS_SENDING)
+    host = models.CharField(
+        _('Host'),
+        max_length=16,
+        choices=HOST_CHOICES,
+        default=HOST_UOLMAIS,
+        help_text=_('Provider that will store the media')
+    )
+    status = models.CharField(
+        _('Status'),
+        max_length=16,
+        choices=STATUS_CHOICES,
+        default=STATUS_SENDING
+    )
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
     embed = models.TextField(default='')
-    celery_task = models.OneToOneField('djcelery.TaskMeta', null=True,
-                                       verbose_name=_('Celery Task ID'))
+    celery_task = models.OneToOneField(
+        'djcelery.TaskMeta',
+        null=True,
+        verbose_name=_('Celery Task ID')
+    )
     updated = models.BooleanField(_('Updated'), default=False)
-    status_message = models.CharField(_('Detailed Status Message'),
-                                      max_length=64, null=True)
+    status_message = models.CharField(
+        _('Detailed Status Message'),
+        max_length=64,
+        null=True
+    )
 
     def __unicode__(self):
         return u'{} - {}'.format(self.get_host_display(), self.media)
@@ -136,17 +149,19 @@ class Media(Article):
         blank=True,
         null=True
     )
-    media_file = models.FileField(_(u'File'), upload_to=upload_dest,
-                                  help_text=_(('Temporary file stored '
-                                               'until it\'s not sent to '
-                                               'final hosting server '
-                                               '(ie: Youtube)')))
+    media_file = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(('Temporary file stored until it\'s not sent to '
+                     'final hosting server (ie: Youtube)'))
+    )
 
     posts = models.ManyToManyField(
         'articles.Post',
         verbose_name=_(u'Posts'),
         related_name=u'%(class)s',
-        null=True, blank=True,
+        null=True,
+        blank=True,
     )
 
     class Meta:
