@@ -55,7 +55,7 @@ class MediaHost(models.Model):
         _('Status'),
         max_length=16,
         choices=STATUS_CHOICES,
-        default=STATUS_SENDING
+        default=STATUS_NOT_UPLOADED
     )
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
@@ -99,13 +99,13 @@ class MediaHost(models.Model):
             return Youtube()
 
     def upload(self):
-        if self.celery_task or self.host_id:
-            self.update()
-        else:
-            result = upload_media.delay(self)
-            taskmeta = TaskMeta.objects.get_or_create(task_id=result.id)[0]
-            self.celery_task = taskmeta
+        if self.status == self.STATUS_NOT_UPLOADED and not (
+                self.celery_task and self.host_id):
+            self.status = self.STATUS_SENDING
             self.save()
+            upload_media.delay(self)
+        else:
+            self.update()
 
     def update(self, force=False):
         # If the upload wasn't done yet we don't have to update anything
