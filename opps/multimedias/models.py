@@ -169,6 +169,7 @@ class Media(Article):
 
     class Meta:
         abstract = True
+        ordering = ['-date_available', 'title', 'channel_long_slug']
 
     def __unicode__(self):
         return u'{}'.format(self.title)
