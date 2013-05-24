@@ -1,4 +1,5 @@
 import os
+import random
 
 from django.conf import settings
 from django.db import models
@@ -139,6 +140,9 @@ class MediaHost(models.Model):
 
 
 def upload_dest(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = u"{0}-{1}.{2}".format(random.getrandbits(32),
+                                     instance.slug, ext)
     return os.path.join(instance.TYPE, filename)
 
 
