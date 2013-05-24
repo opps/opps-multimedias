@@ -26,6 +26,7 @@ class AudioAdminForm(MediaAdminForm):
         model = Audio
 
 
+@apply_opps_rules('multimedias')
 class MediaAdmin(ArticleAdmin):
     add_form_template = 'admin/change_form.html'
     change_form_template = 'multimedias/admin/change_form.html'
@@ -42,7 +43,7 @@ class MediaAdmin(ArticleAdmin):
             'fields': ('channel', )}),
         (_(u'Publication'), {
             'classes': ('extrapretty'),
-            'fields': ('published', 'date_available')}),
+            'fields': ('published', 'date_available', 'show_on_root_channel')}),
     )
 
 
