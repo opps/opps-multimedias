@@ -3,12 +3,17 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from celery import task
+from celery import task, current_task
 from djcelery.models import TaskMeta
 
 
 @task
 def upload_media(mediahost):
+    request = current_task.request
+    taskmeta = TaskMeta.objects.get_or_create(task_id=request.id)[0]
+    mediahost.celery_task = taskmeta
+    mediahost.save()
+
     media = mediahost.media
     tags = list(media.tags.values_list('name', flat=True))
     media_info = mediahost.api.upload(
@@ -19,9 +24,6 @@ def upload_media(mediahost):
         tags
     )
     mediahost.host_id = media_info['id']
-    mediahost.celery_task = TaskMeta.objects.get(
-        task_id=upload_media.request.id
-    )
     mediahost.save()
 
 
@@ -40,6 +42,8 @@ def update_mediahost():
     # update failure tasks
     tasks = TaskMeta.objects.filter(
         ~Q(mediahost__status='error'),
+        mediahost__url__isnull=True,
+        mediahost__pk__isnull=False,
         status='FAILURE'
     )
     for task in tasks:
