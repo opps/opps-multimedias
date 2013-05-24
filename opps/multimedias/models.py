@@ -117,6 +117,9 @@ class MediaHost(models.Model):
         changed = False
         if media_info['status'] and media_info['status'] != self.status:
             self.status = media_info['status']
+            if self.status == self.STATUS_OK:
+                self.media.published = True
+                self.media.save()
             changed = True
 
         if media_info['status_msg'] != self.status_message:
@@ -171,8 +174,8 @@ class Media(Article):
         return u'{}'.format(self.title)
 
     def save(self, *args, **kwargs):
-        if not self.published:
-            self.published = True
+        if not self.pk:
+            self.published = False
 
         super(Media, self).save(*args, **kwargs)
 

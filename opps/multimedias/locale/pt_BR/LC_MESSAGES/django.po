@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-23 19:22-0300\n"
-"PO-Revision-Date: 2013-05-23 19:32+0000\n"
+"POT-Creation-Date: 2013-05-23 21:15-0300\n"
+"PO-Revision-Date: 2013-05-23 21:15+0000\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
 "Language: pt_BR\n"
@@ -124,63 +124,67 @@ msgstr "Mensagem de status detalhada"
 msgid "Not Started"
 msgstr "Não iniciado"
 
-#: models.py:147
+#: models.py:150
 msgid "UOL Mais"
 msgstr "UOL Mais"
 
-#: models.py:153
+#: models.py:156
 msgid "File"
 msgstr "Arquivo"
 
-#: models.py:161
+#: models.py:164
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:227
+#: models.py:230
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:303 models.py:333
+#: models.py:306 models.py:336
 msgid "Media Box"
 msgstr "Box de mídia"
 
-#: models.py:310 models.py:364
+#: models.py:313 models.py:367
 msgid "Audio"
 msgstr "Áudio"
 
-#: models.py:312 models.py:342
+#: models.py:315 models.py:345
 msgid "Date available"
 msgstr "Data de publicação"
 
-#: models.py:314 models.py:344
+#: models.py:317 models.py:347
 msgid "End date"
 msgstr "Data de finalização"
 
-#: models.py:318
+#: models.py:321
 #, fuzzy
 msgid "Media box audio"
 msgstr "Box de mídia"
 
-#: models.py:319
+#: models.py:322
 msgid "Media boxes audios"
 msgstr ""
 
-#: models.py:321 models.py:351
+#: models.py:324 models.py:354
 msgid "Order"
 msgstr "Ordem"
 
-#: models.py:340 models.py:372
+#: models.py:343 models.py:375
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:348
+#: models.py:351
 #, fuzzy
 msgid "Media box video"
 msgstr "Box de mídia"
 
-#: models.py:349
+#: models.py:352
 msgid "Media boxes videos"
 msgstr ""
+
+#: tasks.py:47
+msgid "Error on upload"
+msgstr "Erro ao enviar"
 
 #: templates/includes/mediahost-fieldset.html:14
 msgid "URL"
