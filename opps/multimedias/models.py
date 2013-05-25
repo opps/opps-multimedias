@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from djcelery.models import TaskMeta
 from opps.articles.models import Article
 
-from .tasks import upload_media
 from opps.core.models import BaseBox
 from opps.core.models import BaseConfig
 from .mediaapi import Youtube, UOLMais
@@ -77,12 +76,6 @@ class MediaHost(models.Model):
         return u'{} - {}'.format(self.get_host_display(), self.media)
 
     @property
-    def upload_status(self):
-        if self.celery_task:
-            return self.celery_task.status
-        return _(u'Not Started')
-
-    @property
     def media(self):
         if self.host == MediaHost.HOST_UOLMAIS:
             if hasattr(self, 'uolmais_video'):
@@ -99,20 +92,8 @@ class MediaHost(models.Model):
         elif self.host == MediaHost.HOST_YOUTUBE:
             return Youtube()
 
-    def upload(self):
-        if self.status == self.STATUS_NOT_UPLOADED and not (
-                self.celery_task and self.host_id):
-            self.status = self.STATUS_SENDING
-            self.save()
-            upload_media.delay(self)
-        else:
-            self.update()
-
-    def update(self, force=False):
+    def update(self):
         # If the upload wasn't done yet we don't have to update anything
-        if self.upload_status != 'SUCCESS' and not force:
-            return
-
         media_info = self.api.get_info(self.host_id)
 
         changed = False
@@ -182,36 +163,17 @@ class Media(Article):
         if not self.pk:
             self.published = False
 
-        super(Media, self).save(*args, **kwargs)
-
-        # We have to save before uploading the media because
-        #   the file is only available on filesystem after
-        #   the first save.
-        # If there is a way to use the temp_path outside the form
-        # we could save just one time.
-        # @author: Sergio Oliveira <sergio@tracy.com.br>
-
-        save_again = False
-
         if hasattr(self, 'youtube') and not self.youtube:
             self.youtube = MediaHost.objects.create(
                 host=MediaHost.HOST_YOUTUBE
             )
-            save_again = True
 
         if not self.uolmais:
             self.uolmais = MediaHost.objects.create(
                 host=MediaHost.HOST_UOLMAIS
             )
-            save_again = True
 
-        if save_again:
-            self.save()
-
-        if hasattr(self, 'youtube'):
-            self.youtube.upload()
-
-        self.uolmais.upload()
+        super(Media, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse(

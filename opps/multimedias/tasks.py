@@ -3,50 +3,68 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from celery import task, current_task
-from djcelery.models import TaskMeta
-
-
-@task
-def upload_media(mediahost):
-    request = current_task.request
-    taskmeta = TaskMeta.objects.get_or_create(task_id=request.id)[0]
-    mediahost.celery_task = taskmeta
-    mediahost.save()
-
-    media = mediahost.media
-    tags = list(media.tags.values_list('name', flat=True))
-    media_info = mediahost.api.upload(
-        media.TYPE,
-        media.media_file.path,
-        media.title,
-        media.headline,
-        tags
-    )
-    mediahost.host_id = media_info['id']
-    mediahost.save()
+from celery import task
+from .models import MediaHost
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=5))
-def update_mediahost():
-    q = Q(status='SUCCESS', mediahost__isnull=False)
-    error_without_reason = Q(mediahost__status='error',
-                             mediahost__status_message__isnull=True)
-    no_url = Q(mediahost__url__isnull=True)
-    q &= no_url | error_without_reason
-    tasks = TaskMeta.objects.filter(q)
-
-    for task in tasks:
-        task.mediahost.update()
-
-    # update failure tasks
-    tasks = TaskMeta.objects.filter(
-        ~Q(mediahost__status='error'),
-        mediahost__url__isnull=True,
-        mediahost__pk__isnull=False,
-        status='FAILURE'
+def upload_media():
+    mediahosts = MediaHost.objects.filter(
+        status=MediaHost.STATUS_NOT_UPLOADED,
+        host_id__isnull=True
     )
-    for task in tasks:
-        task.mediahost.status = 'error'
-        task.mediahost.status_message = _('Error on upload')
-        task.mediahost.save()
+
+    for mediahost in mediahosts:
+        mediahost.status = MediaHost.STATUS_SENDING
+        mediahost.save()
+        media = mediahost.media
+        tags = list(media.tags.values_list('name', flat=True))
+        try:
+            media_info = mediahost.api.upload(
+                media.TYPE,
+                media.media_file.path,
+                media.title,
+                media.headline,
+                tags
+            )
+        except:
+            self.status = MediaHost.STATUS_ERROR
+            self.status_message = _('Error on upload')
+            self.save()
+            raise
+
+        mediahost.host_id = media_info['id']
+        mediahost.status = MediaHost.STAUTS_PROCESSING
+        mediahost.save()
+
+
+@task.periodic_task(run_every=timezone.timedelta(minutes=2))
+def update_mediahost():
+    mediahosts = MediaHost.objects.filter(
+        host_id__isnull=False,
+    )
+    # Exclude ok content
+    mediahosts = mediahosts.exclude(
+        status=MediaHost.STATUS_OK,
+        url__isnull=False
+    )
+    # Exclude sending content
+    mediahosts = mediahosts.exclude(
+        status=MediaHost.STATUS_SENDING
+    )
+    # Exclude error with reason
+    mediahosts = mediahosts.exclude(
+        status=MediaHost.STATUS_ERROR,
+        status_message__isnull=False
+    )
+    # Exclude deleted content
+    mediahosts = mediahosts.exclude(
+        status=MediaHost.STATUS_DELETED,
+    )
+    # Exclude NONE host_id
+    mediahosts = mediahosts.exclude(
+        host_id='NONE'
+    )
+
+    for mediahost in mediahosts:
+        mediahost.update()
