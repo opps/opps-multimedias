@@ -38,12 +38,14 @@ class MediaAdmin(ArticleAdmin):
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
                        'short_url', ('main_image', 'image_thumb'))}),
         (_(u'Content'), {
-            'fields': ('short_title', 'headline', 'media_file', 'tags')}),
+            'fields': ('short_title', 'hat',
+                       'headline', 'media_file', 'tags')}),
         (_(u'Relationships'), {
             'fields': ('channel', )}),
         (_(u'Publication'), {
             'classes': ('extrapretty'),
-            'fields': ('published', 'date_available', 'show_on_root_channel')}),
+            'fields': ('published', 'date_available',
+                       'show_on_root_channel')}),
     )
 
 
