@@ -190,7 +190,7 @@ msgstr "Erro ao enviar"
 
 #: templates/includes/mediahost-fieldset.html:13
 msgid "Media ID"
-msgstr "Box de mídia"
+msgstr "ID da mídia"
 
 #: templates/includes/mediahost-fieldset.html:19
 msgid "URL"
