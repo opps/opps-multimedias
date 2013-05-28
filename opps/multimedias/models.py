@@ -68,7 +68,7 @@ class MediaHost(models.Model):
     updated = models.BooleanField(_('Updated'), default=False)
     status_message = models.CharField(
         _('Detailed Status Message'),
-        max_length=64,
+        max_length=150,
         null=True
     )
 

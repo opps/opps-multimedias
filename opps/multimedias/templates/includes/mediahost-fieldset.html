@@ -8,7 +8,12 @@
       <p>{{ mediahost.get_status_display }}{% if mediahost.status_message %} ({{ mediahost.status_message }}){% endif %}</p>
     </div>
   </div>
-
+  <div class="form-row">
+    <div>
+      <label>{% trans "Media ID" %}:</label>
+      <p>{{ mediahost.host_id }}</p>
+    </div>
+  </div>
   <div class="form-row">
     <div>
       <label>{% trans "URL" %}:</label>

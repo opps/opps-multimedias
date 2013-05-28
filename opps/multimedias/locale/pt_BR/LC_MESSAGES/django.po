@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-23 21:15-0300\n"
-"PO-Revision-Date: 2013-05-23 21:15+0000\n"
+"POT-Creation-Date: 2013-05-28 14:55-0300\n"
+"PO-Revision-Date: 2013-05-28 14:57+0300\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
 "Language: pt_BR\n"
@@ -24,23 +24,31 @@ msgstr ""
 msgid "Headline"
 msgstr "Cabeçalho"
 
-#: admin.py:36 admin.py:91
+#: admin.py:44 admin.py:131
 msgid "Identification"
 msgstr "Identificação"
 
-#: admin.py:39
+#: admin.py:47
 msgid "Content"
 msgstr "Conteúdo"
 
-#: admin.py:41 admin.py:93
+#: admin.py:50 admin.py:133
 msgid "Relationships"
 msgstr "Relacionamentos"
 
-#: admin.py:43 admin.py:95
+#: admin.py:52 admin.py:135
 msgid "Publication"
 msgstr "Publicação"
 
-#: admin.py:113
+#: admin.py:74
+msgid "Resend UOLMais media"
+msgstr "Reenviar mídia do UOLMais"
+
+#: admin.py:91
+msgid "Resend Youtube video"
+msgstr "Reenviar vídeo do Youtube"
+
+#: admin.py:153
 msgid "Clean ended media"
 msgstr ""
 
@@ -120,79 +128,80 @@ msgstr "Atualizado"
 msgid "Detailed Status Message"
 msgstr "Mensagem de status detalhada"
 
-#: models.py:82
-msgid "Not Started"
-msgstr "Não iniciado"
-
-#: models.py:150
+#: models.py:135
 msgid "UOL Mais"
 msgstr "UOL Mais"
 
-#: models.py:156
+#: models.py:141
 msgid "File"
 msgstr "Arquivo"
 
-#: models.py:164
+#: models.py:149
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:230
+#: models.py:197
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:306 models.py:336
+#: models.py:273 models.py:303
 msgid "Media Box"
 msgstr "Box de mídia"
 
-#: models.py:313 models.py:367
+#: models.py:280 models.py:334
 msgid "Audio"
 msgstr "Áudio"
 
-#: models.py:315 models.py:345
+#: models.py:282 models.py:312
 msgid "Date available"
 msgstr "Data de publicação"
 
-#: models.py:317 models.py:347
+#: models.py:284 models.py:314
 msgid "End date"
 msgstr "Data de finalização"
 
-#: models.py:321
-#, fuzzy
+#: models.py:288
 msgid "Media box audio"
 msgstr "Box de mídia"
 
-#: models.py:322
+#: models.py:289
 msgid "Media boxes audios"
 msgstr ""
 
-#: models.py:324 models.py:354
+#: models.py:291 models.py:321
 msgid "Order"
 msgstr "Ordem"
 
-#: models.py:343 models.py:375
+#: models.py:310 models.py:342
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:351
-#, fuzzy
+#: models.py:318
 msgid "Media box video"
 msgstr "Box de mídia"
 
-#: models.py:352
+#: models.py:319
 msgid "Media boxes videos"
 msgstr ""
 
-#: tasks.py:47
+#: tasks.py:32
 msgid "Error on upload"
 msgstr "Erro ao enviar"
 
-#: templates/includes/mediahost-fieldset.html:14
+#: templates/includes/mediahost-fieldset.html:13
+msgid "Media ID"
+msgstr "ID da mídia"
+
+#: templates/includes/mediahost-fieldset.html:19
 msgid "URL"
 msgstr "URL"
 
-#: templates/includes/mediahost-fieldset.html:21
+#: templates/includes/mediahost-fieldset.html:26
 msgid "Embed Code"
 msgstr "Código Embed"
+
+#~ msgid "Not Started"
+#~ msgstr "Não iniciado"
 
 #~ msgid "Upload"
 #~ msgstr "Upload"

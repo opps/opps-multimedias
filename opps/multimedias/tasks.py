@@ -28,9 +28,9 @@ def upload_media():
                 tags
             )
         except:
-            self.status = MediaHost.STATUS_ERROR
-            self.status_message = _('Error on upload')
-            self.save()
+            mediahost.status = MediaHost.STATUS_ERROR
+            mediahost.status_message = _('Error on upload')
+            mediahost.save()
             raise
 
         mediahost.host_id = media_info['id']
