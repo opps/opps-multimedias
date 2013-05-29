@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-28 14:55-0300\n"
-"PO-Revision-Date: 2013-05-28 14:57+0300\n"
+"POT-Creation-Date: 2013-05-28 23:17-0300\n"
+"PO-Revision-Date: 2013-05-28 23:18-0300\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
 "Language: pt_BR\n"
@@ -20,35 +20,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: admin.py:15
+#: admin.py:18
 msgid "Headline"
 msgstr "Cabeçalho"
 
-#: admin.py:44 admin.py:131
+#: admin.py:28
+msgid "Invalid extension"
+msgstr "Extensão inválida"
+
+#: admin.py:62 admin.py:149
 msgid "Identification"
 msgstr "Identificação"
 
-#: admin.py:47
+#: admin.py:65
 msgid "Content"
 msgstr "Conteúdo"
 
-#: admin.py:50 admin.py:133
+#: admin.py:68 admin.py:151
 msgid "Relationships"
 msgstr "Relacionamentos"
 
-#: admin.py:52 admin.py:135
+#: admin.py:70 admin.py:153
 msgid "Publication"
 msgstr "Publicação"
 
-#: admin.py:74
+#: admin.py:92
 msgid "Resend UOLMais media"
 msgstr "Reenviar mídia do UOLMais"
 
-#: admin.py:91
+#: admin.py:109
 msgid "Resend Youtube video"
 msgstr "Reenviar vídeo do Youtube"
 
-#: admin.py:153
+#: admin.py:171
 msgid "Clean ended media"
 msgstr ""
 
