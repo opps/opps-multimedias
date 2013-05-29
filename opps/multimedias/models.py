@@ -7,7 +7,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from djcelery.models import TaskMeta
 from opps.articles.models import Article
 
 from opps.core.models import BaseBox
@@ -60,11 +59,6 @@ class MediaHost(models.Model):
     host_id = models.CharField(_('Host ID'), max_length=64, null=True)
     url = models.URLField(max_length=255, null=True)
     embed = models.TextField(default='')
-    celery_task = models.OneToOneField(
-        'djcelery.TaskMeta',
-        null=True,
-        verbose_name=_('Celery Task ID')
-    )
     updated = models.BooleanField(_('Updated'), default=False)
     status_message = models.CharField(
         _('Detailed Status Message'),
