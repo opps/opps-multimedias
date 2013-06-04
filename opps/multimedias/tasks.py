@@ -15,6 +15,9 @@ def upload_media():
     )
 
     for mediahost in mediahosts:
+        if not mediahost.media:
+            mediahost.delete()
+            continue
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
