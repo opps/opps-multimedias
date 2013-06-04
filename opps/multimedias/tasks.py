@@ -70,4 +70,7 @@ def update_mediahost():
     )
 
     for mediahost in mediahosts:
+        if not mediahost.media:
+            mediahost.delete()
+            continue
         mediahost.update()
