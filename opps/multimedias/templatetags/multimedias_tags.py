@@ -48,9 +48,9 @@ def get_active_multimedias(number=5, channel_slug=None,
 
 @register.simple_tag
 def get_mediabox(slug, template_name=None):
-    return get_box('multimedias', slug, template_name)
+    return get_box({}, 'multimedias', slug, template_name)
 
 
 @register.simple_tag
 def get_all_mediabox(channel_slug, template_name=None):
-    return get_all_box('multimedias', channel_slug, template_name)
+    return get_all_box({}, 'multimedias', channel_slug, template_name)
