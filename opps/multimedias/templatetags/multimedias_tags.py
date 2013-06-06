@@ -8,8 +8,8 @@ from opps.core.templatetags.box_tags import get_box, get_all_box
 register = template.Library()
 
 
-@register.simple_tag
-def get_active_multimedias(number=5, channel_slug=None,
+@register.simple_tag(takes_context=True)
+def get_active_multimedias(context, number=5, channel_slug=None,
                            template_name='multimedias/actives.html',
                            type=None):
     """
@@ -46,11 +46,11 @@ def get_active_multimedias(number=5, channel_slug=None,
                                       'number': number}))
 
 
-@register.simple_tag
-def get_mediabox(slug, template_name=None):
-    return get_box({}, 'multimedias', slug, template_name)
+@register.simple_tag(takes_context=True)
+def get_mediabox(context, slug, template_name=None):
+    return get_box(context, 'multimedias', slug, template_name)
 
 
-@register.simple_tag
-def get_all_mediabox(channel_slug, template_name=None):
-    return get_all_box({}, 'multimedias', channel_slug, template_name)
+@register.simple_tag(takes_context=True)
+def get_all_mediabox(context, channel_slug, template_name=None):
+    return get_all_box(context, 'multimedias', channel_slug, template_name)
