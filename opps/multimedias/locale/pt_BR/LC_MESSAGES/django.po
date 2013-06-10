@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-28 23:17-0300\n"
+"POT-Creation-Date: 2013-06-10 16:44-0300\n"
 "PO-Revision-Date: 2013-05-28 23:18-0300\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
@@ -80,115 +80,155 @@ msgstr "Parâmetro YOUTUBE_DEVELOPER_KEY  não setado."
 msgid "Incorrect Youtube username or password"
 msgstr "Nome de usuário ou senha do Youtube incorretos."
 
-#: models.py:33
+#: models.py:32
 msgid "OK"
 msgstr "OK"
 
-#: models.py:34
+#: models.py:33
 msgid "Sending"
 msgstr "Enviando"
 
-#: models.py:35
+#: models.py:34
 msgid "Processing"
 msgstr "Processando"
 
-#: models.py:36
+#: models.py:35
 msgid "Error"
 msgstr "Erro"
 
-#: models.py:37
+#: models.py:36
 msgid "Deleted"
 msgstr "Apagado"
 
-#: models.py:38
+#: models.py:37
 msgid "Not Uploaded"
 msgstr "Upload não realizado"
 
-#: models.py:48
+#: models.py:47
 msgid "Host"
 msgstr "Host"
 
-#: models.py:52
+#: models.py:51
 msgid "Provider that will store the media"
 msgstr "Fornecedor que irá armazenar as mídias"
 
-#: models.py:55 templates/includes/mediahost-fieldset.html:7
+#: models.py:54 templates/includes/mediahost-fieldset.html:7
 msgid "Status"
 msgstr "Status"
 
-#: models.py:60
+#: models.py:59
 msgid "Host ID"
 msgstr "ID do Host"
 
-#: models.py:66
-msgid "Celery Task ID"
-msgstr "ID da task do Celery"
-
-#: models.py:68
+#: models.py:62
 msgid "Updated"
 msgstr "Atualizado"
 
-#: models.py:70
+#: models.py:64
 msgid "Detailed Status Message"
 msgstr "Mensagem de status detalhada"
 
-#: models.py:135
+#: models.py:117
+msgid "Media Host"
+msgstr "Host de mídia"
+
+#: models.py:118
+msgid "Media Hosts"
+msgstr "Hosts de mídia"
+
+#: models.py:133
 msgid "UOL Mais"
 msgstr "UOL Mais"
 
-#: models.py:141
+#: models.py:139
 msgid "File"
 msgstr "Arquivo"
 
-#: models.py:149
+#: models.py:147
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:197
+#: models.py:190
+msgid "Media"
+msgstr "ID da mídia"
+
+#: models.py:191
+msgid "Medias"
+msgstr "ID das mídias"
+
+#: models.py:199
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:273 models.py:303
-msgid "Media Box"
-msgstr "Box de mídia"
-
-#: models.py:280 models.py:334
-msgid "Audio"
-msgstr "Áudio"
-
-#: models.py:282 models.py:312
-msgid "Date available"
-msgstr "Data de publicação"
-
-#: models.py:284 models.py:314
-msgid "End date"
-msgstr "Data de finalização"
-
-#: models.py:288
-msgid "Media box audio"
-msgstr "Box de mídia"
-
-#: models.py:289
-msgid "Media boxes audios"
-msgstr ""
-
-#: models.py:291 models.py:321
-msgid "Order"
-msgstr "Ordem"
-
-#: models.py:310 models.py:342
+#: models.py:216 models.py:328 models.py:360
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:318
-msgid "Media box video"
+#: models.py:217
+msgid "Videos"
+msgstr "Vídeos"
+
+#: models.py:224 models.py:294 models.py:352
+msgid "Audio"
+msgstr "Áudio"
+
+#: models.py:225
+msgid "Audios"
+msgstr "Áudios"
+
+#: models.py:277
+msgid "Media box"
 msgstr "Box de mídia"
 
-#: models.py:319
-msgid "Media boxes videos"
+#: models.py:278
+msgid "Media boxes"
+msgstr "Boxes de mídia"
+
+#: models.py:287 models.py:321
+msgid "Media Box"
+msgstr "Box de mídia"
+
+#: models.py:296 models.py:330
+msgid "Date available"
+msgstr "Data de publicação"
+
+#: models.py:298 models.py:332
+msgid "End date"
+msgstr "Data de finalização"
+
+#: models.py:302 models.py:311
+msgid "Media box audio"
+msgstr "Box de mídia"
+
+#: models.py:303
+msgid "Media boxes audios"
 msgstr ""
 
-#: tasks.py:32
+#: models.py:305 models.py:339
+msgid "Order"
+msgstr "Ordem"
+
+#: models.py:312
+msgid "Media Boxes audios"
+msgstr "Boxes de Mídia - Áudios"
+
+#: models.py:336
+msgid "Media box video"
+msgstr "Box de mídia - Vídeo"
+
+#: models.py:337
+msgid "Media boxes videos"
+msgstr "Boxes de mídia - Vídeo"
+
+#: models.py:367
+msgid "Media Config"
+msgstr "Config de mídia"
+
+#: models.py:368
+msgid "Media Configs"
+msgstr "Configs de mídia"
+
+#: tasks.py:35
 msgid "Error on upload"
 msgstr "Erro ao enviar"
 
@@ -203,6 +243,9 @@ msgstr "URL"
 #: templates/includes/mediahost-fieldset.html:26
 msgid "Embed Code"
 msgstr "Código Embed"
+
+#~ msgid "Celery Task ID"
+#~ msgstr "ID da task do Celery"
 
 #~ msgid "Not Started"
 #~ msgstr "Não iniciado"
