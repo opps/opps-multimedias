@@ -113,6 +113,10 @@ class MediaHost(models.Model):
         if changed:
             self.save()
 
+    class Meta:
+        verbose_name = _(u'Media Host')
+        verbose_name_plural = _(u'Media Hosts')
+
 
 def upload_dest(instance, filename):
     ext = filename.split('.')[-1]
@@ -182,6 +186,10 @@ class Media(Article):
         return 'http://{0}{1}'.format(self.site.domain,
                                       self.get_absolute_url())
 
+    class Meta:
+        verbose_name = _(u'Media')
+        verbose_name_plural = _(u'Medias')
+
 
 class Video(Media):
     TYPE = 'video'
@@ -204,9 +212,17 @@ class Video(Media):
             return player.format(self.youtube.host_id)
         return ''
 
+    class Meta:
+        verbose_name = _(u'Video')
+        verbose_name_plural = _(u'Videos')
+
 
 class Audio(Media):
     TYPE = 'audio'
+
+    class Meta:
+        verbose_name = _(u'Audio')
+        verbose_name_plural = _(u'Audios')
 
 
 # OPPS RELATION MODELS
@@ -257,6 +273,10 @@ class MediaBox(BaseBox):
         """
         return list(self.ordered_videos()) + list(self.ordered_audios())
 
+    class Meta:
+        verbose_name = _(u'Media box')
+        verbose_name_plural = _(u'Media boxes')
+
 
 class MediaBoxAudios(models.Model):
     mediabox = models.ForeignKey(
@@ -286,6 +306,10 @@ class MediaBoxAudios(models.Model):
 
     def __unicode__(self):
         return u"{0}-{1}".format(self.mediabox.slug, self.audio.slug)
+
+    class Meta:
+        verbose_name = _(u'Media box audio')
+        verbose_name_plural = _(u'Media Boxes audios')
 
 
 class MediaBoxVideos(models.Model):
@@ -340,3 +364,5 @@ class MediaConfig(BaseConfig):
         permissions = (("developer", "Developer"),)
         unique_together = ("key_group", "key", "site",
                            "channel", "article", "audio", "video")
+        verbose_name = _(u'Media Config')
+        verbose_name_plural = _(u'Media Configs')
