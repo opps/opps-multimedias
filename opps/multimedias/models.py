@@ -152,7 +152,6 @@ class Media(Article):
 
     class Meta:
         abstract = True
-        ordering = ['-date_available', 'title', 'channel_long_slug']
         verbose_name = _(u'Media')
         verbose_name_plural = _(u'Medias')
 
@@ -211,6 +210,7 @@ class Video(Media):
         return ''
 
     class Meta:
+        ordering = ['-date_available', 'title', 'channel_long_slug']
         verbose_name = _(u'Video')
         verbose_name_plural = _(u'Videos')
 
@@ -219,6 +219,7 @@ class Audio(Media):
     TYPE = 'audio'
 
     class Meta:
+        ordering = ['-date_available', 'title', 'channel_long_slug']
         verbose_name = _(u'Audio')
         verbose_name_plural = _(u'Audios')
 
