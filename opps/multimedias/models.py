@@ -153,6 +153,8 @@ class Media(Article):
     class Meta:
         abstract = True
         ordering = ['-date_available', 'title', 'channel_long_slug']
+        verbose_name = _(u'Media')
+        verbose_name_plural = _(u'Medias')
 
     def __unicode__(self):
         return u'{}'.format(self.title)
@@ -185,10 +187,6 @@ class Media(Article):
     def get_http_absolute_url(self):
         return 'http://{0}{1}'.format(self.site.domain,
                                       self.get_absolute_url())
-
-    class Meta:
-        verbose_name = _(u'Media')
-        verbose_name_plural = _(u'Medias')
 
 
 class Video(Media):
@@ -306,10 +304,6 @@ class MediaBoxAudios(models.Model):
 
     def __unicode__(self):
         return u"{0}-{1}".format(self.mediabox.slug, self.audio.slug)
-
-    class Meta:
-        verbose_name = _(u'Media box audio')
-        verbose_name_plural = _(u'Media Boxes audios')
 
 
 class MediaBoxVideos(models.Model):
