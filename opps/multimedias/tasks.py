@@ -34,7 +34,6 @@ def upload_media():
             mediahost.status = MediaHost.STATUS_ERROR
             mediahost.status_message = _('Error on upload')
             mediahost.save()
-            raise
 
         mediahost.host_id = media_info['id']
         mediahost.status = MediaHost.STAUTS_PROCESSING
