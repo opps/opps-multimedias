@@ -163,6 +163,9 @@ class Youtube(MediaAPI):
             self.yt_service.ProgrammaticLogin()
         except BadAuthentication:
             raise Exception(_('Incorrect Youtube username or password'))
+        except:
+            # TODO: logging.warning()
+            pass # Silently pass when 403 code is raised
 
         # Turn on HTTPS/SSL access.
         # Note: SSL is not available at this time for uploads.
