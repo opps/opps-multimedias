@@ -6,11 +6,13 @@
 
   <!-- Media Metadata information -->
   <fieldset class="module aligned">
-    <h2>Meta</h2>
+    <legend>Meta</legend>
 
   <!-- Media host information -->
   {% if original.youtube %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube %}
   {% endif %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.uolmais %}
+</fieldset>
+
 {% endblock %}
