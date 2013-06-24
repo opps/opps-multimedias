@@ -29,7 +29,10 @@ class VideoIndex(SearchIndex, Indexable):
     def get_updated_field(self):
         return 'date_update'
 
-    def index_queryset(self):
+    def get_model(self):
+        return Video
+
+    def index_queryset(self, using=None):
         return Video.objects.filter(
             date_available__lte=datetime.now(),
             published=True)
