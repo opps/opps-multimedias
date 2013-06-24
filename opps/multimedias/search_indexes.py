@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from haystack.indexes import SearchIndex, CharField, DateTimeField
-from haystack import site
+from haystack.indexes import SearchIndex, Indexable, CharField, DateTimeField
 
 from .models import Audio, Video
 
 
-class AudioIndex(SearchIndex):
+class AudioIndex(SearchIndex, Indexable):
     text = CharField(document=True, use_template=True)
     date_available = DateTimeField(model_attr='date_available')
     date_update = DateTimeField(model_attr='date_update')
@@ -22,7 +21,7 @@ class AudioIndex(SearchIndex):
             published=True)
 
 
-class VideoIndex(SearchIndex):
+class VideoIndex(SearchIndex, Indexable):
     text = CharField(document=True, use_template=True)
     date_available = DateTimeField(model_attr='date_available')
     date_update = DateTimeField(model_attr='date_update')
@@ -34,6 +33,3 @@ class VideoIndex(SearchIndex):
         return Video.objects.filter(
             date_available__lte=datetime.now(),
             published=True)
-
-site.register(Audio, AudioIndex)
-site.register(Video, VideoIndex)
