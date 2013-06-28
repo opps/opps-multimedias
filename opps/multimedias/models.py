@@ -121,7 +121,7 @@ class MediaHost(models.Model):
 def upload_dest(instance, filename):
     ext = filename.split('.')[-1]
     filename = u"{0}-{1}.{2}".format(random.getrandbits(32),
-                                     instance.slug, ext)
+                                     instance.slug[:50], ext)
     return os.path.join(instance.TYPE, filename)
 
 
