@@ -1,7 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from .models import (MediaHost, Audio, Video, MediaBox, MediaBoxAudios,
-                     MediaBoxVideos, MediaConfig)
+from .models import Audio, Video
 
 
 class MediaAdminForm(forms.ModelForm):
