@@ -55,7 +55,7 @@ if not settings.configured:
 
 
 def runtests():
-    argv = [sys.argv[0], 'test', 'polls']
+    argv = [sys.argv[0], 'test', 'multimedias']
     execute_from_command_line(argv)
     sys.exit(0)
 
