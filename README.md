@@ -1,6 +1,9 @@
 
 opps-multimedias
 ================
+[![Build
+Status](https://travis-ci.org/opps/opps-multimedias.png?branch=master)](https://travis-ci.org/opps/opps-multimedias)
+
 
 Multimedia Application for Opps
 

@@ -1,5 +1,4 @@
-
-from django.db.models import Q
+# -*- encoding: utf-8 -*-
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
