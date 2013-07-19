@@ -6,10 +6,15 @@ from setuptools import setup, find_packages
 from opps import multimedias
 
 
-install_requires = ["opps>=0.2", "django-celery", "gdata", "uolmais-api"]
+install_requires = [
+    "opps>=0.2",
+    "django-celery",
+    "gdata",
+    #"uolmais-api"
+]
 
-dependency_links = ['https://yacows.codebasehq.com/yacows-libs/'
-                    'multimediauolmais.git#egg=uolmais-api']
+#dependency_links = ['https://yacows.codebasehq.com/yacows-libs/'
+#                    'multimediauolmais.git#egg=uolmais-api']
 
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Developers",
@@ -37,5 +42,5 @@ setup(name='opps-multimedias',
       author_email=multimedias.__email__,
       packages=find_packages(exclude=('doc', 'docs',)),
       install_requires=install_requires,
-      dependency_links=dependency_links,
+      #dependency_links=dependency_links,
       include_package_data=True,)
