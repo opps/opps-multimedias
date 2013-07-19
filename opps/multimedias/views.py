@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 
 from opps.multimedias.models import Video, Audio
-from opps.articles.views.generic import OppsDetail, OppsList
+from opps.containers.views import ContainerDetail, ContainerList
 
 
-class VideoDetail(OppsDetail):
+class VideoDetail(ContainerDetail):
     model = Video
     type = 'multimedias'
 
 
-class AudioDetail(OppsDetail):
+class AudioDetail(ContainerDetail):
     model = Audio
     type = 'multimedias'
 
 
-class VideoList(OppsList):
+class VideoList(ContainerList):
     model = Video
     type = 'video'
 
 
-class AudioList(OppsList):
+class AudioList(ContainerList):
     model = Audio
     type = 'audio'
