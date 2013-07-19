@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
-
 import pytz
 import gdata.youtube.service
-import dateutil.parser
 
 from django.conf import settings
 from django.utils import timezone
@@ -142,12 +140,12 @@ class Youtube(MediaAPI):
 
     def authenticate(self):
         try:
-            username = settings.YOUTUBE_AUTH_EMAIL
+            settings.YOUTUBE_AUTH_EMAIL
         except AttributeError:
             raise Exception(_('Settings YOUTUBE_AUTH_EMAIL is not set'))
 
         try:
-            password = settings.YOUTUBE_AUTH_PASSWORD
+            settings.YOUTUBE_AUTH_PASSWORD
         except AttributeError:
             raise Exception(_('Settings YOUTUBE_AUTH_PASSWORD is not set'))
 
