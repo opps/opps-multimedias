@@ -12,4 +12,4 @@ __description__ = u"Multimedia App for Opps CMS"
 __author__ = u"Sergio Oliveira"
 __credits__ = []
 __email__ = u"sergio@tracy.com.br"
-__copyright__ = u"Copyright 2013, YACOWS"
+__copyright__ = u"Copyright 2013, Opps Project"
