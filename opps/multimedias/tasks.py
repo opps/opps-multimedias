@@ -20,7 +20,7 @@ def upload_media():
                 continue
         except Exception as e:
             print e.message
-            print mediahost
+            continue
             
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
@@ -41,7 +41,7 @@ def upload_media():
                 tags
             )
         except Exception as e:
-            print e.message, mediahost
+            print e.message
             mediahost.status = MediaHost.STATUS_ERROR
             mediahost.status_message = _('Error on upload')
             mediahost.save()
