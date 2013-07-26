@@ -18,7 +18,7 @@ def upload_media():
             if not mediahost.media:
                 mediahost.delete()
                 continue
-        except Exceptin as e:
+        except Exception as e:
             print e.message
             print mediahost
             
