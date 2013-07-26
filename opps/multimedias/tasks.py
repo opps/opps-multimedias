@@ -1,4 +1,3 @@
-
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -15,13 +14,24 @@ def upload_media():
     )
 
     for mediahost in mediahosts:
-        if not mediahost.media:
-            mediahost.delete()
-            continue
+        try:
+            if not mediahost.media:
+                mediahost.delete()
+                continue
+        except Exceptin as e:
+            print e.message
+            print mediahost
+            
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
-        tags = list(media.tags.values_list('name', flat=True))
+        
+        try:
+             tags = list(media.tags.values_list('name', flat=True))
+        except Exception as e:
+            print e.message
+            tags = []
+            
         try:
             media_info = mediahost.api.upload(
                 media.TYPE,
@@ -30,7 +40,8 @@ def upload_media():
                 media.headline,
                 tags
             )
-        except:
+        except Exception as e:
+            print e.message, mediahost
             mediahost.status = MediaHost.STATUS_ERROR
             mediahost.status_message = _('Error on upload')
             mediahost.save()
@@ -73,10 +84,10 @@ def update_mediahost():
             if not mediahost.media:
                 mediahost.delete()
                 continue
-        except:
-            pass
+        except Exception as e:
+            print e.message
 
         try:
             mediahost.update()
-        except:
-            pass
+        except Exception as e:
+            print e.message
