@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from opps.articles.admin import ArticleAdmin
+from django.utils.html import escape
 
 from .models import (MediaHost, Audio, Video, MediaBox, MediaBoxAudios,
                      MediaBoxVideos, MediaConfig)
 from .forms import VideoAdminForm, AudioAdminForm
 from opps.core.admin import PublishableAdmin
 from opps.core.admin import apply_opps_rules
+from opps.articles.admin import ArticleAdmin
 
 
 @apply_opps_rules('multimedias')
@@ -63,6 +64,20 @@ class VideoAdmin(MediaAdmin):
     form = VideoAdminForm
     actions = MediaAdmin.actions[:]
     actions += ['resend_youtube', ]
+
+    def get_list_display(self, request):
+        list_display = self.list_display
+        pop = request.GET.get('pop')
+        if pop == 'oppseditor':
+            list_display = ['opps_editor_select'] + list(list_display)
+        return list_display
+
+    def opps_editor_select(self, obj):
+        return u'''
+        <a href="#" onclick="window.parent.tinymce.activeEditor.selection.setContent('{0}');window.parent.tinymce.activeEditor.windowManager.close(window);">{1}</a>
+        '''.format(escape(obj.uolmais.embed) ,'Select')
+    opps_editor_select.short_description = _(u'Select')
+    opps_editor_select.allow_tags = True
 
     def resend_youtube(self, request, queryset):
         for media in queryset.select_related('youtube'):
