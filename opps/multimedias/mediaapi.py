@@ -7,7 +7,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 
-from uolmais_lib import UOLMaisLib
 from gdata.service import BadAuthentication, RequestError
 
 
@@ -41,6 +40,7 @@ class UOLMais(MediaAPI):
 
     def __init__(self):
         super(UOLMais, self).__init__()
+        from uolmais_lib import UOLMaisLib
         self._lib = UOLMaisLib()
 
     def authenticate(self):
