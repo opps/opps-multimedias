@@ -46,5 +46,5 @@ tx:
 	mkdir -p opps/multimedias/locale/en_US/LC_MESSAGES
 	touch opps/multimedias/locale/en_US/LC_MESSAGES/django.po
 	tx set --auto-remote https://www.transifex.com/projects/p/opps/resource/multimedias/
-	tx set --auto-local -r opps.multimedias "opps/multimedias/locale/<lang>/LC_MESSAGES/django.po" --source-language=en_US --source-file "opps/multimedias/locale/en_US/LC_MESSAGES/django.po" --execute
+	tx set --auto-local -r opps-multimedias.multimedias "opps/multimedias/locale/<lang>/LC_MESSAGES/django.po" --source-language=en_US --source-file "opps/multimedias/locale/en_US/LC_MESSAGES/django.po" --execute
 	tx pull -f
