@@ -9,8 +9,8 @@ from opps.core.admin import apply_opps_rules
 
 @apply_opps_rules('multimedias')
 class MediaAdmin(ContainerAdmin):
-    add_form_template = 'admin/change_form.html'
-    change_form_template = 'multimedias/admin/change_form.html'
+    add_form_template = u'admin/change_form.html'
+    change_form_template = u'multimedias/admin/change_form.html'
 
     readonly_fields = ContainerAdmin.readonly_fields[:]
     readonly_fields += ['published', 'date_available']
@@ -52,7 +52,7 @@ class MediaAdmin(ContainerAdmin):
 
             media.published = False
             media.save()
-    resend_uolmais.short_description = _("Resend UOLMais media")
+    resend_uolmais.short_description = _(u"Resend UOLMais media")
 
 
 @apply_opps_rules('multimedias')
@@ -69,7 +69,7 @@ class VideoAdmin(MediaAdmin):
             media.youtube.status = MediaHost.STATUS_NOT_UPLOADED
             media.youtube.status_message = ''
             media.youtube.save()
-    resend_youtube.short_description = _("Resend Youtube video")
+    resend_youtube.short_description = _(u"Resend Youtube video")
 
 
 @apply_opps_rules('multimedias')

@@ -17,7 +17,7 @@ class MediaAdminForm(forms.ModelForm):
         if media_file:
             extension = media_file.name.split('.')[-1].upper()
             if extension not in self.ALLOWED_EXTENSIONS:
-                raise forms.ValidationError(_('Invalid extension'))
+                raise forms.ValidationError(_(u'Invalid extension'))
         return media_file
 
 

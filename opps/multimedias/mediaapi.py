@@ -47,12 +47,12 @@ class UOLMais(MediaAPI):
         try:
             username = settings.UOLMAIS_USERNAME
         except AttributeError:
-            raise Exception(_('Settings UOLMAIS_USERNAME is not set'))
+            raise Exception(_(u'Settings UOLMAIS_USERNAME is not set'))
 
         try:
             password = settings.UOLMAIS_PASSWORD
         except AttributeError:
-            raise Exception(_('Settings UOLMAIS_PASSWORD is not set'))
+            raise Exception(_(u'Settings UOLMAIS_PASSWORD is not set'))
 
         self._lib.authenticate(username, password)
 
@@ -64,7 +64,7 @@ class UOLMais(MediaAPI):
 
     def upload(self, type, media_path, title, description, tags):
         tags = tags or []
-        tags.append('virgula')
+        tags.append(u'virgula')
 
         self.authenticate()
 
@@ -80,9 +80,9 @@ class UOLMais(MediaAPI):
             'is_hot': False
         }
 
-        if type == 'video':
+        if type == u'video':
             media_id = self._lib.upload_video(**media_args)
-        elif type == 'audio':
+        elif type == u'audio':
             media_id = self._lib.upload_audio(**media_args)
 
         return self.get_info(media_id)
@@ -96,7 +96,7 @@ class UOLMais(MediaAPI):
 
         if info['status'] in self.SUCCESS_CODES:
             # Embed for audio
-            if info['mediaType'] == 'P':
+            if info['mediaType'] == u'P':
                 embed = render_to_string(
                     'multimedias/uolmais/audio_embed.html',
                     {'media_id': media_id}
@@ -111,22 +111,22 @@ class UOLMais(MediaAPI):
                 u'tags': info['tags'],
                 u'embed': embed,
                 u'url': info['url'],
-                u'status': 'ok',
+                u'status': u'ok',
                 u'status_msg': info['status_description']
             })
         elif info['status'] in self.PROCESSING_CODES:
             result.update({
-                u'status': 'processing',
+                u'status': u'processing',
                 u'status_msg': info['status_description']
             })
         elif info['status'] in self.REMOVED_CODES:
             result.update({
-                u'status': 'deleted',
+                u'status': u'deleted',
                 u'status_msg': info['status_description']
             })
         else:
             result.update({
-                u'status': 'error',
+                u'status': u'error',
                 u'status_msg': info['status_description']
             })
 
@@ -142,17 +142,17 @@ class Youtube(MediaAPI):
         try:
             settings.YOUTUBE_AUTH_EMAIL
         except AttributeError:
-            raise Exception(_('Settings YOUTUBE_AUTH_EMAIL is not set'))
+            raise Exception(_(u'Settings YOUTUBE_AUTH_EMAIL is not set'))
 
         try:
             settings.YOUTUBE_AUTH_PASSWORD
         except AttributeError:
-            raise Exception(_('Settings YOUTUBE_AUTH_PASSWORD is not set'))
+            raise Exception(_(u'Settings YOUTUBE_AUTH_PASSWORD is not set'))
 
         try:
             self.yt_service.developer_key = settings.YOUTUBE_DEVELOPER_KEY
         except AttributeError:
-            raise Exception(_('Settings YOUTUBE_DEVELOPER_KEY is not set'))
+            raise Exception(_(u'Settings YOUTUBE_DEVELOPER_KEY is not set'))
 
         self.yt_service.email = settings.YOUTUBE_AUTH_EMAIL
         self.yt_service.password = settings.YOUTUBE_AUTH_PASSWORD
@@ -160,7 +160,7 @@ class Youtube(MediaAPI):
         try:
             self.yt_service.ProgrammaticLogin()
         except BadAuthentication:
-            raise Exception(_('Incorrect Youtube username or password'))
+            raise Exception(_(u'Incorrect Youtube username or password'))
         except:
             # TODO: logging.warning()
             pass  # Silently pass when 403 code is raised
@@ -171,7 +171,7 @@ class Youtube(MediaAPI):
 
     def upload(self, type, media_path, title, description, tags):
         tags = tags or []
-        tags.append('virgula')
+        tags.append(u'virgula')
 
         self.authenticate()
 
@@ -181,9 +181,9 @@ class Youtube(MediaAPI):
             description=gdata.media.Description(description_type='plain',
                                                 text=description),
             category=[gdata.media.Category(
-                text='Entertainment',
-                scheme='http://gdata.youtube.com/schemas/2007/categories.cat',
-                label='Entertainment')],
+                text=u'Entertainment',
+                scheme=u'http://gdata.youtube.com/schemas/2007/categories.cat',
+                label=u'Entertainment')],
             keywords=gdata.media.Keywords(text=','.join(tags)),
             #private=gdata.media.Private(),
         )
@@ -233,10 +233,10 @@ class Youtube(MediaAPI):
                 video_id=video_id
             )
         except RequestError as reqerr:
-            if reqerr.args[0].get('reason') == 'Not Found':
-                result.update({'status': 'deleted'})
+            if reqerr.args[0].get('reason') == u'Not Found':
+                result.update({'status': u'deleted'})
             else:
-                result.update({'status': 'error'})
+                result.update({'status': u'error'})
         else:
             result.update(self._get_info(video_entry))
         return result
