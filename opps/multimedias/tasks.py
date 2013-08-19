@@ -1,9 +1,11 @@
 # -*- encoding: utf-8 -*-
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
+from django.conf import settings
 from celery import task
 from .models import MediaHost
+
+BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=5))
@@ -11,7 +13,7 @@ def upload_media():
     mediahosts = MediaHost.objects.filter(
         status=MediaHost.STATUS_NOT_UPLOADED,
         host_id__isnull=True
-    )
+    ).exclude(pk__in=BLACKLIST)
 
     for mediahost in mediahosts:
         if not mediahost.media:
@@ -44,6 +46,12 @@ def update_mediahost():
     mediahosts = MediaHost.objects.filter(
         host_id__isnull=False,
     )
+
+    # exclude blacklist
+    mediahosts = mediahosts.exclude(
+        pk__in=BLACKLIST
+    )
+
     # Exclude ok content
     mediahosts = mediahosts.exclude(
         status=MediaHost.STATUS_OK,
