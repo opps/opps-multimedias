@@ -22,7 +22,7 @@ def upload_media():
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
-        tags = list(media.tags.values_list('name', flat=True))
+        tags = list(media.tags)
         try:
             media_info = mediahost.api.upload(
                 media.TYPE,
