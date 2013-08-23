@@ -2,7 +2,8 @@
 from django.conf.urls import patterns, url
 from django.views.decorators.cache import cache_page
 
-from .views import VideoDetail, AudioDetail, VideoList, AudioList
+from .views import (VideoDetail, AudioDetail, VideoList, AudioList,
+                    AllVideoList, AllAudioList)
 
 
 urlpatterns = patterns(
@@ -16,4 +17,9 @@ urlpatterns = patterns(
         VideoList.as_view(), name='video_list'),
     url(r'^audio/(?P<channel__long_slug>[\w\b//-]+)/$',
         AudioList.as_view(), name='audio_list'),
+
+    url(r'^videos/$',
+        AllVideoList.as_view(), name='videos_list'),
+    url(r'^audios/$',
+        AllAudioList.as_view(), name='audios_list'),
 )
