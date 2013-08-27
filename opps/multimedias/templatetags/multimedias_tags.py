@@ -54,3 +54,8 @@ def get_mediabox(context, slug, template_name=None):
 @register.simple_tag(takes_context=True)
 def get_all_mediabox(context, channel_slug, template_name=None):
     return get_all_box(context, 'multimedias', channel_slug, template_name)
+
+
+@register.inclusion_tag('multimedias/article_related.html')
+def get_video_related_articles(context):
+    return {'video': context}
