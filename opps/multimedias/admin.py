@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.html import escape
 
 from .models import (MediaHost, Audio, Video, MediaBox, MediaBoxAudios,
-                     MediaBoxVideos, MediaConfig)
+                     MediaBoxVideos, MediaConfig, ArticleRelated)
 from .forms import VideoAdminForm, AudioAdminForm
 from opps.core.admin import PublishableAdmin
 from opps.core.admin import apply_opps_rules
@@ -60,10 +60,23 @@ class MediaAdmin(ArticleAdmin):
 
 
 @apply_opps_rules('multimedias')
+class ArticleRelatedInline(admin.TabularInline):
+    model = ArticleRelated
+    fk_name = 'video'
+    raw_id_fields = ['related']
+    actions = None
+    ordering = ('order',)
+    extra = 1
+    classes = ('collapse',)
+
+
+
+@apply_opps_rules('multimedias')
 class VideoAdmin(MediaAdmin):
     form = VideoAdminForm
     actions = MediaAdmin.actions[:]
     actions += ['resend_youtube', ]
+    inlines = [ArticleRelatedInline,]
 
     def get_list_display(self, request):
         list_display = self.list_display

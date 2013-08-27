@@ -199,6 +199,15 @@ class Video(Media):
         null=True
     )
 
+    related_articles = models.ManyToManyField(
+        'articles.Article',
+        null=True, blank=True,
+        related_name='video_relatedarticles',
+        through='multimedias.ArticleRelated',
+        verbose_name=_(u'Related Posts'),
+    )
+
+
     @property
     def player(self):
         if self.uolmais.host_id and self.uolmais.status == MediaHost.STATUS_OK:
@@ -209,10 +218,51 @@ class Video(Media):
             return player.format(self.youtube.host_id)
         return ''
 
+    def ordered_related(self, field='order'):
+        """
+        used in template
+        """
+        return self.related_articles.filter(
+            published=True,
+            date_available__lte=timezone.now()
+        ).order_by(
+            'articlerelated_related__order'
+        ).distinct()
+
+
+
     class Meta:
         ordering = ['-date_available', 'title', 'channel_long_slug']
         verbose_name = _(u'Video')
         verbose_name_plural = _(u'Videos')
+
+
+class ArticleRelated(models.Model):
+    video = models.ForeignKey(
+        'multimedias.Video',
+        verbose_name=_(u'Video'),
+        null=True,
+        blank=True,
+        related_name='articlerelated_article',
+        on_delete=models.SET_NULL
+    )
+    related = models.ForeignKey(
+        'articles.Article',
+        verbose_name=_(u'Related Article'),
+        null=True,
+        blank=True,
+        related_name='articlerelated_related',
+        on_delete=models.SET_NULL
+    )
+    order = models.PositiveIntegerField(_(u'Order'), default=0)
+
+    class Meta:
+        verbose_name = _('Related Articles')
+        verbose_name_plural = _('Related Articles')
+        ordering = ('order',)
+
+    def __unicode__(self):
+        return u"{0}->{1}".format(self.related.slug, self.video.slug)
 
 
 class Audio(Media):
