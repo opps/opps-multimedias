@@ -1,8 +1,12 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from django import template
-from opps.multimedias.models import Audio, Video
+from django.db.models import Count
+
+from opps.containers.models import Container
 from opps.core.templatetags.box_tags import get_box, get_all_box
+
+from ..models import Audio, Video
 
 
 register = template.Library()
@@ -54,3 +58,10 @@ def get_mediabox(context, slug, template_name=None):
 @register.simple_tag(takes_context=True)
 def get_all_mediabox(context, channel_slug, template_name=None):
     return get_all_box(context, 'multimedias', channel_slug, template_name)
+
+
+@register.simple_tag(takes_context=True)
+def get_all_channel(context):
+    return [i['channel_name'] for i in Container.objects
+            .values('channel_name').filter(child_class='Video')
+            .annotate(count=Count('channel_name')) if i['count'] >= 1]
