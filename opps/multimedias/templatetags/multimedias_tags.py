@@ -60,8 +60,8 @@ def get_all_mediabox(context, channel_slug, template_name=None):
     return get_all_box(context, 'multimedias', channel_slug, template_name)
 
 
-@register.simple_tag(takes_context=True)
+@register.assignment_tag(takes_context=True)
 def get_all_channel(context):
-    return [i['channel_name'] for i in Container.objects
-            .values('channel_name').filter(child_class='Video')
-            .annotate(count=Count('channel_name')) if i['count'] >= 1]
+    return [i for i in Container.objects
+            .filter(child_class='Video')
+            .annotate(count=Count('channel_name')) if i.count >= 1]
