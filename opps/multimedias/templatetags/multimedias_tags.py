@@ -76,7 +76,7 @@ def get_all_channel(context):
 
     _list = [{'name': i[0], 'long_slug': i[1]} for i in Container.objects
             .values_list('channel_name', 'channel_long_slug')
-            .filter(site=site, child_class='Video')
+            .filter(site=site, child_class='Video', published=True)
             .distinct()
             .annotate(count=Count('channel_long_slug')) if i.count >= 1]
 
