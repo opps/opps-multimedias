@@ -75,8 +75,8 @@ class UOLMais(MediaAPI):
             'title': title,
             'description': description,
             'tags': u','.join(tags),
-            'visibility': UOLMaisLib.VISIBILITY_ANYONE,
-            'comments': UOLMaisLib.COMMENTS_NONE,
+            'visibility': self._lib.VISIBILITY_ANYONE,
+            'comments': self._lib.COMMENTS_NONE,
             'is_hot': False
         }
 
