@@ -74,9 +74,11 @@ def get_all_channel(context):
     if getcache:
         return getcache
 
-    _list = [i for i in Container.objects
+    _list = [{'name': i[0], 'long_slug': i[1]} for i in Container.objects
+            .values_list('channel_name', 'channel_long_slug')
             .filter(site=site, child_class='Video')
-            .annotate(count=Count('channel_name')) if i.count >= 1]
+            .distinct()
+            .annotate(count=Count('channel_long_slug')) if i.count >= 1]
 
     cache.set(cachekey, _list, 3600)
 
