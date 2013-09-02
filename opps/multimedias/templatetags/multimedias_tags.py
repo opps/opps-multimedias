@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from django import template
+from django.conf import settings
 from django.db.models import Count
+from django.contrib.sites.models import Site
+from django.core.cache import cache
 
 from opps.containers.models import Container
 from opps.core.templatetags.box_tags import get_box, get_all_box
@@ -62,6 +65,19 @@ def get_all_mediabox(context, channel_slug, template_name=None):
 
 @register.assignment_tag(takes_context=True)
 def get_all_channel(context):
-    return [i for i in Container.objects
-            .filter(child_class='Video')
+    site = Site.objects.get(id=settings.SITE_ID)
+
+    cachekey = '{}-{}-{}-{}'.format(u'get_all_channel', 'multime', site.domain,
+                                    u'multimedia')
+    getcache = cache.get(cachekey)
+
+    if getcache:
+        return getcache
+
+    _list = [i for i in Container.objects
+            .filter(site=site, child_class='Video')
             .annotate(count=Count('channel_name')) if i.count >= 1]
+
+    cache.set(cachekey, _list, 3600)
+
+    return _list
