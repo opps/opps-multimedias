@@ -82,8 +82,12 @@ class VideoAdmin(MediaAdmin):
 
     def opps_editor_select(self, obj):
         return u'''
-        <a href="#" onclick="window.parent.tinymce.activeEditor.selection.setContent('{0}');window.parent.tinymce.activeEditor.windowManager.close(window);">{1}</a>
-        '''.format(escape(obj.uolmais.embed) ,'Select')
+        <a href="#"
+        onclick="window.parent.tinymce.activeEditor.selection
+        .setContent('{0}');
+        window.parent.tinymce.activeEditor.windowManager
+        .close(window);">{1}</a>
+        '''.format(escape(obj.uolmais.embed), _(u'Select'))
     opps_editor_select.short_description = _(u'Select')
     opps_editor_select.allow_tags = True
 
