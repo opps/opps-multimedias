@@ -9,7 +9,7 @@ class MediaAdminForm(forms.ModelForm):
     headline = forms.CharField(
         _(u"Headline"),
         widget=forms.Textarea,
-        required=True
+        required=False
     )
 
     def clean_media_file(self):
