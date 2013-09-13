@@ -83,3 +83,43 @@ def get_all_channel(context):
     cache.set(cachekey, _list, 3600)
 
     return _list
+
+
+@register.assignment_tag()
+def get_multimedias(number=5, channel_slug=None, type=None,
+                    include_subchannels=False):
+    """
+    Type can be 'audio' or 'video'
+    for media in active_multimedias:
+        media.TYPE == 'video'
+        media.TYPE == 'audio'
+
+    If include_subchannels = True the queryset will look into the subchannels
+    for multimedias as well
+    """
+    active_multimedias = []
+
+    if not type or type == 'audio':
+        active_audios = Audio.objects.all_published()
+        if channel_slug:
+            lookup = {'channel__slug': channel_slug}
+            if include_subchannels:
+                lookup = {'channel__long_slug__contains': channel_slug}
+            active_audios = active_audios.filter(
+                **lookup
+            ).distinct()
+        active_audios = active_audios[:number]
+        active_multimedias.extend(active_audios)
+
+    if not type or type == 'video':
+        active_videos = Video.objects.all_published()
+        if channel_slug:
+            lookup = {'channel__slug': channel_slug}
+            if include_subchannels:
+                lookup = {'channel__long_slug__contains': channel_slug}
+            active_videos = active_videos.filter(
+                **lookup
+            ).distinct()
+        active_videos = active_videos[:number]
+        active_multimedias.extend(active_videos)
+    return active_multimedias
