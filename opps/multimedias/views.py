@@ -28,7 +28,7 @@ class AudioList(ContainerList):
     type = 'audio'
 
 
-class AllList(ListView):
+class ListAll(ListView):
 
     def get_template_names(self):
         templates = []
@@ -52,7 +52,7 @@ class AllList(ListView):
     def get_queryset(self):
         self.site = get_current_site(self.request)
 
-        queryset = super(AllList, self).get_queryset()
+        queryset = super(ListView, self).get_queryset()
         filters = {}
         filters['site_domain'] = self.site.domain
         filters['date_available__lte'] = timezone.now()
@@ -63,11 +63,11 @@ class AllList(ListView):
         return queryset._clone()
 
 
-class AllVideoList(AllList):
+class AllVideoList(ListAll):
     model = Video
     type = 'video'
 
 
-class AllAudioList(AllList):
+class AllAudioList(ListAll):
     model = Audio
     type = 'audio'
