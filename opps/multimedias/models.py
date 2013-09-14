@@ -137,8 +137,8 @@ class Media(Article):
     media_file = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
-        help_text=_((u'Temporary file stored until it\'s not sent to '
-                     u'final hosting server (ie: Youtube)'))
+        help_text=_(u'Temporary file stored until it\'s not sent to final '
+                    u'hosting server (ie: Youtube)')
     )
 
     posts = models.ManyToManyField(

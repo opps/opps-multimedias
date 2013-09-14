@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-12 00:41-0300\n"
+"POT-Creation-Date: 2013-09-14 02:47-0300\n"
 "PO-Revision-Date: 2013-05-28 23:18-0300\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
@@ -40,13 +40,13 @@ msgstr "Publicação"
 msgid "Resend UOLMais media"
 msgstr "Reenviar mídia do UOLMais"
 
-#: admin.py:81
-msgid "Resend Youtube video"
-msgstr "Reenviar vídeo do Youtube"
-
-#: admin.py:90 admin.py:91
+#: admin.py:74 admin.py:75
 msgid "Select"
 msgstr "Selecionar"
+
+#: admin.py:93
+msgid "Resend Youtube video"
+msgstr "Reenviar vídeo do Youtube"
 
 #: forms.py:10
 msgid "Headline"
@@ -80,99 +80,107 @@ msgstr "Parâmetro YOUTUBE_DEVELOPER_KEY  não setado."
 msgid "Incorrect Youtube username or password"
 msgstr "Nome de usuário ou senha do Youtube incorretos."
 
-#: models.py:30
+#: models.py:31
 msgid "OK"
 msgstr "OK"
 
-#: models.py:31
+#: models.py:32
 msgid "Sending"
 msgstr "Enviando"
 
-#: models.py:32
+#: models.py:33
 msgid "Processing"
 msgstr "Processando"
 
-#: models.py:33
+#: models.py:34
 msgid "Error"
 msgstr "Erro"
 
-#: models.py:34
+#: models.py:35
 msgid "Deleted"
 msgstr "Apagado"
 
-#: models.py:35
+#: models.py:36
 msgid "Not Uploaded"
 msgstr "Upload não realizado"
 
-#: models.py:45
+#: models.py:46
 msgid "Host"
 msgstr "Host"
 
-#: models.py:49
+#: models.py:50
 msgid "Provider that will store the media"
 msgstr "Fornecedor que irá armazenar as mídias"
 
-#: models.py:52 templates/includes/mediahost-fieldset.html:7
+#: models.py:53 templates/includes/mediahost-fieldset.html:7
 msgid "Status"
 msgstr "Status"
 
-#: models.py:57
+#: models.py:58
 msgid "Host ID"
 msgstr "ID do Host"
 
-#: models.py:60
+#: models.py:61
 msgid "Updated"
 msgstr "Atualizado"
 
-#: models.py:62
+#: models.py:63
 msgid "Detailed Status Message"
 msgstr "Mensagem de status detalhada"
 
-#: models.py:115
+#: models.py:116
 msgid "Media Host"
 msgstr "Host de mídia"
 
-#: models.py:116
+#: models.py:117
 msgid "Media Hosts"
 msgstr "Hosts de mídia"
 
-#: models.py:131
+#: models.py:132
 msgid "UOL Mais"
 msgstr "UOL Mais"
 
-#: models.py:137
+#: models.py:138
 msgid "File"
 msgstr "Arquivo"
 
-#: models.py:145
+#: models.py:140
+msgid ""
+"Temporary file stored until it's not sent to final hosting server (ie: "
+"Youtube)"
+msgstr ""
+"Arquivo temporário que ficará armazenado até que seja enviado ao host final "
+"(ex: Youtube)"
+
+#: models.py:146
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:153
+#: models.py:155
 msgid "Media"
 msgstr "ID da mídia"
 
-#: models.py:154
+#: models.py:156
 msgid "Medias"
 msgstr "ID das mídias"
 
-#: models.py:194
+#: models.py:196
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:212
+#: models.py:216
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:213
+#: models.py:217
 msgid "Videos"
 msgstr "Vídeos"
 
-#: models.py:221
+#: models.py:227
 msgid "Audio"
 msgstr "Áudio"
 
-#: models.py:222
+#: models.py:228
 msgid "Audios"
 msgstr "Áudios"
 
