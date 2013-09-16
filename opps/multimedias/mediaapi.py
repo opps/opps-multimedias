@@ -74,7 +74,7 @@ class UOLMais(MediaAPI):
             'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
             'title': title,
             'description': description,
-            'tags': u','.join(tags),
+            'tags': tags,
             'visibility': self._lib.VISIBILITY_ANYONE,
             'comments': self._lib.COMMENTS_NONE,
             'is_hot': False
