@@ -9,6 +9,8 @@ from django.template.loader import render_to_string
 
 from gdata.service import BadAuthentication, RequestError
 
+DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
+
 
 class MediaAPIError(Exception):
     pass
@@ -64,7 +66,7 @@ class UOLMais(MediaAPI):
 
     def upload(self, type, media_path, title, description, tags):
         tags = tags or []
-        tags.append(u'virgula')
+        tags += DEFAULT_TAGS
 
         self.authenticate()
 
