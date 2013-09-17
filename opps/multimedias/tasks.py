@@ -22,13 +22,19 @@ def upload_media():
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
+        
+        if media.tags:
+            tags = [tag.lower().strip() for tag in media.tags.split(",")]
+        else:
+            tags = []
+            
         try:
             media_info = mediahost.api.upload(
                 media.TYPE,
                 media.media_file.path,
                 media.title,
                 media.headline,
-                media.tags or ''
+                tags
             )
         except:
             mediahost.status = MediaHost.STATUS_ERROR
