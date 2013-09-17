@@ -56,13 +56,6 @@ class MediaAdmin(ContainerAdmin):
             media.save()
     resend_uolmais.short_description = _(u"Resend UOLMais media")
 
-
-@apply_opps_rules('multimedias')
-class VideoAdmin(MediaAdmin):
-    form = VideoAdminForm
-    actions = MediaAdmin.actions[:]
-    actions += ['resend_youtube', ]
-
     def get_list_display(self, request):
         list_display = self.list_display
         pop = request.GET.get('pop')
@@ -70,15 +63,6 @@ class VideoAdmin(MediaAdmin):
             list_display = ['opps_editor_select'] + list(list_display)
         return list_display
 
-    def resend_youtube(self, request, queryset):
-        for media in queryset.select_related('youtube'):
-            media.youtube.host_id = None
-            media.youtube.url = None
-            media.youtube.embed = ''
-            media.youtube.status = MediaHost.STATUS_NOT_UPLOADED
-            media.youtube.status_message = ''
-            media.youtube.save()
-    resend_youtube.short_description = _(u"Resend Youtube video")
 
     def opps_editor_select(self, obj):
         return u'''
@@ -90,6 +74,23 @@ class VideoAdmin(MediaAdmin):
         '''.format(escape(obj.uolmais.embed), _(u'Select'))
     opps_editor_select.short_description = _(u'Select')
     opps_editor_select.allow_tags = True
+
+
+@apply_opps_rules('multimedias')
+class VideoAdmin(MediaAdmin):
+    form = VideoAdminForm
+    actions = MediaAdmin.actions[:]
+    actions += ['resend_youtube', ]
+
+    def resend_youtube(self, request, queryset):
+        for media in queryset.select_related('youtube'):
+            media.youtube.host_id = None
+            media.youtube.url = None
+            media.youtube.embed = ''
+            media.youtube.status = MediaHost.STATUS_NOT_UPLOADED
+            media.youtube.status_message = ''
+            media.youtube.save()
+    resend_youtube.short_description = _(u"Resend Youtube video")
 
 
 @apply_opps_rules('multimedias')

@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 from django import template
 from django.conf import settings
-from django.db.models import Count
+#from django.db.models import Count
 from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.utils import timezone
 
-from opps.containers.models import Container
+#from opps.containers.models import Container
+from opps.channels.models import Channel
 from opps.core.templatetags.box_tags import get_box, get_all_box
 
 from ..models import Audio, Video
@@ -74,12 +76,58 @@ def get_all_channel(context):
     if getcache:
         return getcache
 
+    _list = Channel.objects.filter(published=True,
+                                   container__video__isnull=False,
+                                   date_available__lte=timezone.now(),
+                                   site=site).distinct().values('name',
+                                                                'long_slug')
+    """
     _list = [{'name': i[0], 'long_slug': i[1]} for i in Container.objects
             .values_list('channel_name', 'channel_long_slug')
             .filter(site=site, child_class='Video', published=True)
             .distinct()
             .annotate(count=Count('channel_long_slug')) if i.count >= 1]
-
+    """
     cache.set(cachekey, _list, 3600)
 
     return _list
+
+
+@register.assignment_tag()
+def get_multimedias(number=5, channel_slug=None, type=None,
+                    include_subchannels=False):
+    """
+    Type can be 'audio' or 'video'
+    for media in active_multimedias:
+        media.TYPE == 'video'
+        media.TYPE == 'audio'
+
+    If include_subchannels = True the queryset will look into the subchannels
+    for multimedias as well
+    """
+    active_multimedias = []
+
+    if not type or type == 'audio':
+        active_audios = Audio.objects.all_published()
+        if channel_slug:
+            lookup = {'channel__slug': channel_slug}
+            if include_subchannels:
+                lookup = {'channel__long_slug__contains': channel_slug}
+            active_audios = active_audios.filter(
+                **lookup
+            ).distinct()
+        active_audios = active_audios[:number]
+        active_multimedias.extend(active_audios)
+
+    if not type or type == 'video':
+        active_videos = Video.objects.all_published()
+        if channel_slug:
+            lookup = {'channel__slug': channel_slug}
+            if include_subchannels:
+                lookup = {'channel__long_slug__contains': channel_slug}
+            active_videos = active_videos.filter(
+                **lookup
+            ).distinct()
+        active_videos = active_videos[:number]
+        active_multimedias.extend(active_videos)
+    return active_multimedias

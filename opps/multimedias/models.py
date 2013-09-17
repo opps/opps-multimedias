@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from opps.articles.models import Article
+from opps.core.managers import PublishableManager
 from .mediaapi import Youtube, UOLMais
 
 app_namespace = getattr(
@@ -136,8 +137,8 @@ class Media(Article):
     media_file = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
-        help_text=_((u'Temporary file stored until it\'s not sent to '
-                     u'final hosting server (ie: Youtube)'))
+        help_text=_(u'Temporary file stored until it\'s not sent to final '
+                    u'hosting server (ie: Youtube)')
     )
 
     posts = models.ManyToManyField(
@@ -147,6 +148,7 @@ class Media(Article):
         null=True,
         blank=True,
     )
+
 
     class Meta:
         abstract = True
@@ -197,6 +199,8 @@ class Video(Media):
         null=True
     )
 
+    objects = PublishableManager()
+
     @property
     def player(self):
         if self.uolmais.host_id and self.uolmais.status == MediaHost.STATUS_OK:
@@ -215,6 +219,8 @@ class Video(Media):
 
 class Audio(Media):
     TYPE = u'audio'
+
+    objects = PublishableManager()
 
     class Meta:
         ordering = ['-date_available', 'title', 'channel_long_slug']

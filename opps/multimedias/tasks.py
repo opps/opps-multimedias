@@ -22,7 +22,12 @@ def upload_media():
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
-        tags = list(media.tags)
+        
+        if media.tags:
+            tags = [tag.lower().strip() for tag in media.tags.split(",")]
+        else:
+            tags = []
+            
         try:
             media_info = mediahost.api.upload(
                 media.TYPE,
@@ -35,10 +40,10 @@ def upload_media():
             mediahost.status = MediaHost.STATUS_ERROR
             mediahost.status_message = _('Error on upload')
             mediahost.save()
-
-        mediahost.host_id = media_info['id']
-        mediahost.status = MediaHost.STAUTS_PROCESSING
-        mediahost.save()
+        else:
+            mediahost.host_id = media_info['id']
+            mediahost.status = MediaHost.STAUTS_PROCESSING
+            mediahost.save()
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=2))
