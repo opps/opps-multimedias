@@ -28,16 +28,16 @@ def upload_media():
                 media.media_file.path,
                 media.title,
                 media.headline,
-                media.tags
+                media.tags or ''
             )
         except:
             mediahost.status = MediaHost.STATUS_ERROR
             mediahost.status_message = _('Error on upload')
             mediahost.save()
-
-        mediahost.host_id = media_info['id']
-        mediahost.status = MediaHost.STAUTS_PROCESSING
-        mediahost.save()
+        else:
+            mediahost.host_id = media_info['id']
+            mediahost.status = MediaHost.STAUTS_PROCESSING
+            mediahost.save()
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=2))
