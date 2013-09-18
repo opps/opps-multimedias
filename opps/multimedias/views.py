@@ -2,10 +2,10 @@
 from django.contrib.sites.models import get_current_site
 from django.utils import timezone
 from django.conf import settings
+from django.views.generic import ListView
 
 from opps.multimedias.models import Video, Audio
 from opps.containers.views import ContainerDetail, ContainerList
-from opps.views.generic.list import ListView
 
 
 class VideoDetail(ContainerDetail):
@@ -33,7 +33,7 @@ class ListAll(ListView):
     def get_template_names(self):
         templates = []
 
-        domain_folder = self.get_template_folder()
+        domain_folder = 'containers'
         list_name = 'list'
 
         templates.append('{}/{}/{}.html'.format(
@@ -52,13 +52,12 @@ class ListAll(ListView):
     def get_queryset(self):
         self.site = get_current_site(self.request)
 
-        queryset = super(ListView, self).get_queryset()
         filters = {}
         filters['site_domain'] = self.site.domain
         filters['date_available__lte'] = timezone.now()
         filters['published'] = True
         filters['show_on_root_channel'] = True
-        queryset = queryset.filter(**filters)
+        queryset = self.model.objects.filter(**filters)
 
         return queryset._clone()
 
