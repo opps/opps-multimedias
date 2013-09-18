@@ -11,25 +11,24 @@ from .views import (VideoDetail, AudioDetail, VideoList, AudioList,
 
 urlpatterns = patterns(
     '',
-    url(r'^video/(?P<long_slug>[\w\b//-]+)/(rss|feed)$',
+    url(r'^videos/(?P<long_slug>[\w\b//-]+)/(rss|feed)$',
         cache_page(settings.OPPS_CACHE_EXPIRE)(
             ChannelFeed()), name='video_list_feed'),
-    url(r'^audio/(?P<long_slug>[\w\b//-]+)/(rss|feed)$',
+    url(r'^audios/(?P<long_slug>[\w\b//-]+)/(rss|feed)$',
        cache_page(settings.OPPS_CACHE_EXPIRE)(
            ChannelFeed()), name='audio_list_feed'),
 
-    url(r'^audio/(?P<channel__long_slug>[\w//-]+)/(?P<slug>[\w-]+)$',
+    url(r'^audios/(?P<channel__long_slug>[\w//-]+)/(?P<slug>[\w-]+)$',
         cache_page(settings.OPPS_CACHE_EXPIRE)(
             AudioDetail.as_view()), name='audio_detail'),
-    url(r'^video/(?P<channel__long_slug>[\w//-]+)/(?P<slug>[\w-]+)$',
+    url(r'^videos/(?P<channel__long_slug>[\w//-]+)/(?P<slug>[\w-]+)$',
         cache_page(settings.OPPS_CACHE_EXPIRE)(
             VideoDetail.as_view()), name='video_detail'),
 
-    url(r'^video/(?P<channel__long_slug>[\w\b//-]+)/$',
+    url(r'^videos/(?P<channel__long_slug>[\w\b//-]+)/$',
         VideoList.as_view(), name='video_list'),
-    url(r'^audio/(?P<channel__long_slug>[\w\b//-]+)/$',
+    url(r'^audios/(?P<channel__long_slug>[\w\b//-]+)/$',
         AudioList.as_view(), name='audio_list'),
-
     url(r'^videos/(rss|feed)$',
         cache_page(settings.OPPS_CACHE_EXPIRE)(
             ContainerFeed('Video')), name='videos_list_feed'),
