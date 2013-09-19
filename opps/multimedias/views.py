@@ -98,6 +98,18 @@ class ListAll(ListView):
 
         return queryset._clone()
 
+    def get_context_data(self, **kwargs):
+        context = super(ListAll, self).get_context_data(**kwargs)
+        long_slug = self.kwargs.get('channel__long_slug')
+        try:
+            channel = Channel.objects.get(long_slug=long_slug)
+        except Channel.DoesNotExist:
+            channel = Channel.objects.get_homepage(
+                site=get_current_site(self.request)
+            )
+        context['channel'] = channel
+        return context
+
 
 class AllVideoList(ListAll):
     model = Video
