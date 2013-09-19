@@ -6,7 +6,9 @@ from appconf import AppConf
 
 
 class OppsLiveBloggingConf(AppConf):
-    VIDEO_CHANNEL = getattr(settings, 'OPPS_MULTIMEDIAS_VIDEO_CHANNEL', 'video')
-    AUDIO_CHANNEL = getattr(settings, 'OPPS_MULTIMEDIAS_AUDIO_CHANNEL', 'audio')
+    VIDEO_CHANNEL = getattr(settings, 'OPPS_MULTIMEDIAS_VIDEO_CHANNEL',
+                            'videos')
+    AUDIO_CHANNEL = getattr(settings, 'OPPS_MULTIMEDIAS_AUDIO_CHANNEL',
+                            'audios')
     class Meta:
         prefix = 'opps_multimedias'
