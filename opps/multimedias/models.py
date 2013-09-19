@@ -178,7 +178,7 @@ class Media(Article):
         return reverse(
             u'{0}:{1}_detail'.format(app_namespace, self.TYPE),
             kwargs={
-                'channel__long_slug': self.channel.long_slug,
+                'channel__long_slug': self.channel_long_slug,
                 'slug': self.slug
             }
         )
