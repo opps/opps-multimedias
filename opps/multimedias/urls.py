@@ -16,17 +16,11 @@ urlpatterns = patterns(
         settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL),
         cache_page(settings.OPPS_CACHE_EXPIRE)(ChannelFeed()),
         name='video_list_feed',
-        kwargs={
-            'channel__long_slug': settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL
-        }
     ),
     url(r'^{}/(?P<long_slug>[\w\b//-]+)/(rss|feed)$'.format(
         settings.OPPS_MULTIMEDIAS_AUDIO_CHANNEL),
         cache_page(settings.OPPS_CACHE_EXPIRE)(ChannelFeed()),
         name='audio_list_feed',
-        kwargs={
-            'channel__long_slug': settings.OPPS_MULTIMEDIAS_AUDIO_CHANNEL
-        }
     ),
 
     #DETAIL
@@ -65,8 +59,7 @@ urlpatterns = patterns(
 
     # ALL LIST
     url(r'^{}/$'.format(settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL),
-        #cache_page(settings.OPPS_CACHE_EXPIRE)(AllVideoList.as_view()),
-        AllVideoList.as_view(),
+        cache_page(settings.OPPS_CACHE_EXPIRE)(AllVideoList.as_view()),
         name='videos_list',
         kwargs={'channel__long_slug': settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL}
     ),
