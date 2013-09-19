@@ -8,6 +8,15 @@ from .models import MediaHost
 BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
 
+def log_it(s):
+    try:
+        open("/tmp/multimedias_upload.log", "a").write(
+            u"{now} - {s}\n".format(now=datetime.datetime.now(), s=s)
+        )
+    except:
+        pass
+
+
 @task.periodic_task(run_every=timezone.timedelta(minutes=5))
 def upload_media():
     mediahosts = MediaHost.objects.filter(
@@ -22,12 +31,12 @@ def upload_media():
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
-        
+
         if media.tags:
             tags = [tag.lower().strip() for tag in media.tags.split(",")]
         else:
             tags = []
-            
+
         try:
             media_info = mediahost.api.upload(
                 media.TYPE,
@@ -36,11 +45,13 @@ def upload_media():
                 media.headline,
                 tags
             )
-        except:
+        except Exception as e:
+            log_it(u'Erro no upload {}: {}'.format(mediahost.pk, unicode(e)))
             mediahost.status = MediaHost.STATUS_ERROR
             mediahost.status_message = _('Error on upload')
             mediahost.save()
         else:
+            log_it(u'Sucesso no upload {}'.format(mediahost.pk))
             mediahost.host_id = media_info['id']
             mediahost.status = MediaHost.STAUTS_PROCESSING
             mediahost.save()
