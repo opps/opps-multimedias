@@ -45,7 +45,7 @@ def upload_media():
             )
         except Exception as e:
             log_it(u'Error on upload {}: {}'.format(
-                unicode(mediahost.media), unicode(e)
+                unicode(mediahost.media), unicode(e.encode("utf-8"))
             ))
             if mediahost.retries < 3:
                 mediahost.retries += 1
