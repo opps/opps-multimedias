@@ -47,12 +47,16 @@ def upload_media():
                 tags
             )
         except Exception as e:
-            log_it(u'Erro no upload {}: {}'.format(mediahost.pk, unicode(e)))
-            mediahost.status = MediaHost.STATUS_ERROR
-            mediahost.status_message = _('Error on upload')
+            log_it(u'Error on upload {}: {}'.format(mediahost.pk, unicode(e)))
+            if mediahost.retries < 3:
+                mediahost.retries += 1
+                mediahost.status = MediaHost.STATUS_NOT_UPLOADED
+            else:
+                mediahost.status = MediaHost.STATUS_ERROR
+                mediahost.status_message = _('Error on upload')
             mediahost.save()
         else:
-            log_it(u'Sucesso no upload {}'.format(mediahost.pk))
+            log_it(u'Uploaded {}'.format(mediahost.pk))
             mediahost.host_id = media_info['id']
             mediahost.status = MediaHost.STAUTS_PROCESSING
             mediahost.save()
