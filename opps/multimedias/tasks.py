@@ -11,7 +11,8 @@ BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
 def log_it(s):
     with open("/tmp/multimedias_upload.log", "a") as log:
-        log.write(u"{} - {}\n".format(datetime.datetime.now(), s))
+        msg = u"{} - {}\n".format(datetime.datetime.now(), s)
+        log.write(msg.encode('utf-8'))
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=5))
@@ -45,7 +46,7 @@ def upload_media():
             )
         except Exception as e:
             log_it(u'Error on upload {}: {}'.format(
-                unicode(mediahost.media), unicode(e.encode("utf-8"))
+                unicode(mediahost.media), unicode(e)
             ))
             if mediahost.retries < 3:
                 mediahost.retries += 1
