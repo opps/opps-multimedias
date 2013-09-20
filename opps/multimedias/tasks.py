@@ -56,7 +56,10 @@ def upload_media():
                 mediahost.status_message = _('Error on upload')
             mediahost.save()
         else:
-            log_it(u'Uploaded {}'.format(unicode(mediahost.media)))
+            log_it(u'Uploaded {} - Data returned: {}'.format(
+                unicode(mediahost.media),
+                unicode(media_info)
+            ))
             mediahost.host_id = media_info['id']
             mediahost.status = MediaHost.STAUTS_PROCESSING
             mediahost.save()
