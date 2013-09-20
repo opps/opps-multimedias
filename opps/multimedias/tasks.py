@@ -10,12 +10,8 @@ BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
 
 def log_it(s):
-    try:
-        open("/tmp/multimedias_upload.log", "a").write(
-            u"{now} - {s}\n".format(now=datetime.datetime.now(), s=s)
-        )
-    except:
-        pass
+    with open("/tmp/multimedias_upload.log", "a") as log:
+        log.write(u"{} - {}\n".format(datetime.datetime.now(), s))
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=5))
@@ -39,6 +35,7 @@ def upload_media():
             tags = []
 
         try:
+            log_it(u'Uploading: {}'.format(unicode(mediahost.media)))
             media_info = mediahost.api.upload(
                 media.TYPE,
                 media.media_file.path,
@@ -47,7 +44,9 @@ def upload_media():
                 tags
             )
         except Exception as e:
-            log_it(u'Error on upload {}: {}'.format(mediahost.pk, unicode(e)))
+            log_it(u'Error on upload {}: {}'.format(
+                unicode(mediahost.media), unicode(e)
+            ))
             if mediahost.retries < 3:
                 mediahost.retries += 1
                 mediahost.status = MediaHost.STATUS_NOT_UPLOADED
@@ -56,7 +55,7 @@ def upload_media():
                 mediahost.status_message = _('Error on upload')
             mediahost.save()
         else:
-            log_it(u'Uploaded {}'.format(mediahost.pk))
+            log_it(u'Uploaded {}'.format(unicode(mediahost.media)))
             mediahost.host_id = media_info['id']
             mediahost.status = MediaHost.STAUTS_PROCESSING
             mediahost.save()
