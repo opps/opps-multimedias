@@ -4,6 +4,7 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.conf import settings
 
 User = get_user_model()
@@ -31,62 +32,43 @@ class Migration(DataMigration):
             pk__in=audios_pk
         )
         for audio in audios:
-            new_path = u'/{}/{}/{}.html$'.format(
+            old_path = u'/{}/{}/{}.html$'.format(
                 getattr(settings, 'OPPS_MULTIMEDIAS_AUDIO_CHANNEL', 'audios'),
                 audio.channel_long_slug,
                 audio.slug
             )
-            old_path = u'/audio/{}/{}'.format(
-                audio.channel_long_slug,
-                audio.slug
-            )
             if old_path not in current_redirects:
+                new_path = u'/{}/{}.html$'.format(
+                    audio.channel_long_slug,
+                    audio.slug
+                )
                 Redirect.objects.create(
                     old_path=old_path,
                     new_path=new_path,
                     site_id=audio.site_id
                 )
                 current_redirects.add(old_path)
-
-            old_path2 = u'{}/'.format(old_path)
-            if old_path2 not in current_redirects:
-                Redirect.objects.create(
-                    old_path=old_path2,
-                    new_path=new_path,
-                    site_id=audio.site_id
-                )
-                current_redirects.add(old_path2)
-
         # Videos
         videos = orm['containers.Container'].objects.filter(
             pk__in=videos_pk
         )
         for video in videos:
-            new_path = u'/{}/{}/{}.html$'.format(
-                getattr(settings, 'OPPS_MULTIMEDIAS_AUDIO_CHANNEL', 'videos'),
-                audio.channel_long_slug,
-                audio.slug
-            )
-            old_path = u'/video/{}/{}'.format(
+            old_path = u'/{}/{}/{}.html$'.format(
+                getattr(settings, 'OPPS_MULTIMEDIAS_VIDEO_CHANNEL', 'videos'),
                 video.channel_long_slug,
                 video.slug
             )
             if old_path not in current_redirects:
+                new_path = u'/{}/{}.html$'.format(
+                    video.channel_long_slug,
+                    video.slug
+                )
                 Redirect.objects.create(
                     old_path=old_path,
                     new_path=new_path,
                     site_id=video.site_id
                 )
                 current_redirects.add(old_path)
-
-            old_path2 = u'{}/'.format(old_path)
-            if old_path2 not in current_redirects:
-                Redirect.objects.create(
-                    old_path=old_path2,
-                    new_path=new_path,
-                    site_id=video.site_id
-                )
-                current_redirects.add(old_path2)
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")

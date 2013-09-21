@@ -23,17 +23,6 @@ urlpatterns = patterns(
         name='audio_list_feed',
     ),
 
-    #DETAIL
-    url(r'^{}/(?P<channel__long_slug>[\w//-]+)/(?P<slug>[\w-]+)\.html$'.format(
-        settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL),
-        cache_page(settings.OPPS_CACHE_EXPIRE)(VideoDetail.as_view()),
-        name='video_detail',
-    ),
-    url(r'^{}/(?P<channel__long_slug>[\w//-]+)/(?P<slug>[\w-]+)\.html$'.format(
-        settings.OPPS_MULTIMEDIAS_AUDIO_CHANNEL),
-        cache_page(settings.OPPS_CACHE_EXPIRE)(AudioDetail.as_view()),
-        name='audio_detail'
-    ),
 
     # CHANNEL LIST
     url(r'^{}/(?P<channel__long_slug>[\w\b//-]+)/$'.format(

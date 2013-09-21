@@ -174,21 +174,6 @@ class Media(Article):
 
         super(Media, self).save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return reverse(
-            u'{0}:{1}_detail'.format(app_namespace, self.TYPE),
-            kwargs={
-                'channel__long_slug': self.channel_long_slug,
-                'slug': self.slug
-            }
-        )
-
-    def get_http_absolute_url(self):
-        return u'http://{0}{1}'.format(
-            self.site.domain,
-            self.get_absolute_url()
-        )
-
 
 class Video(Media):
     TYPE = u'video'
