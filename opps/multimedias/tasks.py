@@ -3,6 +3,7 @@ import datetime
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.db import transaction
 from celery import task
 from .models import MediaHost
 
@@ -54,7 +55,6 @@ def upload_media():
             else:
                 mediahost.status = MediaHost.STATUS_ERROR
                 mediahost.status_message = _('Error on upload')
-            mediahost.save()
         else:
             log_it(u'Uploaded {} - Data returned: {}'.format(
                 unicode(mediahost.media),
@@ -62,6 +62,7 @@ def upload_media():
             ))
             mediahost.host_id = media_info['id']
             mediahost.status = MediaHost.STAUTS_PROCESSING
+        with transaction.commit_on_success():
             mediahost.save()
 
 
