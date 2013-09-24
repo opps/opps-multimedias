@@ -6,7 +6,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.utils import timezone
 
-from opps.channels.models import Channel
+from django.db.models import Count, Max
 from opps.core.templatetags.box_tags import get_box, get_all_box
 
 from ..models import Audio, Video
@@ -74,12 +74,16 @@ def get_all_channel(context):
     if getcache:
         return getcache
 
-    _list = Channel.objects.filter(
+    _list = Video.objects.values(
+        'channel_name',
+        'channel_long_slug'
+    ).filter(
         published=True,
-        container__video__isnull=False,
         date_available__lte=timezone.now(),
-        site=site).distinct().values(
-            'name', 'long_slug').order_by('container__date_available')
+        site=site
+    ).annotate(
+        count=Count('channel_long_slug'),
+        date=Max('date_available')).order_by('-date')
     cache.set(cachekey, _list, 3600)
 
     return _list
