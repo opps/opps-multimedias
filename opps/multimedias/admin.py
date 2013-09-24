@@ -47,6 +47,7 @@ class MediaAdmin(ContainerAdmin):
         for media in queryset.select_related('uolmais'):
             media.uolmais.host_id = None
             media.uolmais.url = None
+            media.uolmais.retries = 0
             media.uolmais.embed = ''
             media.uolmais.status = MediaHost.STATUS_NOT_UPLOADED
             media.uolmais.status_message = ''
@@ -86,6 +87,7 @@ class VideoAdmin(MediaAdmin):
         for media in queryset.select_related('youtube'):
             media.youtube.host_id = None
             media.youtube.url = None
+            media.youtube.retries = 0
             media.youtube.embed = ''
             media.youtube.status = MediaHost.STATUS_NOT_UPLOADED
             media.youtube.status_message = ''

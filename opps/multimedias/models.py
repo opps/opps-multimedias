@@ -64,6 +64,7 @@ class MediaHost(models.Model):
         max_length=150,
         null=True
     )
+    retries = models.PositiveSmallIntegerField(_(u'Retries'), default=0)
 
     def __unicode__(self):
         return u'{} - {}'.format(self.get_host_display(), self.media)
@@ -149,7 +150,6 @@ class Media(Article):
         blank=True,
     )
 
-
     class Meta:
         abstract = True
         verbose_name = _(u'Media')
@@ -173,19 +173,6 @@ class Media(Article):
             )
 
         super(Media, self).save(*args, **kwargs)
-
-    def get_absolute_url(self):
-        return reverse(
-            u'{0}:{1}_detail'.format(app_namespace, self.TYPE),
-            kwargs={
-                'channel__long_slug': self.channel_long_slug,
-                'slug': self.slug
-            }
-        )
-
-    def get_http_absolute_url(self):
-        return u'http://{0}{1}'.format(self.site.domain,
-                                      self.get_absolute_url())
 
 
 class Video(Media):

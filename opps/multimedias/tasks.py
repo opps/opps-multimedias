@@ -1,7 +1,9 @@
 # -*- encoding: utf-8 -*-
+import datetime
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.db import transaction
 from celery import task
 from .models import MediaHost
 
@@ -9,12 +11,9 @@ BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
 
 def log_it(s):
-    try:
-        open("/tmp/multimedias_upload.log", "a").write(
-            u"{now} - {s}\n".format(now=datetime.datetime.now(), s=s)
-        )
-    except:
-        pass
+    with open("/tmp/multimedias_upload.log", "a") as log:
+        msg = u"{} - {}\n".format(datetime.datetime.now(), s)
+        log.write(msg.encode('utf-8'))
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=5))
@@ -38,6 +37,7 @@ def upload_media():
             tags = []
 
         try:
+            log_it(u'Uploading: {}'.format(unicode(mediahost.media)))
             media_info = mediahost.api.upload(
                 media.TYPE,
                 media.media_file.path,
@@ -46,14 +46,23 @@ def upload_media():
                 tags
             )
         except Exception as e:
-            log_it(u'Erro no upload {}: {}'.format(mediahost.pk, unicode(e)))
-            mediahost.status = MediaHost.STATUS_ERROR
-            mediahost.status_message = _('Error on upload')
-            mediahost.save()
+            log_it(u'Error on upload {}: {}'.format(
+                unicode(mediahost.media), unicode(e)
+            ))
+            if mediahost.retries < 3:
+                mediahost.retries += 1
+                mediahost.status = MediaHost.STATUS_NOT_UPLOADED
+            else:
+                mediahost.status = MediaHost.STATUS_ERROR
+                mediahost.status_message = _('Error on upload')
         else:
-            log_it(u'Sucesso no upload {}'.format(mediahost.pk))
+            log_it(u'Uploaded {} - Data returned: {}'.format(
+                unicode(mediahost.media),
+                unicode(media_info)
+            ))
             mediahost.host_id = media_info['id']
             mediahost.status = MediaHost.STAUTS_PROCESSING
+        with transaction.commit_on_success():
             mediahost.save()
 
 
