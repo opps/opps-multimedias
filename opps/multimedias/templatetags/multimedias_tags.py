@@ -74,11 +74,12 @@ def get_all_channel(context):
     if getcache:
         return getcache
 
-    _list = Channel.objects.filter(published=True,
-                                   container__video__isnull=False,
-                                   date_available__lte=timezone.now(),
-                                   site=site).distinct().values('name',
-                                                                'long_slug')
+    _list = Channel.objects.filter(
+        published=True,
+        container__video__isnull=False,
+        date_available__lte=timezone.now(),
+        site=site).distinct().values(
+            'name', 'long_slug').order_by('container__date_available')
     cache.set(cachekey, _list, 3600)
 
     return _list
