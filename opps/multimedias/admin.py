@@ -23,6 +23,8 @@ class MediaAdmin(ContainerAdmin):
     actions = ContainerAdmin.actions[:]
     actions += ['resend_uolmais', ]
 
+    search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
+
     fieldsets = (
         (_(u'Identification'), {
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
@@ -63,7 +65,6 @@ class MediaAdmin(ContainerAdmin):
         if pop == 'oppseditor':
             list_display = ['opps_editor_select'] + list(list_display)
         return list_display
-
 
     def opps_editor_select(self, obj):
         return u'''
