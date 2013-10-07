@@ -1,9 +1,9 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from .models import Audio, Video
+from opps.containers.forms import ContainerAdminForm
 
-
-class MediaAdminForm(forms.ModelForm):
+class MediaAdminForm(ContainerAdminForm):
     ALLOWED_EXTENSIONS = ()
 
     headline = forms.CharField(

@@ -31,7 +31,7 @@ class MediaAdmin(ContainerAdmin):
                        'short_url', ('main_image', 'image_thumb'))}),
         (_(u'Content'), {
             'fields': ('short_title', 'hat',
-                       'headline', 'media_file', 'tags')}),
+                       'headline', 'json', 'media_file', 'tags')}),
         (_(u'Relationships'), {
             'fields': ('channel', )}),
         (_(u'Publication'), {
