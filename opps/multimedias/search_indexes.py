@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
+from django.utils import timezone
 from haystack.indexes import SearchIndex, Indexable, CharField, DateTimeField
 
 from .models import Audio, Video
@@ -20,7 +19,7 @@ class AudioIndex(SearchIndex, Indexable):
 
     def index_queryset(self, using=None):
         return self.get_model().objects.filter(
-            date_available__lte=datetime.now(),
+            date_available__lte=timezone.now(),
             published=True)
 
 
@@ -37,5 +36,5 @@ class VideoIndex(SearchIndex, Indexable):
 
     def index_queryset(self, using=None):
         return Video.objects.filter(
-            date_available__lte=datetime.now(),
+            date_available__lte=timezone.now(),
             published=True)
