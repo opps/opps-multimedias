@@ -24,9 +24,13 @@ def upload_media():
     ).exclude(pk__in=BLACKLIST)
 
     for mediahost in mediahosts:
-        if not mediahost.media:
-            mediahost.delete()
+        try:
+            if not mediahost.media:
+                mediahost.delete()
+                continue
+        except:
             continue
+
         mediahost.status = MediaHost.STATUS_SENDING
         mediahost.save()
         media = mediahost.media
