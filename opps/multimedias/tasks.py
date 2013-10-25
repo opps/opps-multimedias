@@ -28,7 +28,8 @@ def upload_media():
             if not mediahost.media:
                 mediahost.delete()
                 continue
-        except:
+        except Exception as e:
+            log_it(u"Error deleting media host")
             continue
 
         mediahost.status = MediaHost.STATUS_SENDING
