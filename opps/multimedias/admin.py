@@ -33,7 +33,7 @@ class MediaAdmin(ContainerAdmin):
             'fields': ('short_title', 'hat',
                        'headline', 'json', 'media_file', 'tags')}),
         (_(u'Relationships'), {
-            'fields': ('channel', )}),
+            'fields': ('channel', 'mirror_channel',)}),
         (_(u'Publication'), {
             'classes': ('extrapretty'),
             'fields': ('published', 'date_available',
