@@ -1,0 +1,9 @@
+<h1>Active Multimedias</h1>
+
+<ul>
+  {% for multimedia in active_multimedias %}
+  <li>{{ multimedia.title|title }}</li>
+  {% empty %}
+  <li>No Active multimedias</li>
+  {% endfor %}
+</ul>
