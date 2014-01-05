@@ -28,6 +28,13 @@ def get_active_multimedias(context, number=5, channel_slug=None,
     """
     active_multimedias = []
 
+    cache_key = u'ActiveMultimedias-{}-{}-{}'.format(number, channel_slug,
+                                                     template_name)
+
+    exists = cache.get(cache_key)
+    if exists:
+        return exists
+
     if not type or type == 'audio':
         active_audios = Audio.objects.all_published()
         if channel_slug:
@@ -48,10 +55,11 @@ def get_active_multimedias(context, number=5, channel_slug=None,
 
     t = template.loader.get_template(template_name)
 
-    return t.render(template.Context({'active_multimedias': active_multimedias,
+    render = t.render(template.Context({'active_multimedias': active_multimedias,
                                       'channel_slug': channel_slug,
                                       'number': number}))
-
+    cache.set(cache_key, render, 60 * 60)
+    return render
 
 @register.simple_tag(takes_context=True)
 def get_mediabox(context, slug, template_name=None):
