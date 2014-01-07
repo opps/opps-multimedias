@@ -71,21 +71,22 @@ class UOLMais(MediaAPI):
         self.authenticate()
 
         saopaulo_tz = pytz.timezone('America/Sao_Paulo')
-        media_args = {
-            'f': open(media_path, 'rb'),
-            'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
-            'title': title,
-            'description': description,
-            'tags': u','.join(tags),
-            'visibility': self._lib.VISIBILITY_ANYONE,
-            'comments': self._lib.COMMENTS_NONE,
-            'is_hot': False
-        }
+        with open(media, 'rb') as f:
+            media_args = {
+                'f': f,
+                'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
+                'title': title,
+                'description': description,
+                'tags': u','.join(tags),
+                'visibility': self._lib.VISIBILITY_ANYONE,
+                'comments': self._lib.COMMENTS_NONE,
+                'is_hot': False
+            }
 
-        if type == u'video':
-            media_id = self._lib.upload_video(**media_args)
-        elif type == u'audio':
-            media_id = self._lib.upload_audio(**media_args)
+            if type == u'video':
+                media_id = self._lib.upload_video(**media_args)
+            elif type == u'audio':
+                media_id = self._lib.upload_audio(**media_args)
 
         return self.get_info(media_id)
 
