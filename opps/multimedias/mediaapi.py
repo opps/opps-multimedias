@@ -174,7 +174,6 @@ class Youtube(MediaAPI):
 
     def upload(self, type, media_path, title, description, tags):
         tags = tags or []
-        tags.append(u'virgula')
 
         self.authenticate()
 
