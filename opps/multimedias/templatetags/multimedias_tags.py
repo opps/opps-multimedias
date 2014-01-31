@@ -61,6 +61,7 @@ def get_active_multimedias(context, number=5, channel_slug=None,
     cache.set(cache_key, render, 60 * 60)
     return render
 
+
 @register.simple_tag(takes_context=True)
 def get_mediabox(context, slug, template_name=None):
     return get_box(context, 'multimedias', slug, template_name)
