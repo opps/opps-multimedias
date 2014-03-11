@@ -23,7 +23,8 @@ class MediaAdmin(ContainerAdmin):
     actions = ContainerAdmin.actions[:]
     actions += ['resend_uolmais', ]
 
-    search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
+    #search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
+    search_fields = ['title', 'slug', 'channel_name']
 
     fieldsets = (
         (_(u'Identification'), {
