@@ -26,26 +26,32 @@ class MediaHost(models.Model):
     STATUS_SENDING = u'sending'
     STATUS_DELETED = u'deleted'
     STATUS_NOT_UPLOADED = u'notuploaded'
+    STATUS_ENCODING = u'encoding'
+    STATUS_NOT_ENCODED = u'not encoded'
     STATUS_CHOICES = (
         (STATUS_OK, _(u'OK')),
         (STATUS_SENDING, _(u'Sending')),
         (STAUTS_PROCESSING, _(u'Processing')),
         (STATUS_ERROR, _(u'Error')),
         (STATUS_DELETED, _(u'Deleted')),
-        (STATUS_NOT_UPLOADED, _(u'Not Uploaded')),
+        (STATUS_NOT_UPLOADED, _(u'Not Uploaded')
+        (STATUS_ENCODING, _(u'Encoding')),
+        (STATUS_NOT_ENCODED, _(u'Not Encoded')),
     )
 
     HOST_YOUTUBE = u'youtube'
     HOST_UOLMAIS = u'uolmais'
+    HOST_LOCAL = u'local'
     HOST_CHOICES = (
         (HOST_YOUTUBE, u'Youtube'),
         (HOST_UOLMAIS, u'UOL Mais'),
+        (HOST_LOCAL, u'Local'),
     )
     host = models.CharField(
         _(u'Host'),
         max_length=16,
         choices=HOST_CHOICES,
-        default=HOST_UOLMAIS,
+        default=HOST_LOCAL,
         help_text=_(u'Provider that will store the media')
     )
     status = models.CharField(
@@ -77,6 +83,8 @@ class MediaHost(models.Model):
                 return self.uolmais_audio
         elif self.host == MediaHost.HOST_YOUTUBE:
             return self.youtube_video
+        elif self.host == MediaHost.HOST_LOCAL:
+            return self.local_video
 
     @property
     def api(self):
@@ -84,13 +92,15 @@ class MediaHost(models.Model):
             return UOLMais()
         elif self.host == MediaHost.HOST_YOUTUBE:
             return Youtube()
+        elif self.host == MediaHost.HOST_LOCAL:
+            return Local()
 
     def update(self):
         # If the upload wasn't done yet we don't have to update anything
         media_info = self.api.get_info(self.host_id)
 
         changed = False
-        if media_info['status'] and media_info['status'] != self.status:
+        if media_info.get('status') != self.status:
             self.status = media_info['status']
             if self.status == self.STATUS_OK:
                 self.media.published = True
@@ -105,7 +115,7 @@ class MediaHost(models.Model):
             self.url = media_info['url']
             changed = True
 
-        if media_info['embed'] and media_info['embed'] != self.embed:
+        if media_info.get('embed') != self.embed:
             self.embed = media_info['embed']
             changed = True
 
@@ -134,6 +144,7 @@ class Media(Article):
         blank=True,
         null=True
     )
+
     media_file = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
@@ -166,6 +177,11 @@ class Media(Article):
                 host=MediaHost.HOST_YOUTUBE
             )
 
+        if hasattr(self, 'local') and not self.local:
+            self.youtube = MediaHost.objects.create(
+                host=MediaHost.HOST_LOCAL
+            )
+
         if not self.uolmais:
             self.uolmais = MediaHost.objects.create(
                 host=MediaHost.HOST_UOLMAIS
@@ -181,6 +197,14 @@ class Video(Media):
         MediaHost,
         verbose_name=_(u'Youtube'),
         related_name=u'youtube_video',
+        blank=True,
+        null=True
+    )
+
+    video_file = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage')
         blank=True,
         null=True
     )

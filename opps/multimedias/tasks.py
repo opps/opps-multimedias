@@ -117,3 +117,31 @@ def update_mediahost():
             mediahost.update()
         except:
             pass
+
+@task.periodic_task(run_every=timezone.timedelta(minutes=2))
+def video_encoder(self, video, width, heigth, vcodec, acodec, bitrate):
+    videos = MediaHost.objects.filter(
+        status=MediaHost.STATUS_NOT_ENCODED,
+        host_id__isnull=True
+    ).exclude(pk__in=BLACKLIST)
+
+    for video in videos:
+        import os
+        import subprocess
+
+        ffmpeg = "/usr/bin/ffmpeg -i {in_file} -vcodec {vcodec} -acodec {acodec} -strict -2 -b:a {bitrate} -vf scale={width}:{heigth} {out_file}"
+        args = {
+            'in_file': video.filename,
+            'acodec': acodec,
+            'vcodec': vcodec,
+            'bitrate': bitrate,
+            'width': width,
+            'heigth':heigth,
+            'out_file': os.path.join('/tmp/', os.path.basename(video.filename)[0:-4] + '.mp4')
+            }
+        run = subprocess.Popen(ffmpeg.format(**params)slpit(), stdout=subprocess.PIPE)
+        out, err = run.communicate()
+        os.move(args['out_file'], args['in_file'])
+        video.filename = args['in_file']
+        video.save()
+        return out, err

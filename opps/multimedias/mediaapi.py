@@ -9,6 +9,8 @@ from django.template.loader import render_to_string
 
 from gdata.service import BadAuthentication, RequestError
 
+from .models import Video
+
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
 
 
@@ -17,7 +19,6 @@ class MediaAPIError(Exception):
 
 
 class MediaAPI(object):
-
     def authenticate(self):
         raise NotImplementedError()
 
@@ -31,6 +32,40 @@ class MediaAPI(object):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
                               u'tags', u'embed', u'url', u'status',
                               u'status_msg'])
+
+
+class LocalMediaAPI(MediaAPI):
+
+    def __init__(self):
+        super(LocalMediaAPI, self).__init__()
+
+    def video_upload(self, *args, **kwargs):
+        return self.upload('video', *args, **kwargs)
+
+    def audio_upload(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def upload(self, type, media_path, title, description, tags):
+        tags = tags or [] + DEFAULT_TAGS
+
+        with open(media_path, 'rb') as f:
+            media_args = {
+                'video_file': f.read(),
+                'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
+                'title': title,
+                'description': description,
+                'tags': u','.join(tags),
+                'visibility': self._lib.VISIBILITY_ANYONE,
+                'comments': self._lib.COMMENTS_NONE,
+                'is_hot': False,
+                ''
+            } 
+
+            if type == u'video':
+                video = Video(media_args).save()
+
+            elif type == u'audio':
+                raise NotImplementedError()
 
 
 class UOLMais(MediaAPI):
@@ -65,7 +100,7 @@ class UOLMais(MediaAPI):
         return self.upload('audio', *args, **kwargs)
 
     def upload(self, type, media_path, title, description, tags):
-        tags = tags or []
+        tags = tags or [] 
         tags += DEFAULT_TAGS
 
         self.authenticate()
