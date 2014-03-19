@@ -34,10 +34,10 @@ class MediaAPI(object):
                               u'status_msg'])
 
 
-class LocalMediaAPI(MediaAPI):
+class Local(MediaAPI):
 
     def __init__(self):
-        super(LocalMediaAPI, self).__init__()
+        super(Local, self).__init__()
 
     def video_upload(self, *args, **kwargs):
         return self.upload('video', *args, **kwargs)
@@ -48,6 +48,7 @@ class LocalMediaAPI(MediaAPI):
     def upload(self, type, media_path, title, description, tags):
         tags = tags or [] + DEFAULT_TAGS
 
+        saopaulo_tz = pytz.timezone('America/Sao_Paulo')
         with open(media_path, 'rb') as f:
             media_args = {
                 'video_file': f.read(),
@@ -58,8 +59,7 @@ class LocalMediaAPI(MediaAPI):
                 'visibility': self._lib.VISIBILITY_ANYONE,
                 'comments': self._lib.COMMENTS_NONE,
                 'is_hot': False,
-                ''
-            } 
+            }
 
             if type == u'video':
                 video = Video(media_args).save()
@@ -100,7 +100,7 @@ class UOLMais(MediaAPI):
         return self.upload('audio', *args, **kwargs)
 
     def upload(self, type, media_path, title, description, tags):
-        tags = tags or [] 
+        tags = tags or []
         tags += DEFAULT_TAGS
 
         self.authenticate()
