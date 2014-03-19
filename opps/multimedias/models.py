@@ -204,7 +204,7 @@ class Video(Media):
     video_file = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
-        help_text=_(u'Local video file storage')
+        help_text=_(u'Local video file storage'),
         blank=True,
         null=True
     )
