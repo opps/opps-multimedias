@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
-from .mediaapi import Youtube, UOLMais
+from .mediaapi import Youtube, UOLMais, Local
 
 app_namespace = getattr(
     settings,
