@@ -34,7 +34,7 @@ class MediaHost(models.Model):
         (STAUTS_PROCESSING, _(u'Processing')),
         (STATUS_ERROR, _(u'Error')),
         (STATUS_DELETED, _(u'Deleted')),
-        (STATUS_NOT_UPLOADED, _(u'Not Uploaded')
+        (STATUS_NOT_UPLOADED, _(u'Not Uploaded')),
         (STATUS_ENCODING, _(u'Encoding')),
         (STATUS_NOT_ENCODED, _(u'Not Encoded')),
     )
