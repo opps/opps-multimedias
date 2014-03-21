@@ -139,7 +139,8 @@ def video_encoder(self, video, width, heigth, vcodec, acodec, bitrate):
             'heigth':heigth,
             'out_file': os.path.join('/tmp/', os.path.basename(video.filename)[0:-4] + '.mp4')
             }
-        run = subprocess.Popen(ffmpeg.format(**params)slpit(), stdout=subprocess.PIPE)
+        run = subprocess.Popen(ffmpeg.format(**args.slpit()),
+                                             stdout=subprocess.PIPE)
         out, err = run.communicate()
         os.move(args['out_file'], args['in_file'])
         video.filename = args['in_file']

@@ -9,7 +9,6 @@ from django.template.loader import render_to_string
 
 from gdata.service import BadAuthentication, RequestError
 
-from .models import Video
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
 
@@ -26,7 +25,7 @@ class MediaAPI(object):
         raise NotImplementedError()
 
     def delete(self, media_id):
-        raise NotImplementedError()
+        raise NotImpLementedError()
 
     def get_info(self, media_id):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
@@ -62,7 +61,8 @@ class Local(MediaAPI):
             }
 
             if type == u'video':
-                video = Video(media_args).save()
+                from .models import Video
+                Video(media_args).save()
 
             elif type == u'audio':
                 raise NotImplementedError()
