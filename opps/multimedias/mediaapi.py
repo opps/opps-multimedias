@@ -46,14 +46,37 @@ class Local(MediaAPI):
         raise NotImplementedError()
 
     def upload(self, mediahost, tags):
-        print 'lajsdhakjshdkjh'
-        tags = tags or [] + DEFAULT_TAGS
+        self.tags = tags
 
-        saopaulo_tz = pytz.timezone('America/Sao_Paulo')
         with open(mediahost.media.media_file.path, 'rb') as f:
+            mediahost.status = u'processing'
+            mediahost.save()
            # Saving File Processing
             mediahost.media.ffmpeg_file = File(f)
+            mediahost.media.published = True
             mediahost.media.save()
+
+        return self.get_info(mediahost)
+
+    def get_info(self, mediahost):
+        tags = self.tags or [] + DEFAULT_TAGS
+
+        mediahost.status = u'ok'
+        mediahost.url = u'---'
+        mediahost.embed = u'---'
+        mediahost.updated = True
+        mediahost.save()
+        print 'cheguei'
+
+        return {'id': mediahost.media.id,
+                'title': mediahost.media.title,
+                'description': mediahost.media.headline,
+                'thumbnail': '---',
+                'tags': u','.join(tags),
+                'embed': '---',
+                'url': '---',
+                'status': u'ok',
+                'status_msg': u'ok'}
 
 
 class UOLMais(MediaAPI):
