@@ -40,7 +40,6 @@ def upload_media():
         else:
             tags = []
 
-        print mediahost.host
         try:
             if mediahost.host != MediaHost.HOST_LOCAL:
                 media_info = mediahost.api.upload(
@@ -72,7 +71,10 @@ def upload_media():
                 unicode(media_info)
             ))
             mediahost.host_id = media_info['id']
-            mediahost.status = MediaHost.STAUTS_PROCESSING
+
+            if mediahost.host != MediaHost.HOST_LOCAL:
+                mediahost.status = MediaHost.STAUTS_PROCESSING
+
         with transaction.commit_on_success():
             mediahost.save()
 
