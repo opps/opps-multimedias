@@ -49,6 +49,11 @@ class Local(MediaAPI):
         self.tags = tags
 
         with open(mediahost.media.media_file.path, 'rb') as f:
+            """
+            video process via ffmpeg:
+            sudo ffmpeg -i ../Charlie_Brown_Jr_-_Meu_Novo_Mundo_OFICIAL_HD.mp4 -acodec libmp3lame -ac 2 -ar 11025 -vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f flv -y ../test.flv
+            """
+
             mediahost.status = u'processing'
             mediahost.save()
            # Saving File Processing
