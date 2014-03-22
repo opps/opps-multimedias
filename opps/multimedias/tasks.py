@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.db import transaction
 from celery import task
-from .models import MediaHost
+from .models import MediaHost, Video, Audio
 
 BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
@@ -16,11 +16,10 @@ def log_it(s):
         log.write(msg.encode('utf-8'))
 
 
-@task.periodic_task(run_every=timezone.timedelta(minutes=5))
+@task.periodic_task(run_every=timezone.timedelta(minutes=1))
 def upload_media():
     mediahosts = MediaHost.objects.filter(
-        status=MediaHost.STATUS_NOT_UPLOADED,
-        host_id__isnull=True
+        status=MediaHost.STATUS_NOT_UPLOADED
     ).exclude(pk__in=BLACKLIST)
 
     for mediahost in mediahosts:
@@ -41,15 +40,22 @@ def upload_media():
         else:
             tags = []
 
+        print mediahost.host
         try:
-            log_it(u'Uploading: {}'.format(unicode(mediahost.media)))
-            media_info = mediahost.api.upload(
-                media.TYPE,
-                media.media_file.path,
-                media.title,
-                media.headline,
-                tags
-            )
+            if mediahost.host != MediaHost.HOST_LOCAL:
+                media_info = mediahost.api.upload(
+                    media.TYPE,
+                    media.media_file.path,
+                    media.title,
+                    media.headline,
+                    tags
+                )
+            else:
+                media_info = mediahost.api.upload(
+                    mediahost,
+                    tags
+                )
+
         except Exception as e:
             log_it(u'Error on upload {}: {}'.format(
                 unicode(mediahost.media), unicode(e)
@@ -117,32 +123,3 @@ def update_mediahost():
             mediahost.update()
         except:
             pass
-
-@task.periodic_task(run_every=timezone.timedelta(minutes=2))
-def video_encoder(self, video, width, heigth, vcodec, acodec, bitrate):
-    videos = MediaHost.objects.filter(
-        status=MediaHost.STATUS_NOT_ENCODED,
-        host_id__isnull=True
-    ).exclude(pk__in=BLACKLIST)
-
-    for video in videos:
-        import os
-        import subprocess
-
-        ffmpeg = "/usr/bin/ffmpeg -i {in_file} -vcodec {vcodec} -acodec {acodec} -strict -2 -b:a {bitrate} -vf scale={width}:{heigth} {out_file}"
-        args = {
-            'in_file': video.filename,
-            'acodec': acodec,
-            'vcodec': vcodec,
-            'bitrate': bitrate,
-            'width': width,
-            'heigth':heigth,
-            'out_file': os.path.join('/tmp/', os.path.basename(video.filename)[0:-4] + '.mp4')
-            }
-        run = subprocess.Popen(ffmpeg.format(**args.slpit()),
-                                             stdout=subprocess.PIPE)
-        out, err = run.communicate()
-        os.move(args['out_file'], args['in_file'])
-        video.filename = args['in_file']
-        video.save()
-        return out, err
