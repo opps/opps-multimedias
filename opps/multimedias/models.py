@@ -83,8 +83,10 @@ class MediaHost(models.Model):
                 return self.uolmais_audio
         elif self.host == MediaHost.HOST_YOUTUBE:
             return self.youtube_video
-        elif self.host == MediaHost.HOST_LOCAL:
-            return self.local_video
+
+        if hasattr(self, 'local_audio'):
+            return self.local_audio
+        return self.local_video
 
     @property
     def api(self):
@@ -92,8 +94,7 @@ class MediaHost(models.Model):
             return UOLMais()
         elif self.host == MediaHost.HOST_YOUTUBE:
             return Youtube()
-        elif self.host == MediaHost.HOST_LOCAL:
-            return Local()
+        return Local()
 
     def update(self):
         # If the upload wasn't done yet we don't have to update anything
@@ -145,11 +146,26 @@ class Media(Article):
         null=True
     )
 
+    local = models.OneToOneField(
+        MediaHost, verbose_name=_(u'Local'),
+        related_name=u'local_%(class)s',
+        blank=True,
+        null=True
+    )
+
     media_file = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
         help_text=_(u'Temporary file stored until it\'s not sent to final '
                     u'hosting server (ie: Youtube)')
+    )
+
+    ffmpeg_file = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
     )
 
     posts = models.ManyToManyField(
@@ -177,17 +193,17 @@ class Media(Article):
                 host=MediaHost.HOST_YOUTUBE
             )
 
-        if hasattr(self, 'local') and not self.local:
-            self.youtube = MediaHost.objects.create(
-                host=MediaHost.HOST_LOCAL
-            )
-
         if not self.uolmais:
             self.uolmais = MediaHost.objects.create(
                 host=MediaHost.HOST_UOLMAIS
             )
 
         super(Media, self).save(*args, **kwargs)
+
+        self.local = MediaHost.objects.create(
+            host=MediaHost.HOST_LOCAL,
+            host_id=self.pk
+        )
 
 
 class Video(Media):
@@ -197,14 +213,6 @@ class Video(Media):
         MediaHost,
         verbose_name=_(u'Youtube'),
         related_name=u'youtube_video',
-        blank=True,
-        null=True
-    )
-
-    video_file = models.FileField(
-        _(u'File'),
-        upload_to=upload_dest,
-        help_text=_(u'Local video file storage'),
         blank=True,
         null=True
     )
