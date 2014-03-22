@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
+from django.core.files import File
 
 from gdata.service import BadAuthentication, RequestError
 
@@ -44,28 +45,15 @@ class Local(MediaAPI):
     def audio_upload(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def upload(self, type, media_path, title, description, tags):
+    def upload(self, mediahost, tags):
+        print 'lajsdhakjshdkjh'
         tags = tags or [] + DEFAULT_TAGS
 
         saopaulo_tz = pytz.timezone('America/Sao_Paulo')
-        with open(media_path, 'rb') as f:
-            media_args = {
-                'video_file': f.read(),
-                'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
-                'title': title,
-                'description': description,
-                'tags': u','.join(tags),
-                'visibility': self._lib.VISIBILITY_ANYONE,
-                'comments': self._lib.COMMENTS_NONE,
-                'is_hot': False,
-            }
-
-            if type == u'video':
-                from .models import Video
-                Video(media_args).save()
-
-            elif type == u'audio':
-                raise NotImplementedError()
+        with open(mediahost.media.media_file.path, 'rb') as f:
+           # Saving File Processing
+            mediahost.media.ffmpeg_file = File(f)
+            mediahost.media.save()
 
 
 class UOLMais(MediaAPI):
