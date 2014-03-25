@@ -10,7 +10,6 @@ from django.template.loader import render_to_string
 from django.core.files import File
 
 from gdata.service import BadAuthentication, RequestError
-from ffvideo import VideoStream
 
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
@@ -50,6 +49,10 @@ class Local(MediaAPI):
     def upload(self, mediahost, tags):
         self.tags = tags
 
+        mediahost.status = u'processing'
+        mediahost.save()
+
+        # MP4 to FLV
         cmd = "ffmpeg -i {0} -acodec libmp3lame -ac 2 -ar 11025 "\
             "-vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f {2} -y "\
             "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
@@ -57,14 +60,22 @@ class Local(MediaAPI):
                                   "flv")
         system(cmd)
         with open("/tmp/{}.flv".format(mediahost.media.id), 'rb') as f:
-            mediahost.status = u'processing'
-            mediahost.save()
-           # Saving File Processing
-            mediahost.media.ffmpeg_file = File(f)
-
-            mediahost.media.published = True
+            mediahost.media.ffmpeg_file_flv = File(f)
             mediahost.media.save()
 
+        # MP4 to OGG
+        try:
+            cmd = "ffmpeg -i {0} -acodec libvorbis -vcodec libtheora -f {2} "\
+                "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
+                                      mediahost.media.id,
+                                      'ogv')
+            with open("/tmp/{}.ogv".format(mediahost.media.id), 'rb') as f:
+                mediahost.media.ffmpeg_file_ogv = File(f)
+                mediahost.media.save()
+        except:
+            pass
+
+        # Generate thumb
         try:
             cmd = "ffmpeg -i /tmp/{}.flv -an -ss 00:00:03 -an -r 1 -vframes "\
                 "1 -y /tmp/{}.jpg".format(mediahost.medid.id)
@@ -76,6 +87,9 @@ class Local(MediaAPI):
         except:
             pass
 
+        mediahost.media.published = True
+        mediahost.media.save()
+
         return self.get_info(mediahost)
 
     def get_info(self, mediahost):
@@ -83,9 +97,10 @@ class Local(MediaAPI):
 
         mediahost.status = u'ok'
         mediahost.url = u'{}{}'.format(settings.STATIC_URL[:-1],
-                                       mediahost.media.ffmpeg_file.url)
-        mediahost.embed = render_to_string('multimedias/video_embed.html',
-                                           {'url': mediahost.url})
+                                       mediahost.media.ffmpeg_file_flv.url)
+        mediahost.embed = render_to_string(
+            'multimedias/video_embed.html',
+            {'url': mediahost.media.ffmpeg_file_flv})
         mediahost.updated = True
         mediahost.save()
 
