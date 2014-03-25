@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import pytz
 import gdata.youtube.service
+from os import system
 
 from django.conf import settings
 from django.utils import timezone
@@ -9,6 +10,7 @@ from django.template.loader import render_to_string
 from django.core.files import File
 
 from gdata.service import BadAuthentication, RequestError
+from ffvideo import VideoStream
 
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
@@ -48,18 +50,31 @@ class Local(MediaAPI):
     def upload(self, mediahost, tags):
         self.tags = tags
 
-        with open(mediahost.media.media_file.path, 'rb') as f:
-            """
-            video process via ffmpeg:
-            sudo ffmpeg -i ../Charlie_Brown_Jr_-_Meu_Novo_Mundo_OFICIAL_HD.mp4 -acodec libmp3lame -ac 2 -ar 11025 -vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f flv -y ../test.flv
-            """
-
+        cmd = "ffmpeg -i {0} -acodec libmp3lame -ac 2 -ar 11025 "\
+            "-vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f {2} -y "\
+            "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
+                                  mediahost.media.id,
+                                  "flv")
+        system(cmd)
+        with open("/tmp/{}.flv".format(mediahost.media.id), 'rb') as f:
             mediahost.status = u'processing'
             mediahost.save()
            # Saving File Processing
             mediahost.media.ffmpeg_file = File(f)
+
             mediahost.media.published = True
             mediahost.media.save()
+
+        try:
+            cmd = "ffmpeg -i /tmp/{}.flv -an -ss 00:00:03 -an -r 1 -vframes "\
+                "1 -y /tmp/{}.jpg".format(mediahost.medid.id)
+            system(cmd)
+            with open("/tmp/{}.jpg".format(mediahost.media.id),
+                      'rb') as img:
+                mediahost.media.ffmpeg_file_thumb = File(img)
+                mediahost.media.save()
+        except:
+            pass
 
         return self.get_info(mediahost)
 
@@ -67,19 +82,20 @@ class Local(MediaAPI):
         tags = self.tags or [] + DEFAULT_TAGS
 
         mediahost.status = u'ok'
-        mediahost.url = u'---'
-        mediahost.embed = u'---'
+        mediahost.url = u'{}{}'.format(settings.STATIC_URL[:-1],
+                                       mediahost.media.ffmpeg_file.url)
+        mediahost.embed = render_to_string('multimedias/video_embed.html',
+                                           {'url': mediahost.url})
         mediahost.updated = True
         mediahost.save()
-        print 'cheguei'
 
         return {'id': mediahost.media.id,
                 'title': mediahost.media.title,
                 'description': mediahost.media.headline,
-                'thumbnail': '---',
                 'tags': u','.join(tags),
-                'embed': '---',
-                'url': '---',
+                'thumbnail': mediahost.media.ffmpeg_file_thumb.url,
+                'embed': mediahost.embed,
+                'url': mediahost.url,
                 'status': u'ok',
                 'status_msg': u'ok'}
 
