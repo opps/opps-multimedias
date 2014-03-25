@@ -160,7 +160,15 @@ class Media(Article):
                     u'hosting server (ie: Youtube)')
     )
 
-    ffmpeg_file = models.FileField(
+    ffmpeg_file_flv = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_ogv = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
         help_text=_(u'Local video file storage'),
