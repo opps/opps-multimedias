@@ -168,6 +168,14 @@ class Media(Article):
         null=True
     )
 
+    ffmpeg_file_thumb = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
     posts = models.ManyToManyField(
         'articles.Post',
         verbose_name=_(u'Posts'),
