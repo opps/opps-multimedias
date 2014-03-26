@@ -3,7 +3,7 @@ import pytz
 import gdata.youtube.service
 from os import system
 
-from django.conf import settings
+from .conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
@@ -53,11 +53,12 @@ class Local(MediaAPI):
         mediahost.save()
 
         # MP4 to FLV
-        cmd = "ffmpeg -i {0} -acodec libmp3lame -ac 2 -ar 11025 "\
+        cmd = "{3} -i {0} -acodec libmp3lame -ac 2 -ar 11025 "\
             "-vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f {2} -y "\
             "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
                                   mediahost.media.id,
-                                  "flv")
+                                  "flv",
+                                  settings.OPPS_MULTIMEDIAS_FFMPEG)
         system(cmd)
         with open("/tmp/{}.flv".format(mediahost.media.id), 'rb') as f:
             mediahost.media.ffmpeg_file_flv = File(f)
@@ -65,21 +66,22 @@ class Local(MediaAPI):
 
         # MP4 to OGG
         try:
-            cmd = "ffmpeg -i {0} -acodec libvorbis -vcodec libtheora -f {2} "\
+            cmd = "{3} -i {0} -acodec libvorbis -vcodec libtheora -f {2} "\
                 "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
-                                      mediahost.media.id, 'ogv')
+                                      mediahost.media.id, 'ogv',
+                                      settings.OPPS_MULTIMEDIAS_FFMPEG)
             system(cmd)
             with open("/tmp/{}.ogv".format(mediahost.media.id), 'rb') as f:
                 mediahost.media.ffmpeg_file_ogv = File(f)
                 mediahost.media.save()
-                print 'OGV'
         except:
             pass
 
         # Generate thumb
         try:
-            cmd = "ffmpeg -i /tmp/{0}.flv -an -ss 00:00:03 -an -r 1 ".format(
-                mediahost.media.id)
+            cmd = "{1} -i /tmp/{0}.flv -an -ss 00:00:03 -an -r 1 ".format(
+                mediahost.media.id,
+                settings.OPPS_MULTIMEDIAS_FFMPEG)
             cmd += "-vframes 1 -y /tmp/{0}.jpg".format(mediahost.media.id)
             print cmd
             system(cmd)

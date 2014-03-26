@@ -13,5 +13,7 @@ class OppsMultimediasConf(AppConf):
     ENGINES = getattr(settings, 'OPPS_MULTIMEDIAS_ENGINES',
                       [u'local'])
 
+    FFMPEG = getattr(settings, 'OPPS_MULTIMEDIAS_FFMPEG', '/usr/bin/ffmpeg')
+
     class Meta:
         prefix = 'opps_multimedias'
