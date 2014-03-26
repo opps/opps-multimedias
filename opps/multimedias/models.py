@@ -3,13 +3,13 @@
 import os
 import random
 
-from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
 from .mediaapi import Youtube, UOLMais, Local
+from .conf import settings
 
 app_namespace = getattr(
     settings,
@@ -205,19 +205,25 @@ class Media(Article):
         if not self.pk:
             self.published = False
 
-        if hasattr(self, 'youtube') and not self.youtube:
+        if hasattr(self, 'youtube') and not self.youtube and \
+                MediaHost.HOST_YOUTUBE in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                                           or [u'local']):
             self.youtube = MediaHost.objects.create(
                 host=MediaHost.HOST_YOUTUBE
             )
 
-        if not self.uolmais:
+        if not self.uolmais and \
+                MediaHost.HOST_UOLMAIS in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                                           or [u'local']):
             self.uolmais = MediaHost.objects.create(
                 host=MediaHost.HOST_UOLMAIS
             )
 
         super(Media, self).save(*args, **kwargs)
 
-        if hasattr(self, 'local') and not self.local:
+        if hasattr(self, 'local') and not self.local and \
+                MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                                         or [u'local']):
             self.local = MediaHost.objects.create(
                 host=MediaHost.HOST_LOCAL,
                 host_id=self.pk
