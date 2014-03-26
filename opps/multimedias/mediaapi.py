@@ -67,18 +67,21 @@ class Local(MediaAPI):
         try:
             cmd = "ffmpeg -i {0} -acodec libvorbis -vcodec libtheora -f {2} "\
                 "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
-                                      mediahost.media.id,
-                                      'ogv')
+                                      mediahost.media.id, 'ogv')
+            system(cmd)
             with open("/tmp/{}.ogv".format(mediahost.media.id), 'rb') as f:
                 mediahost.media.ffmpeg_file_ogv = File(f)
                 mediahost.media.save()
+                print 'OGV'
         except:
             pass
 
         # Generate thumb
         try:
-            cmd = "ffmpeg -i /tmp/{}.flv -an -ss 00:00:03 -an -r 1 -vframes "\
-                "1 -y /tmp/{}.jpg".format(mediahost.medid.id)
+            cmd = "ffmpeg -i /tmp/{0}.flv -an -ss 00:00:03 -an -r 1 ".format(
+                mediahost.media.id)
+            cmd += "-vframes 1 -y /tmp/{0}.jpg".format(mediahost.media.id)
+            print cmd
             system(cmd)
             with open("/tmp/{}.jpg".format(mediahost.media.id),
                       'rb') as img:
@@ -108,7 +111,7 @@ class Local(MediaAPI):
                 'title': mediahost.media.title,
                 'description': mediahost.media.headline,
                 'tags': u','.join(tags),
-                'thumbnail': mediahost.media.ffmpeg_file_thumb.url,
+                'thumbnail': mediahost.media.ffmpeg_file_thumb.url or '',
                 'embed': mediahost.embed,
                 'url': mediahost.url,
                 'status': u'ok',
