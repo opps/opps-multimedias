@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.db import transaction
 from celery import task
-from .models import MediaHost, Video, Audio
+from .models import MediaHost
 
 BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 
