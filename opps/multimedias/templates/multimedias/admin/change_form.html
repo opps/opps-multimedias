@@ -9,11 +9,15 @@
     <legend>Meta</legend>
 
   <!-- Media host information -->
+  {% if original.local %}
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.local %}
+  {% endif %}
   {% if original.youtube %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube %}
   {% endif %}
+  {% if original.uolmais %}
   {% include 'includes/mediahost-fieldset.html' with mediahost=original.uolmais %}
-  {% include 'includes/mediahost-fieldset.html' with mediahost=original.local %}
+  {% endif %}
 </fieldset>
 
 {% endblock %}
