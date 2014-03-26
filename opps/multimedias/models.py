@@ -3,13 +3,13 @@
 import os
 import random
 
-from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
-from .mediaapi import Youtube, UOLMais
+from .mediaapi import Youtube, UOLMais, Local
+from .conf import settings
 
 app_namespace = getattr(
     settings,
@@ -26,6 +26,8 @@ class MediaHost(models.Model):
     STATUS_SENDING = u'sending'
     STATUS_DELETED = u'deleted'
     STATUS_NOT_UPLOADED = u'notuploaded'
+    STATUS_ENCODING = u'encoding'
+    STATUS_NOT_ENCODED = u'not encoded'
     STATUS_CHOICES = (
         (STATUS_OK, _(u'OK')),
         (STATUS_SENDING, _(u'Sending')),
@@ -33,19 +35,23 @@ class MediaHost(models.Model):
         (STATUS_ERROR, _(u'Error')),
         (STATUS_DELETED, _(u'Deleted')),
         (STATUS_NOT_UPLOADED, _(u'Not Uploaded')),
+        (STATUS_ENCODING, _(u'Encoding')),
+        (STATUS_NOT_ENCODED, _(u'Not Encoded')),
     )
 
     HOST_YOUTUBE = u'youtube'
     HOST_UOLMAIS = u'uolmais'
+    HOST_LOCAL = u'local'
     HOST_CHOICES = (
         (HOST_YOUTUBE, u'Youtube'),
         (HOST_UOLMAIS, u'UOL Mais'),
+        (HOST_LOCAL, u'Local'),
     )
     host = models.CharField(
         _(u'Host'),
         max_length=16,
         choices=HOST_CHOICES,
-        default=HOST_UOLMAIS,
+        default=HOST_LOCAL,
         help_text=_(u'Provider that will store the media')
     )
     status = models.CharField(
@@ -77,6 +83,10 @@ class MediaHost(models.Model):
                 return self.uolmais_audio
         elif self.host == MediaHost.HOST_YOUTUBE:
             return self.youtube_video
+        elif self.host == MediaHost.HOST_LOCAL:
+            if hasattr(self, 'local_audio'):
+                return self.local_audio
+            return self.local_video
 
     @property
     def api(self):
@@ -84,13 +94,15 @@ class MediaHost(models.Model):
             return UOLMais()
         elif self.host == MediaHost.HOST_YOUTUBE:
             return Youtube()
+        elif self.host == MediaHost.HOST_LOCAL:
+            return Local()
 
     def update(self):
         # If the upload wasn't done yet we don't have to update anything
         media_info = self.api.get_info(self.host_id)
 
         changed = False
-        if media_info['status'] and media_info['status'] != self.status:
+        if media_info.get('status') != self.status:
             self.status = media_info['status']
             if self.status == self.STATUS_OK:
                 self.media.published = True
@@ -105,7 +117,7 @@ class MediaHost(models.Model):
             self.url = media_info['url']
             changed = True
 
-        if media_info['embed'] and media_info['embed'] != self.embed:
+        if media_info.get('embed') != self.embed:
             self.embed = media_info['embed']
             changed = True
 
@@ -134,11 +146,43 @@ class Media(Article):
         blank=True,
         null=True
     )
+
+    local = models.OneToOneField(
+        MediaHost, verbose_name=_(u'Local'),
+        related_name=u'local_%(class)s',
+        blank=True,
+        null=True
+    )
+
     media_file = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
         help_text=_(u'Temporary file stored until it\'s not sent to final '
                     u'hosting server (ie: Youtube)')
+    )
+
+    ffmpeg_file_flv = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_ogv = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_thumb = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
     )
 
     posts = models.ManyToManyField(
@@ -161,17 +205,29 @@ class Media(Article):
         if not self.pk:
             self.published = False
 
-        if hasattr(self, 'youtube') and not self.youtube:
+        if hasattr(self, 'youtube') and not self.youtube and \
+                MediaHost.HOST_YOUTUBE in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                                           or [u'local']):
             self.youtube = MediaHost.objects.create(
                 host=MediaHost.HOST_YOUTUBE
             )
 
-        if not self.uolmais:
+        if not self.uolmais and \
+                MediaHost.HOST_UOLMAIS in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                                           or [u'local']):
             self.uolmais = MediaHost.objects.create(
                 host=MediaHost.HOST_UOLMAIS
             )
 
         super(Media, self).save(*args, **kwargs)
+
+        if hasattr(self, 'local') and not self.local and \
+                MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                                         or [u'local']):
+            self.local = MediaHost.objects.create(
+                host=MediaHost.HOST_LOCAL,
+                host_id=self.pk
+            )
 
 
 class Video(Media):

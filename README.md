@@ -11,7 +11,7 @@ Multimedia Application for Opps
 Requirements
 -------------
 
-Linux: FFVideo
+Linux: FFVideo, x264, libvpx
 
 Python: Opps, ffvideo
 
@@ -22,7 +22,7 @@ Installation
 
 Install FFVideo dependencies:
 ```
-sudo apt-get install python-dev cython libavcodec-dev libavformat-dev libswscale-dev
+sudo apt-get install python-dev cython libavcodec-dev libavformat-dev libswscale-dev, x264, libvpx
 ```
 
 Install Celery dependencies:

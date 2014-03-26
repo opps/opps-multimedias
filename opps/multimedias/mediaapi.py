@@ -1,13 +1,16 @@
 # -*- coding:utf-8 -*-
 import pytz
 import gdata.youtube.service
+from os import system
 
-from django.conf import settings
+from .conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
+from django.core.files import File
 
 from gdata.service import BadAuthentication, RequestError
+
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
 
@@ -17,7 +20,6 @@ class MediaAPIError(Exception):
 
 
 class MediaAPI(object):
-
     def authenticate(self):
         raise NotImplementedError()
 
@@ -25,12 +27,97 @@ class MediaAPI(object):
         raise NotImplementedError()
 
     def delete(self, media_id):
-        raise NotImplementedError()
+        raise NotImpLementedError()
 
     def get_info(self, media_id):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
                               u'tags', u'embed', u'url', u'status',
                               u'status_msg'])
+
+
+class Local(MediaAPI):
+
+    def __init__(self):
+        super(Local, self).__init__()
+
+    def video_upload(self, *args, **kwargs):
+        return self.upload('video', *args, **kwargs)
+
+    def audio_upload(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def upload(self, mediahost, tags):
+        self.tags = tags
+
+        mediahost.status = u'processing'
+        mediahost.save()
+
+        # MP4 to FLV
+        cmd = "{3} -i {0} -acodec libmp3lame -ac 2 -ar 11025 "\
+            "-vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f {2} -y "\
+            "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
+                                  mediahost.media.id,
+                                  "flv",
+                                  settings.OPPS_MULTIMEDIAS_FFMPEG)
+        system(cmd)
+        with open("/tmp/{}.flv".format(mediahost.media.id), 'rb') as f:
+            mediahost.media.ffmpeg_file_flv = File(f)
+            mediahost.media.save()
+
+        # MP4 to OGG
+        try:
+            cmd = "{3} -i {0} -acodec libvorbis -vcodec libtheora -f {2} "\
+                "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
+                                      mediahost.media.id, 'ogv',
+                                      settings.OPPS_MULTIMEDIAS_FFMPEG)
+            system(cmd)
+            with open("/tmp/{}.ogv".format(mediahost.media.id), 'rb') as f:
+                mediahost.media.ffmpeg_file_ogv = File(f)
+                mediahost.media.save()
+        except:
+            pass
+
+        # Generate thumb
+        try:
+            cmd = "{1} -i /tmp/{0}.flv -an -ss 00:00:03 -an -r 1 ".format(
+                mediahost.media.id,
+                settings.OPPS_MULTIMEDIAS_FFMPEG)
+            cmd += "-vframes 1 -y /tmp/{0}.jpg".format(mediahost.media.id)
+            print cmd
+            system(cmd)
+            with open("/tmp/{}.jpg".format(mediahost.media.id),
+                      'rb') as img:
+                mediahost.media.ffmpeg_file_thumb = File(img)
+                mediahost.media.save()
+        except:
+            pass
+
+        mediahost.media.published = True
+        mediahost.media.save()
+
+        return self.get_info(mediahost)
+
+    def get_info(self, mediahost):
+        tags = self.tags or [] + DEFAULT_TAGS
+
+        mediahost.status = u'ok'
+        mediahost.url = u'{}{}'.format(settings.STATIC_URL[:-1],
+                                       mediahost.media.ffmpeg_file_flv.url)
+        mediahost.embed = render_to_string(
+            'multimedias/video_embed.html',
+            {'url': mediahost.media.ffmpeg_file_flv})
+        mediahost.updated = True
+        mediahost.save()
+
+        return {'id': mediahost.media.id,
+                'title': mediahost.media.title,
+                'description': mediahost.media.headline,
+                'tags': u','.join(tags),
+                'thumbnail': mediahost.media.ffmpeg_file_thumb.url or '',
+                'embed': mediahost.embed,
+                'url': mediahost.url,
+                'status': u'ok',
+                'status_msg': u'ok'}
 
 
 class UOLMais(MediaAPI):

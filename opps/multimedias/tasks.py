@@ -16,11 +16,10 @@ def log_it(s):
         log.write(msg.encode('utf-8'))
 
 
-@task.periodic_task(run_every=timezone.timedelta(minutes=5))
+@task.periodic_task(run_every=timezone.timedelta(minutes=1))
 def upload_media():
     mediahosts = MediaHost.objects.filter(
-        status=MediaHost.STATUS_NOT_UPLOADED,
-        host_id__isnull=True
+        status=MediaHost.STATUS_NOT_UPLOADED
     ).exclude(pk__in=BLACKLIST)
 
     for mediahost in mediahosts:
@@ -41,40 +40,52 @@ def upload_media():
         else:
             tags = []
 
-        try:
-            log_it(u'Uploading: {}'.format(unicode(mediahost.media)))
+        if mediahost.host != MediaHost.HOST_LOCAL:
+            try:
+                media_info = mediahost.api.upload(
+                    media.TYPE,
+                    media.media_file.path,
+                    media.title,
+                    media.headline,
+                    tags
+                )
+            except Exception as e:
+                log_it(u'Error on upload {}: {}'.format(
+                    unicode(mediahost.media), unicode(e)
+                ))
+                if mediahost.retries < 3:
+                    mediahost.retries += 1
+                    mediahost.status = MediaHost.STATUS_NOT_UPLOADED
+                else:
+                    mediahost.status = MediaHost.STATUS_ERROR
+                    mediahost.status_message = _('Error on upload')
+            else:
+                log_it(u'Uploaded {} - Data returned: {}'.format(
+                    unicode(mediahost.media),
+                    unicode(media_info)
+                ))
+                mediahost.host_id = media_info['id']
+
+                mediahost.status = MediaHost.STAUTS_PROCESSING
+
+            with transaction.commit_on_success():
+                mediahost.save()
+        else:
             media_info = mediahost.api.upload(
-                media.TYPE,
-                media.media_file.path,
-                media.title,
-                media.headline,
+                mediahost,
                 tags
             )
-        except Exception as e:
-            log_it(u'Error on upload {}: {}'.format(
-                unicode(mediahost.media), unicode(e)
-            ))
-            if mediahost.retries < 3:
-                mediahost.retries += 1
-                mediahost.status = MediaHost.STATUS_NOT_UPLOADED
-            else:
-                mediahost.status = MediaHost.STATUS_ERROR
-                mediahost.status_message = _('Error on upload')
-        else:
-            log_it(u'Uploaded {} - Data returned: {}'.format(
-                unicode(mediahost.media),
-                unicode(media_info)
-            ))
-            mediahost.host_id = media_info['id']
-            mediahost.status = MediaHost.STAUTS_PROCESSING
-        with transaction.commit_on_success():
-            mediahost.save()
 
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=2))
 def update_mediahost():
     mediahosts = MediaHost.objects.filter(
-        host_id__isnull=False,
+        host_id__isnull=False
+    )
+
+    # Exclude local host
+    mediahosts = mediahosts.exclude(
+        host=MediaHost.HOST_LOCAL
     )
 
     # exclude blacklist
