@@ -10,6 +10,8 @@ class OppsMultimediasConf(AppConf):
                             'videos')
     AUDIO_CHANNEL = getattr(settings, 'OPPS_MULTIMEDIAS_AUDIO_CHANNEL',
                             'audios')
+    ENGINES = getattr(settings, 'OPPS_MULTIMEDIAS_ENGINES',
+                      [u'local'])
 
     class Meta:
         prefix = 'opps_multimedias'
