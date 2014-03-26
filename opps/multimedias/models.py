@@ -83,10 +83,10 @@ class MediaHost(models.Model):
                 return self.uolmais_audio
         elif self.host == MediaHost.HOST_YOUTUBE:
             return self.youtube_video
-
-        if hasattr(self, 'local_audio'):
-            return self.local_audio
-        return self.local_video
+        elif self.host == MediaHost.HOST_LOCAL:
+            if hasattr(self, 'local_audio'):
+                return self.local_audio
+            return self.local_video
 
     @property
     def api(self):
@@ -94,7 +94,8 @@ class MediaHost(models.Model):
             return UOLMais()
         elif self.host == MediaHost.HOST_YOUTUBE:
             return Youtube()
-        return Local()
+        elif self.host == MediaHost.HOST_LOCAL:
+            return Local()
 
     def update(self):
         # If the upload wasn't done yet we don't have to update anything
@@ -216,10 +217,11 @@ class Media(Article):
 
         super(Media, self).save(*args, **kwargs)
 
-        self.local = MediaHost.objects.create(
-            host=MediaHost.HOST_LOCAL,
-            host_id=self.pk
-        )
+        if hasattr(self, 'local') and not self.local:
+            self.local = MediaHost.objects.create(
+                host=MediaHost.HOST_LOCAL,
+                host_id=self.pk
+            )
 
 
 class Video(Media):
