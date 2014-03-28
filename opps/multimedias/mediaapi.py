@@ -107,12 +107,19 @@ class Local(MediaAPI):
             {'url': mediahost.media.ffmpeg_file_flv.url})
         mediahost.updated = True
         mediahost.save()
+        
+        try:
+            thumbnail = mediahost.media.ffmpeg_file_thumb.url
+        except:
+            thumbnail = mediahost.media.archive.url
+        finally:
+            thumbnail = ''
 
         return {'id': mediahost.media.id,
                 'title': mediahost.media.title,
                 'description': mediahost.media.headline,
                 'tags': u','.join(tags),
-                'thumbnail': mediahost.media.ffmpeg_file_thumb.url or '',
+                'thumbnail': thumbnail,
                 'embed': mediahost.embed,
                 'url': mediahost.url,
                 'status': u'ok',
