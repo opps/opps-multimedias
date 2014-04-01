@@ -6,13 +6,10 @@ from opps.containers.forms import ContainerAdminForm
 
 class MediaAdminForm(ContainerAdminForm):
     ALLOWED_EXTENSIONS = ()
-
-    headline = forms.CharField(
-        _(u"Headline"),
-        widget=forms.Textarea,
-        required=False,
-        max_length=4000
-    )
+    
+    def __init__(self, *args, **kwargs):
+        super(MediaAdminForm, self).__init__(*args, **kwargs)
+        self.fields['headline'].required = Fals
 
     def clean_media_file(self):
         media_file = self.cleaned_data['media_file']
