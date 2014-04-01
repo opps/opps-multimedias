@@ -10,7 +10,8 @@ class MediaAdminForm(ContainerAdminForm):
     headline = forms.CharField(
         _(u"Headline"),
         widget=forms.Textarea,
-        required=False
+        required=False,
+        max_length=4000
     )
 
     def clean_media_file(self):
