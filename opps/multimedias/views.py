@@ -25,6 +25,7 @@ class BaseList(ListView):
 
     def get_queryset(self):
         queryset = super(BaseList, self).get_queryset()
+        default_site = settings.OPPS_CONTAINERS_SITE_ID or 1
         self.site = get_current_site(self.request)
         channel_long_slug = self.kwargs.get('channel__long_slug')
         channel = get_object_or_404(Channel, long_slug=channel_long_slug)
@@ -40,6 +41,14 @@ class BaseList(ListView):
             filters['channel__long_slug'] = channel_long_slug
 
         queryset = self.model.objects.filter(**filters)
+
+        if not queryset and self.site.id != default_site:
+            del filters['site_domain']
+
+            filters['site_id'] = default_site
+
+            queryset = self.model.objects.filter(**filters)
+
         return queryset._clone()
 
     def get_context_data(self, **kwargs):
@@ -87,6 +96,7 @@ class ListAll(ListView):
         return templates
 
     def get_queryset(self):
+        default_site = settings.OPPS_CONTAINERS_SITE_ID or 1
         self.site = get_current_site(self.request)
 
         filters = {}
@@ -95,6 +105,13 @@ class ListAll(ListView):
         filters['published'] = True
         filters['show_on_root_channel'] = True
         queryset = self.model.objects.filter(**filters)
+
+        if not queryset and self.site.id != default_site:
+            del filters['site_domain']
+
+            filters['site_id'] = default_site
+
+            queryset = self.model.objects.filter(**filters)
 
         return queryset._clone()
 
