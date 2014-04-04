@@ -9,7 +9,7 @@ class MediaAdminForm(ContainerAdminForm):
     
     def __init__(self, *args, **kwargs):
         super(MediaAdminForm, self).__init__(*args, **kwargs)
-        self.fields['headline'].required = Fals
+        self.fields['headline'].required = False
 
     def clean_media_file(self):
         media_file = self.cleaned_data['media_file']
