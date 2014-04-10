@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from django.utils.html import escape
+from django.utils.html import escapejs
 
 from .models import (MediaHost, Audio, Video)
 from .forms import VideoAdminForm, AudioAdminForm
@@ -68,13 +68,15 @@ class MediaAdmin(ContainerAdmin):
         return list_display
 
     def opps_editor_select(self, obj):
+        source = obj.get_media_embed()
+        source = escapejs(source)
         return u'''
         <a href="#"
         onclick="window.parent.tinymce.activeEditor.selection
         .setContent('{0}');
         window.parent.tinymce.activeEditor.windowManager
         .close(window);">{1}</a>
-        '''.format(escape(obj.uolmais.embed), _(u'Select'))
+        '''.format(source, _(u'Select'))
     opps_editor_select.short_description = _(u'Select')
     opps_editor_select.allow_tags = True
 
