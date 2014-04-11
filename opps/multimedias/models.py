@@ -201,19 +201,27 @@ class Media(Article):
     def __unicode__(self):
         return u'{}'.format(self.title)
 
+    def get_media_embed(self):
+        if self.uolmais:
+            return self.uolmais.embed
+        elif self.local:
+            return self.local.embed
+        else:
+            return "<p>TODO</p>"
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.published = False
 
         if hasattr(self, 'youtube') and not self.youtube and \
-                MediaHost.HOST_YOUTUBE in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                MediaHost.HOST_YOUTUBE in (settings.OPPS_MULTIMEDIAS_ENGINES
                                            or [u'local']):
             self.youtube = MediaHost.objects.create(
                 host=MediaHost.HOST_YOUTUBE
             )
 
         if not self.uolmais and \
-                MediaHost.HOST_UOLMAIS in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                MediaHost.HOST_UOLMAIS in (settings.OPPS_MULTIMEDIAS_ENGINES
                                            or [u'local']):
             self.uolmais = MediaHost.objects.create(
                 host=MediaHost.HOST_UOLMAIS
@@ -222,7 +230,7 @@ class Media(Article):
         super(Media, self).save(*args, **kwargs)
 
         if hasattr(self, 'local') and not self.local and \
-                MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES \
+                MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES
                                          or [u'local']):
             self.local = MediaHost.objects.create(
                 host=MediaHost.HOST_LOCAL,

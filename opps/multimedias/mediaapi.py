@@ -27,7 +27,7 @@ class MediaAPI(object):
         raise NotImplementedError()
 
     def delete(self, media_id):
-        raise NotImpLementedError()
+        raise NotImplementedementedError()
 
     def get_info(self, media_id):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
@@ -107,7 +107,7 @@ class Local(MediaAPI):
             {'url': mediahost.media.ffmpeg_file_flv.url})
         mediahost.updated = True
         mediahost.save()
-        
+
         try:
             thumbnail = mediahost.media.ffmpeg_file_thumb.url
         except:
