@@ -24,7 +24,7 @@ class MediaAdmin(ContainerAdmin):
     actions += ['resend_uolmais', ]
 
     search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
-    #search_fields = ['title', 'slug', 'channel_name']
+    # search_fields = ['title', 'slug', 'channel_name']
 
     raw_id_fields = ContainerAdmin.raw_id_fields[:]
     raw_id_fields += ['related_posts']
@@ -35,7 +35,7 @@ class MediaAdmin(ContainerAdmin):
                        'short_url', ('main_image', 'image_thumb'))}),
         (_(u'Content'), {
             'fields': ('short_title', 'hat',
-                       'headline', 'json', 'media_file', 'tags', 
+                       'headline', 'json', 'media_file', 'tags',
                        'related_posts')}),
         (_(u'Relationships'), {
             'fields': ('channel', 'mirror_channel',)}),

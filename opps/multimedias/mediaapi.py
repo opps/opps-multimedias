@@ -3,6 +3,8 @@ import pytz
 import gdata.youtube.service
 from os import system
 
+from exceptions import NotImplementedError
+
 from .conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -27,7 +29,7 @@ class MediaAPI(object):
         raise NotImplementedError()
 
     def delete(self, media_id):
-        raise NotImplementedementedError()
+        raise NotImplementedError()
 
     def get_info(self, media_id):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
@@ -280,7 +282,7 @@ class Youtube(MediaAPI):
                 scheme=u'http://gdata.youtube.com/schemas/2007/categories.cat',
                 label=u'Entertainment')],
             keywords=gdata.media.Keywords(text=','.join(tags)),
-            #private=gdata.media.Private(),
+            # private=gdata.media.Private(),
         )
 
         video_entry = gdata.youtube.YouTubeVideoEntry(media=my_media_group)

@@ -6,7 +6,7 @@ from opps.containers.forms import ContainerAdminForm
 
 class MediaAdminForm(ContainerAdminForm):
     ALLOWED_EXTENSIONS = ()
-    
+
     def __init__(self, *args, **kwargs):
         super(MediaAdminForm, self).__init__(*args, **kwargs)
         self.fields['headline'].required = False
