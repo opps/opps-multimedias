@@ -26,13 +26,17 @@ class MediaAdmin(ContainerAdmin):
     search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
     #search_fields = ['title', 'slug', 'channel_name']
 
+    raw_id_fields = ContainerAdmin.raw_id_fields[:]
+    raw_id_fields += ['related_posts']
+
     fieldsets = (
         (_(u'Identification'), {
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
                        'short_url', ('main_image', 'image_thumb'))}),
         (_(u'Content'), {
             'fields': ('short_title', 'hat',
-                       'headline', 'json', 'media_file', 'tags')}),
+                       'headline', 'json', 'media_file', 'tags', 
+                       'related_posts')}),
         (_(u'Relationships'), {
             'fields': ('channel', 'mirror_channel',)}),
         (_(u'Publication'), {

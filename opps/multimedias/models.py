@@ -249,6 +249,12 @@ class Video(Media):
         null=True
     )
 
+    related_posts = models.ManyToManyField(
+        'containers.Container',
+        null=True, blank=True,
+        related_name='video_relatedposts'
+    )
+
     objects = PublishableManager()
 
     @property
@@ -269,6 +275,12 @@ class Video(Media):
 
 class Audio(Media):
     TYPE = u'audio'
+
+    related_posts = models.ManyToManyField(
+        'containers.Container',
+        null=True, blank=True,
+        related_name='audio_relatedposts'
+    )
 
     objects = PublishableManager()
 
