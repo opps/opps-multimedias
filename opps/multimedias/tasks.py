@@ -66,7 +66,7 @@ def upload_media():
                 ))
                 mediahost.host_id = media_info['id']
 
-                mediahost.status = MediaHost.STAUTS_PROCESSING
+                mediahost.status = MediaHost.STATUS_PROCESSING
 
             with transaction.commit_on_success():
                 mediahost.save()

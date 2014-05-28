@@ -21,7 +21,7 @@ app_namespace = getattr(
 class MediaHost(models.Model):
 
     STATUS_OK = u'ok'
-    STAUTS_PROCESSING = u'processing'
+    STATUS_PROCESSING = u'processing'
     STATUS_ERROR = u'error'
     STATUS_SENDING = u'sending'
     STATUS_DELETED = u'deleted'
@@ -31,7 +31,7 @@ class MediaHost(models.Model):
     STATUS_CHOICES = (
         (STATUS_OK, _(u'OK')),
         (STATUS_SENDING, _(u'Sending')),
-        (STAUTS_PROCESSING, _(u'Processing')),
+        (STATUS_PROCESSING, _(u'Processing')),
         (STATUS_ERROR, _(u'Error')),
         (STATUS_DELETED, _(u'Deleted')),
         (STATUS_NOT_UPLOADED, _(u'Not Uploaded')),
@@ -162,6 +162,22 @@ class Media(Article):
     )
 
     ffmpeg_file_flv = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_mp4_sd = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_mp4_hd = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
         help_text=_(u'Local video file storage'),
