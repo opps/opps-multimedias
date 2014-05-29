@@ -35,16 +35,20 @@ class OppsMultimediasConf(AppConf):
             },
             "mp4_sd": {
                 "quality": "480p",
-                "cmd": "{exec} -i {from} -codec:v libx264 -profile:v main "
-                       "-preset slow -b:v 500k -maxrate 500k -bufsize 1000k "
-                       "-vf scale=-1:480 -threads 0 -b:a 128k -f mp4 -y {to}",
+                "cmd": "{exec} -i {from} -filter:v scale=640:360,setsar=1/1 "
+                       "-pix_fmt yuv420p -c:v libx264 -preset:v slow "
+                       "-profile:v baseline -x264opts level=3.0:ref=1 "
+                       "-b:v 500k -r:v 25/1 -force_fps -movflags +faststart "
+                       "-b:a 80k -y {to}",
                 "ext": "mp4",
             },
             "mp4_hd": {
                 "quality": "720p",
-                "cmd": "{exec} -i {from} -codec:v libx264 -profile:v main "
-                       "-preset slow -b:v 1000k -maxrate 1000k -bufsize 2000k "
-                       "-vf scale=-1:480 -threads 0 -b:a 196k -f mp4 -y {to}",
+                "cmd": "{exec} -i {from} -filter:v scale=640:360,setsar=1/1 "
+                       "-pix_fmt yuv420p -c:v libx264 -preset:v slow "
+                       "-profile:v baseline -x264opts level=3.0:ref=1 "
+                       "-b:v 1000k -r:v 25/1 -force_fps -movflags +faststart "
+                       "-b:a 128k -y {to}",
                 "ext": "mp4",
             },
             #"ogv": {
@@ -54,8 +58,8 @@ class OppsMultimediasConf(AppConf):
             #    "ext": "ogv",
             #},
             "thumb": {
-                "cmd": "{exec} -i {from} -an -ss 00:00:03 -an -r 1 -vframes 1 "
-                       "{to}",
+                "cmd": "{exec} -y -i {from} -an -ss 00:00:03 -an -r 1 "
+                       "-vframes 1 {to}",
                 "ext": "jpg",
             },
         })
