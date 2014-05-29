@@ -115,7 +115,9 @@ class Local(MediaAPI):
         mediahost.url = mediahost.media.ffmpeg_file_flv.url
         mediahost.embed = render_to_string(
             'multimedias/video_embed.html',
-            {'url': mediahost.media.ffmpeg_file_flv.url})
+            {
+                'url': mediahost.media.ffmpeg_file_flv.url,
+                'mediahost': mediahost})
         mediahost.updated = True
         mediahost.save()
 
