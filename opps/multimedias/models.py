@@ -6,6 +6,7 @@ import random
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
+from django.core.exceptions import ObjectDoesNotExist
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
@@ -80,9 +81,12 @@ class MediaHost(models.Model):
         if name == 'embed':
             api = self.api
             if isinstance(api, Local):
-                return render_to_string('multimedias/video_embed.html', {
-                    'url': self.media.ffmpeg_file_flv.url,  # compatibilty
-                    'mediahost': self})
+                try:
+                    return render_to_string('multimedias/video_embed.html', {
+                        'url': self.media.ffmpeg_file_flv.url,  # compatibilty
+                        'mediahost': self})
+                except ObjectDoesNotExist:
+                    pass
         return super(MediaHost, self).__getattribute__(name)
 
     @property
