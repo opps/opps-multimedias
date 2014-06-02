@@ -75,18 +75,18 @@ class MediaHost(models.Model):
     def __unicode__(self):
         return u'{} - {}'.format(self.get_host_display(), self.media)
 
-    def __getattribute__(self, name):
-        # Dynamic access for local video embed.
-        if name == 'embed':
-            api = self.api
-            if isinstance(api, Local):
-                try:
-                    return render_to_string('multimedias/video_embed.html', {
-                        'url': self.media.ffmpeg_file_flv.url,  # compatibilty
-                        'mediahost': self})
-                except:
-                    pass
-        return super(MediaHost, self).__getattribute__(name)
+    #def __getattribute__(self, name):
+    #    # Dynamic access for local video embed.
+    #    if name == 'embed':
+    #        api = self.api
+    #        if isinstance(api, Local):
+    #            try:
+    #                return render_to_string('multimedias/video_embed.html', {
+    #                    'url': self.media.ffmpeg_file_flv.url,  # compatibilty
+    #                    'mediahost': self})
+    #            except:
+    #                pass
+    #    return super(MediaHost, self).__getattribute__(name)
 
     @property
     def media(self):
