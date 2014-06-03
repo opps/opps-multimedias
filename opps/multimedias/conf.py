@@ -39,7 +39,7 @@ class OppsMultimediasConf(AppConf):
                        "-pix_fmt yuv420p -c:v libx264 -preset:v slow "
                        "-profile:v baseline -x264opts level=3.0:ref=1 "
                        "-b:v 500k -r:v 25/1 -force_fps -movflags +faststart "
-                       "-b:a 80k -y {to}",
+                       "-b:a 80k -async 1 -vsync 1 -y {to}",
                 "ext": "mp4",
             },
             "mp4_hd": {
@@ -48,7 +48,7 @@ class OppsMultimediasConf(AppConf):
                        "-pix_fmt yuv420p -c:v libx264 -preset:v slow "
                        "-profile:v baseline -x264opts level=3.0:ref=1 "
                        "-b:v 1000k -r:v 25/1 -force_fps -movflags +faststart "
-                       "-b:a 128k -y {to}",
+                       "-b:a 128k -async 1 -y {to}",
                 "ext": "mp4",
             },
             #"ogv": {
