@@ -2,6 +2,7 @@
 import pytz
 import gdata.youtube.service
 from os import system, path
+import subprocess as sp
 
 from exceptions import NotImplementedError
 
@@ -99,7 +100,7 @@ class Local(MediaAPI):
             cmd = cnf['cmd'].format(**data)
 
             try:
-                system(cmd)
+                sp.call(cmd, shell=True)
             except:
                 continue
 
