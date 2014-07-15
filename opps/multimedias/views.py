@@ -75,6 +75,7 @@ class AudioList(BaseList):
 
 
 class ListAll(ListView):
+    paginate_by = 20
 
     def get_template_names(self):
         templates = []
