@@ -284,6 +284,11 @@ class Audio(Media):
 
     objects = PublishableManager()
 
+    def save(self, *args, **kwargs):
+        if 'local' in settings.OPPS_MULTIMEDIAS_AUDIO_ENGINES:
+            self.published = True
+        super(Audio, self).save(*args, **kwargs)
+
     class Meta:
         ordering = ['-date_available', 'title', 'channel_long_slug']
         verbose_name = _(u'Audio')

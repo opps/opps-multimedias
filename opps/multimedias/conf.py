@@ -12,6 +12,8 @@ class OppsMultimediasConf(AppConf):
                             'audios')
     ENGINES = getattr(settings, 'OPPS_MULTIMEDIAS_ENGINES',
                       [u'local'])
+    AUDIO_ENGINES = getattr(settings, 'OPPS_MULTIMEDIAS_AUDIO_ENGINES',
+                            [u'local'])
 
     FFMPEG = getattr(settings, 'OPPS_MULTIMEDIAS_FFMPEG', '/usr/bin/ffmpeg')
 
