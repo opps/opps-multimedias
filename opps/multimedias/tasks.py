@@ -16,7 +16,7 @@ def log_it(s):
         log.write(msg.encode('utf-8'))
 
 
-@task.periodic_task(run_every=timezone.timedelta(minutes=1))
+@task.periodic_task(run_every=timezone.timedelta(minutes=5))
 def upload_media():
     mediahosts = MediaHost.objects.filter(
         status=MediaHost.STATUS_NOT_UPLOADED
