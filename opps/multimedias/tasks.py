@@ -33,6 +33,8 @@ def upload_media():
             log_it(u"Error deleting media host")
             continue
 
+        media = mediahost.media
+
         if media.tags:
             tags = [tag.lower().strip() for tag in media.tags.split(",")]
         else:

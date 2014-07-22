@@ -59,16 +59,14 @@ class Local(MediaAPI):
 
         try:
             self.process(mediahost, formats, force)
+            mediahost.media.published = True
+            mediahost.media.save()
+            return self.get_info(mediahost)
         except Exception as e:
             mediahost.status = mediahost.STATUS_ERROR
             mediahost.status_message = str(e)[:150]
             mediahost.save()
             raise e
-
-        mediahost.media.published = True
-        mediahost.media.save()
-
-        return self.get_info(mediahost)
 
     def process(self, mediahost, formats=None, force=False):
         """
