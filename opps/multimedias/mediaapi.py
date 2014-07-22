@@ -115,12 +115,18 @@ class Local(MediaAPI):
     def get_info(self, mediahost):
         tags = self.tags or [] + DEFAULT_TAGS
 
+        if mediahost.media.ffmpeg_file_mp4_sd:
+            url = mediahost.media.ffmpeg_file_mp4_sd.url
+        elif mediahost.media.ffmpeg_file_flv:
+            url = mediahost.media.ffmpeg_file_flv.url
+        else:
+            url = ''
+
         mediahost.status = u'ok'
-        mediahost.url = mediahost.media.ffmpeg_file_flv.url
+        mediahost.url = url
         mediahost.embed = render_to_string(
-            'multimedias/video_embed.html',
-            {
-                'url': mediahost.media.ffmpeg_file_flv.url,
+            'multimedias/video_embed.html', {
+                'url': url,
                 'mediahost': mediahost})
         mediahost.updated = True
         mediahost.save()
