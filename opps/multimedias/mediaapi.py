@@ -51,13 +51,19 @@ class Local(MediaAPI):
     def audio_upload(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def upload(self, mediahost, tags):
+    def upload(self, mediahost, tags=None, formats=None, force=False):
         self.tags = tags
 
         mediahost.status = mediahost.STATUS_PROCESSING
         mediahost.save()
 
-        self.process(mediahost)
+        try:
+            self.process(mediahost, formats, force)
+        except Exception as e:
+            mediahost.status = mediahost.STATUS_ERROR
+            mediahost.status_message = str(e)[:150]
+            mediahost.save()
+            raise e
 
         mediahost.media.published = True
         mediahost.media.save()
@@ -99,10 +105,7 @@ class Local(MediaAPI):
                 'exec': settings.OPPS_MULTIMEDIAS_FFMPEG, }
             cmd = cnf['cmd'].format(**data)
 
-            try:
-                sp.call(cmd, shell=True)
-            except:
-                continue
+            output = sp.check_output(cmd, shell=True)
 
             with open(tmp_to, 'rb') as f:
                 if hasattr(media, model_field):

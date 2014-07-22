@@ -8,6 +8,8 @@ from celery import task
 from .models import MediaHost
 
 BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
+LOCAL_MAX_PARALLEL = getattr(
+    settings, 'OPPS_MULTIMEDIAS_LOCAL_MAX_PARALLEL', 1)
 
 
 def log_it(s):
@@ -71,6 +73,13 @@ def upload_media():
             with transaction.commit_on_success():
                 mediahost.save()
         else:
+            local_in_process = MediaHost.objects.filter(
+                host=MediaHost.HOST_LOCAL,
+                status=MediaHost.STATUS_PROCESSING).count()
+
+            if LOCAL_MAX_PARALLEL and local_in_process >= LOCAL_MAX_PARALLEL:
+                continue
+
             media_info = mediahost.api.upload(
                 mediahost,
                 tags

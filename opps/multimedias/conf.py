@@ -24,6 +24,9 @@ class OppsMultimediasConf(AppConf):
     LOCAL_TEMP_DIR = getattr(
         settings, 'OPPS_MULTIMEDIAS_LOCAL_TEMP_DIR', TEMP_DIR)
 
+    LOCAL_MAX_PARALLEL = getattr(
+        settings, 'OPPS_MULTIMEDIAS_LOCAL_MAX_PARALLEL', 1)
+
     LOCAL_FORMATS = getattr(
         settings, 'OPPS_MULTIMEDIAS_LOCAL_FORMATS', {
             "flv": {
