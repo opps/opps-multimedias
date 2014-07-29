@@ -64,6 +64,7 @@ class Local(MediaAPI):
             return self.get_info(mediahost)
         except Exception as e:
             mediahost.status = mediahost.STATUS_ERROR
+            mediahost.media.published = False
             mediahost.status_message = str(e)[:150]
             mediahost.save()
             raise e
