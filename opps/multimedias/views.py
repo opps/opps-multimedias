@@ -2,12 +2,13 @@
 from django.contrib.sites.models import get_current_site
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.conf import settings
 from django.views.generic import ListView
 
 from opps.multimedias.models import Video, Audio
 from opps.containers.views import ContainerDetail
 from opps.channels.models import Channel
+
+from .conf import settings
 
 
 class VideoDetail(ContainerDetail):
@@ -20,14 +21,26 @@ class AudioDetail(ContainerDetail):
     type = 'multimedias'
 
 
-class BaseList(ListView):
+class CurrentChannelMixin(object):
+    def get_channel_long_slug(self):
+        channel_long_slug = self.kwargs.get('channel__long_slug')
+        if self.prepend_channel:
+                channel_long_slug = \
+                    '%s/%s' % (self.multimedias_channel, channel_long_slug)
+        return channel_long_slug
+
+
+class BaseList(CurrentChannelMixin, ListView):
     paginate_by = 20
+    prepend_channel = False
 
     def get_queryset(self):
         queryset = super(BaseList, self).get_queryset()
         default_site = settings.OPPS_CONTAINERS_SITE_ID or 1
         self.site = get_current_site(self.request)
-        channel_long_slug = self.kwargs.get('channel__long_slug')
+
+        channel_long_slug = self.get_channel_long_slug()
+
         channel = get_object_or_404(Channel, long_slug=channel_long_slug)
 
         filters = {}
@@ -53,9 +66,9 @@ class BaseList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(BaseList, self).get_context_data(**kwargs)
-        long_slug = self.kwargs.get('channel__long_slug')
+        channel_long_slug = self.get_channel_long_slug()
         try:
-            channel = Channel.objects.get(long_slug=long_slug)
+            channel = Channel.objects.get(long_slug=channel_long_slug)
         except Channel.DoesNotExist:
             channel = Channel.objects.get_homepage(
                 site=get_current_site(self.request)
@@ -66,15 +79,19 @@ class BaseList(ListView):
 
 class VideoList(BaseList):
     model = Video
+    multimedias_channel = settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL
+    prepend_channel = settings.OPPS_MULTIMEDIAS_PREPEND_VIDEO_CHANNEL
     template_name = 'multimedias/video/list_paginated.html'
 
 
 class AudioList(BaseList):
     model = Audio
+    multimedias_channel = settings.OPPS_MULTIMEDIAS_AUDIO_CHANNEL
+    prepend_channel = settings.OPPS_MULTIMEDIAS_PREPEND_AUDIO_CHANNEL
     template_name = 'multimedias/audio/list_paginated.html'
 
 
-class ListAll(ListView):
+class ListAll(CurrentChannelMixin, ListView):
     paginate_by = 20
 
     def get_template_names(self):
@@ -118,7 +135,8 @@ class ListAll(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ListAll, self).get_context_data(**kwargs)
-        long_slug = self.kwargs.get('channel__long_slug')
+        long_slug = self.get_channel_long_slug()
+
         try:
             channel = Channel.objects.get(long_slug=long_slug)
         except Channel.DoesNotExist:
@@ -131,9 +149,13 @@ class ListAll(ListView):
 
 class AllVideoList(ListAll):
     model = Video
+    multimedias_channel = settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL
+    prepend_channel = settings.OPPS_MULTIMEDIAS_PREPEND_VIDEO_CHANNEL
     type = 'video'
 
 
 class AllAudioList(ListAll):
     model = Audio
+    multimedias_channel = settings.OPPS_MULTIMEDIAS_AUDIO_CHANNEL
+    prepend_channel = settings.OPPS_MULTIMEDIAS_PREPEND_AUDIO_CHANNEL
     type = 'audio'
