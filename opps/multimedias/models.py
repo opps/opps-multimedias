@@ -5,6 +5,7 @@ import random
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
@@ -21,7 +22,7 @@ app_namespace = getattr(
 class MediaHost(models.Model):
 
     STATUS_OK = u'ok'
-    STAUTS_PROCESSING = u'processing'
+    STATUS_PROCESSING = u'processing'
     STATUS_ERROR = u'error'
     STATUS_SENDING = u'sending'
     STATUS_DELETED = u'deleted'
@@ -31,7 +32,7 @@ class MediaHost(models.Model):
     STATUS_CHOICES = (
         (STATUS_OK, _(u'OK')),
         (STATUS_SENDING, _(u'Sending')),
-        (STAUTS_PROCESSING, _(u'Processing')),
+        (STATUS_PROCESSING, _(u'Processing')),
         (STATUS_ERROR, _(u'Error')),
         (STATUS_DELETED, _(u'Deleted')),
         (STATUS_NOT_UPLOADED, _(u'Not Uploaded')),
@@ -73,6 +74,19 @@ class MediaHost(models.Model):
 
     def __unicode__(self):
         return u'{} - {}'.format(self.get_host_display(), self.media)
+
+    #def __getattribute__(self, name):
+    #    # Dynamic access for local video embed.
+    #    if name == 'embed':
+    #        api = self.api
+    #        if isinstance(api, Local):
+    #            try:
+    #                return render_to_string('multimedias/video_embed.html', {
+    #                    'url': self.media.ffmpeg_file_flv.url,  # compatibilty
+    #                    'mediahost': self})
+    #            except:
+    #                pass
+    #    return super(MediaHost, self).__getattribute__(name)
 
     @property
     def media(self):
@@ -162,6 +176,22 @@ class Media(Article):
     )
 
     ffmpeg_file_flv = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_mp4_sd = models.FileField(
+        _(u'File'),
+        upload_to=upload_dest,
+        help_text=_(u'Local video file storage'),
+        blank=True,
+        null=True
+    )
+
+    ffmpeg_file_mp4_hd = models.FileField(
         _(u'File'),
         upload_to=upload_dest,
         help_text=_(u'Local video file storage'),

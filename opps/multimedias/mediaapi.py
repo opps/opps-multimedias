@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
 import pytz
 import gdata.youtube.service
-from os import system
+from os import system, path
+import subprocess as sp
 
 from exceptions import NotImplementedError
 
@@ -15,6 +16,8 @@ from gdata.service import BadAuthentication, RequestError
 
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
+LOCAL_FORMATS = getattr(settings, 'OPPS_MULTIMEDIAS_LOCAL_FORMATS', {})
+LOCAL_TEMP_DIR = getattr(settings, 'OPPS_MULTIMEDIAS_TEMP_DIR', '/tmp')
 
 
 class MediaAPIError(Exception):
@@ -48,65 +51,82 @@ class Local(MediaAPI):
     def audio_upload(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def upload(self, mediahost, tags):
+    def upload(self, mediahost, tags=None, formats=None, force=False):
         self.tags = tags
 
-        mediahost.status = u'processing'
+        mediahost.status = mediahost.STATUS_PROCESSING
         mediahost.save()
 
-        # MP4 to FLV
-        cmd = "{3} -i {0} -acodec libmp3lame -ac 2 -ar 11025 "\
-            "-vcodec libx264 -r 15 -s 720x400 -aspect 720:400 -sn -f {2} -y "\
-            "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
-                                  mediahost.media.id,
-                                  "flv",
-                                  settings.OPPS_MULTIMEDIAS_FFMPEG)
-        system(cmd)
-        with open("/tmp/{}.flv".format(mediahost.media.id), 'rb') as f:
-            mediahost.media.ffmpeg_file_flv = File(f)
+        try:
+            self.process(mediahost, formats, force)
+            mediahost.media.published = True
             mediahost.media.save()
+            return self.get_info(mediahost)
+        except Exception as e:
+            mediahost.status = mediahost.STATUS_ERROR
+            mediahost.media.published = False
+            mediahost.status_message = str(e)[:150]
+            mediahost.save()
+            raise e
 
-        # MP4 to OGG
-        try:
-            cmd = "{3} -i {0} -acodec libvorbis -vcodec libtheora -f {2} "\
-                "/tmp/{1}.{2}".format(mediahost.media.media_file.path,
-                                      mediahost.media.id, 'ogv',
-                                      settings.OPPS_MULTIMEDIAS_FFMPEG)
-            system(cmd)
-            with open("/tmp/{}.ogv".format(mediahost.media.id), 'rb') as f:
-                mediahost.media.ffmpeg_file_ogv = File(f)
-                mediahost.media.save()
-        except:
-            pass
+    def process(self, mediahost, formats=None, force=False):
+        """
+        Process formats declared on config file
 
-        # Generate thumb
-        try:
-            cmd = "{1} -i /tmp/{0}.flv -an -ss 00:00:03 -an -r 1 ".format(
-                mediahost.media.id,
-                settings.OPPS_MULTIMEDIAS_FFMPEG)
-            cmd += "-vframes 1 -y /tmp/{0}.jpg".format(mediahost.media.id)
-            print cmd
-            system(cmd)
-            with open("/tmp/{}.jpg".format(mediahost.media.id),
-                      'rb') as img:
-                mediahost.media.ffmpeg_file_thumb = File(img)
-                mediahost.media.save()
-        except:
-            pass
+        Keyword Args:
+            mediahost - Instance of model opps.multimedias.Video
+            formats - List of formats do process
+            force - Forces to re-process selected formats
 
-        mediahost.media.published = True
-        mediahost.media.save()
+        Returns
+            None
+        """
 
-        return self.get_info(mediahost)
+        media = mediahost.media
+        media_file = media.media_file
+
+        for i, cnf in LOCAL_FORMATS.items():
+            if formats and i not in formats:
+                continue
+
+            model_field = 'ffmpeg_file_{}'.format(i)
+
+            if getattr(media, model_field) and not force:
+                continue
+
+            # ex. /tmp/<media.id>-<format>.<ext>
+            tmp_to = path.join(
+                LOCAL_TEMP_DIR, "{}-{}.{}".format(media.id, i, cnf['ext']))
+
+            data = {
+                'from': media_file.path,
+                'to': tmp_to,
+                'exec': settings.OPPS_MULTIMEDIAS_FFMPEG, }
+            cmd = cnf['cmd'].format(**data)
+
+            output = sp.check_output(cmd, shell=True)
+
+            with open(tmp_to, 'rb') as f:
+                if hasattr(media, model_field):
+                    setattr(media, model_field, File(f))
+                    media.save()
 
     def get_info(self, mediahost):
         tags = self.tags or [] + DEFAULT_TAGS
 
+        if mediahost.media.ffmpeg_file_mp4_sd:
+            url = mediahost.media.ffmpeg_file_mp4_sd.url
+        elif mediahost.media.ffmpeg_file_flv:
+            url = mediahost.media.ffmpeg_file_flv.url
+        else:
+            url = ''
+
         mediahost.status = u'ok'
-        mediahost.url = mediahost.media.ffmpeg_file_flv.url
+        mediahost.url = url
         mediahost.embed = render_to_string(
-            'multimedias/video_embed.html',
-            {'url': mediahost.media.ffmpeg_file_flv.url})
+            'multimedias/video_embed.html', {
+                'url': url,
+                'mediahost': mediahost})
         mediahost.updated = True
         mediahost.save()
 
