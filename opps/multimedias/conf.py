@@ -27,6 +27,12 @@ class OppsMultimediasConf(AppConf):
     LOCAL_MAX_PARALLEL = getattr(
         settings, 'OPPS_MULTIMEDIAS_LOCAL_MAX_PARALLEL', 1)
 
+    UPLOAD_MEDIA_INTERVAL = getattr(
+        settings, 'OPPS_MULTIMEDIAS_UPLOAD_MEDIA_INTERVAL', 5)
+
+    UPDATE_MEDIAHOST_INTERVAL = getattr(
+        settings, 'OPPS_MULTIMEDIAS_UPDATE_MEDIAHOST_INTERVAL', 2)
+
     LOCAL_FORMATS = getattr(
         settings, 'OPPS_MULTIMEDIAS_LOCAL_FORMATS', {
             "flv": {

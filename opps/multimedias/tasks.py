@@ -1,15 +1,23 @@
 # -*- encoding: utf-8 -*-
 import datetime
+import subprocess as sp
+
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.db import transaction
 from celery import task
+
 from .models import MediaHost
+
 
 BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
 LOCAL_MAX_PARALLEL = getattr(
     settings, 'OPPS_MULTIMEDIAS_LOCAL_MAX_PARALLEL', 1)
+UPLOAD_MEDIA_INTERVAL = getattr(
+    settings, 'OPPS_MULTIMEDIAS_UPLOAD_MEDIA_INTERVAL', 5)
+UPDATE_MEDIAHOST_INTERVAL = getattr(
+    settings, 'OPPS_MULTIMEDIAS_UPDATE_MEDIAHOST_INTERVAL', 2)
 
 
 def log_it(s):
@@ -18,22 +26,34 @@ def log_it(s):
         log.write(msg.encode('utf-8'))
 
 
-@task.periodic_task(run_every=timezone.timedelta(minutes=5))
+@task.periodic_task(run_every=timezone.timedelta(
+    minutes=UPLOAD_MEDIA_INTERVAL))
 def upload_media():
     mediahosts = MediaHost.objects.filter(
         status=MediaHost.STATUS_NOT_UPLOADED
     ).exclude(pk__in=BLACKLIST)
 
+    if 'local' in settings.OPPS_MULTIMEDIAS_ENGINES:
+        ffmpeg_active = False
+
+        try:
+            output = sp.check_output(
+                "ps aux | grep -v grep | grep {0}".format(
+                    settings.OPPS_MULTIMEDIAS_FFMPEG),
+                shell=True)
+            if not output:
+                raise Exception("FFMPEG doesn't run!")
+        except:
+            MediaHost.objects.filter(
+                host=MediaHost.HOST_LOCAL,
+                status=MediaHost.STATUS_PROCESSING).update(
+                    status=MediaHost.STATUS_NOT_UPLOADED)
+
     for mediahost in mediahosts:
         try:
-            if not mediahost.media:
-                mediahost.delete()
-                continue
-        except Exception as e:
-            log_it(u"Error deleting media host")
+            media = mediahost.media
+        except:
             continue
-
-        media = mediahost.media
 
         if media.tags:
             tags = [tag.lower().strip() for tag in media.tags.split(",")]
