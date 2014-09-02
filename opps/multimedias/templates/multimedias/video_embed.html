@@ -1,2 +1,4 @@
+{% with mediahost.media as media %}
 <embed width="640" id="movie_player-flash" height="390"
-tabindex="0" type="application/x-shockwave-flash"src="{{url}}">
+tabindex="0" type="application/x-shockwave-flash"src="{% firstof media.ffmpeg_file_mp4_sd.url media.ffmpeg_file_mp4_hd.url media.ffmpeg_file_flv.url %}">
+{% endwith %}
