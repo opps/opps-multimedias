@@ -18,7 +18,7 @@ class MediaAdmin(ContainerAdmin):
     readonly_fields += ['published', 'date_available']
 
     change_readonly_fields = ContainerAdmin.readonly_fields[:]
-    change_readonly_fields += ['published', 'date_available', 'media_file']
+    change_readonly_fields += ['published', 'date_available']
 
     actions = ContainerAdmin.actions[:]
     actions += ['resend_uolmais', ]
