@@ -2,7 +2,7 @@
 from django.conf.urls import patterns, url
 from django.views.decorators.cache import cache_page
 
-from opps.contrib.feeds.views import ContainerFeed, ChannelFeed
+from opps.contrib.feeds.views import ContainerFeed
 
 from .views import VideoList, AudioList, AllVideoList, AllAudioList
 
@@ -10,15 +10,6 @@ from .conf import settings
 
 urlpatterns = patterns(
     '',
-    # CHANNEL FEED LIST
-    url(r'^{}/(?P<long_slug>[\w\b//-]+)/(rss|feed)$'.format(
-        settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL),
-        cache_page(settings.OPPS_CACHE_EXPIRE)(ChannelFeed()),
-        name='video_list_feed',),
-    url(r'^{}/(?P<long_slug>[\w\b//-]+)/(rss|feed)$'.format(
-        settings.OPPS_MULTIMEDIAS_AUDIO_CHANNEL),
-        cache_page(settings.OPPS_CACHE_EXPIRE)(ChannelFeed()),
-        name='audio_list_feed',),
     # CHANNEL LIST
     url(r'^{}/(?P<channel__long_slug>[\w\b//-]+)/$'.format(
         settings.OPPS_MULTIMEDIAS_VIDEO_CHANNEL),
