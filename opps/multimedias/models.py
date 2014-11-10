@@ -172,7 +172,9 @@ class Media(Article):
         _(u'File'),
         upload_to=upload_dest,
         help_text=_(u'Temporary file stored until it\'s not sent to final '
-                    u'hosting server (ie: Youtube)')
+                    u'hosting server (ie: Youtube)'),
+        blank=True,
+        null=True
     )
 
     ffmpeg_file_flv = models.FileField(
