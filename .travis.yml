@@ -3,6 +3,7 @@ python:
   - "2.7"
 install:
   - pip install $DJANGO --use-mirrors
+  - pip install -e git+git@github.com:YACOWS/Multimedia-UOLMais.git#egg=uolmais-api
   - make travis
 env:
   - DJANGO=django==1.5
