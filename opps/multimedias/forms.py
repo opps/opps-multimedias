@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from .models import Audio, Video
+from .models import Audio, Video, MediaHost
 from opps.containers.forms import ContainerAdminForm
 
 
@@ -23,6 +23,14 @@ class MediaAdminForm(ContainerAdminForm):
 class VideoAdminForm(MediaAdminForm):
     ALLOWED_EXTENSIONS = ('AVI', 'DIVX', 'DV', 'MOV', 'QT', 'MPEG', 'MPG',
                           'MP4', 'ASF', 'WMV', 'FLV')
+
+    def __init__(self, *args, **kwargs):
+        super(VideoAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.uolmais:
+            if self.instance.uolmais == MediaHost.STATUS_OK:
+                self.fields['media_file'].required = False
+        else:
+            self.fields['media_file'].required = True
 
     class Meta:
         model = Video
