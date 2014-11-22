@@ -52,13 +52,13 @@ def upload_media():
     for mediahost in mediahosts:
         try:
             media = mediahost.media
+
+            if media.tags:
+                tags = [tag.lower().strip() for tag in media.tags.split(",")]
+            else:
+                tags = []
         except:
             continue
-
-        if media.tags:
-            tags = [tag.lower().strip() for tag in media.tags.split(",")]
-        else:
-            tags = []
 
         if mediahost.host != MediaHost.HOST_LOCAL:
 
