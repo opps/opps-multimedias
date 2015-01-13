@@ -1,12 +1,51 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import escapejs
+from django.conf import settings
 
 from .models import (MediaHost, Audio, Video)
 from .forms import VideoAdminForm, AudioAdminForm
 
 from opps.core.admin import apply_opps_rules
 from opps.containers.admin import ContainerAdmin
+
+
+# Custom Actions
+def resend_uolmais(modeladmin, request, queryset):
+    for media in queryset.select_related('uolmais'):
+        media.uolmais.host_id = None
+        media.uolmais.url = None
+        media.uolmais.retries = 0
+        media.uolmais.embed = ''
+        media.uolmais.status = MediaHost.STATUS_NOT_UPLOADED
+        media.uolmais.status_message = ''
+        media.uolmais.save()
+
+        media.published = False
+        media.save()
+resend_uolmais.short_description = _(u"Resend UOLMais media")
+
+
+def resend_vimeo(modeladmin, request, queryset):
+    for media in queryset.select_related('vimeo'):
+        media.vimeo.status = MediaHost.STATUS_DELETED
+        media.vimeo.save()
+        media.vimeo = MediaHost.objects.create(host=MediaHost.HOST_VIMEO)
+        media.published = False
+        media.save()
+resend_vimeo.short_description = _(u"Resend VIMEO video")
+
+
+def resend_youtube(modeladmin, request, queryset):
+    for media in queryset.select_related('youtube'):
+        media.youtube.host_id = None
+        media.youtube.url = None
+        media.youtube.retries = 0
+        media.youtube.embed = ''
+        media.youtube.status = MediaHost.STATUS_NOT_UPLOADED
+        media.youtube.status_message = ''
+        media.youtube.save()
+resend_youtube.short_description = _(u"Resend Youtube video")
 
 
 @apply_opps_rules('multimedias')
@@ -19,9 +58,6 @@ class MediaAdmin(ContainerAdmin):
 
     change_readonly_fields = ContainerAdmin.readonly_fields[:]
     change_readonly_fields += ['published', 'date_available']
-
-    actions = ContainerAdmin.actions[:]
-    actions += ['resend_uolmais', ]
 
     search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
     # search_fields = ['title', 'slug', 'channel_name']
@@ -45,24 +81,21 @@ class MediaAdmin(ContainerAdmin):
                        'show_on_root_channel')}),
     )
 
+    def get_actions(self, request):
+        actions = super(MediaAdmin, self).get_actions(request)
+
+        if 'uolmais' in settings.OPPS_MULTIMEDIAS_ENGINES:
+            actions['resend_uolmais'] = (
+                resend_uolmais,
+                'resend_uolmais',
+                resend_uolmais.short_description)
+
+        return actions
+
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return self.change_readonly_fields
         return self.readonly_fields
-
-    def resend_uolmais(self, request, queryset):
-        for media in queryset.select_related('uolmais'):
-            media.uolmais.host_id = None
-            media.uolmais.url = None
-            media.uolmais.retries = 0
-            media.uolmais.embed = ''
-            media.uolmais.status = MediaHost.STATUS_NOT_UPLOADED
-            media.uolmais.status_message = ''
-            media.uolmais.save()
-
-            media.published = False
-            media.save()
-    resend_uolmais.short_description = _(u"Resend UOLMais media")
 
     def get_list_display(self, request):
         list_display = self.list_display
@@ -88,19 +121,23 @@ class MediaAdmin(ContainerAdmin):
 @apply_opps_rules('multimedias')
 class VideoAdmin(MediaAdmin):
     form = VideoAdminForm
-    actions = MediaAdmin.actions[:]
-    actions += ['resend_youtube', ]
 
-    def resend_youtube(self, request, queryset):
-        for media in queryset.select_related('youtube'):
-            media.youtube.host_id = None
-            media.youtube.url = None
-            media.youtube.retries = 0
-            media.youtube.embed = ''
-            media.youtube.status = MediaHost.STATUS_NOT_UPLOADED
-            media.youtube.status_message = ''
-            media.youtube.save()
-    resend_youtube.short_description = _(u"Resend Youtube video")
+    def get_actions(self, request):
+        actions = super(VideoAdmin, self).get_actions(request)
+
+        if 'vimeo' in settings.OPPS_MULTIMEDIAS_ENGINES:
+            actions['resend_vimeo'] = (
+                resend_vimeo,
+                'resend_vimeo',
+                resend_vimeo.short_description, )
+
+        if 'youtube' in settings.OPPS_MULTIMEDIAS_ENGINES:
+            actions['resend_youtube'] = (
+                resend_youtube,
+                'resend_youtube',
+                resend_youtube.short_description, )
+
+        return actions
 
 
 @apply_opps_rules('multimedias')

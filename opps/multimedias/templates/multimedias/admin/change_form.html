@@ -4,20 +4,18 @@
 {% block field_sets %}
   {{ block.super }}
 
-  <!-- Media Metadata information -->
-  <fieldset class="module aligned">
-    <legend>Meta</legend>
-
   <!-- Media host information -->
   {% if original.local %}
-  {% include 'includes/mediahost-fieldset.html' with mediahost=original.local %}
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.local only %}
   {% endif %}
   {% if original.youtube %}
-  {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube %}
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.youtube only %}
   {% endif %}
   {% if original.uolmais %}
-  {% include 'includes/mediahost-fieldset.html' with mediahost=original.uolmais %}
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.uolmais only %}
   {% endif %}
-</fieldset>
+  {% if original.vimeo %}
+  {% include 'includes/mediahost-fieldset.html' with mediahost=original.vimeo only %}
+  {% endif %}
 
 {% endblock %}

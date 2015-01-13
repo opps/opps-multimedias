@@ -79,12 +79,6 @@ class OppsMultimediasConf(AppConf):
                        "-b:a 128k -async 1 -vsync 1 -y {to}",
                 "ext": "mp4",
             },
-            #"ogv": {
-            #    "quality": "720p",
-            #    "cmd": "{exec} -i {from} -acodec libvorbis -vcodec libtheora "
-            #           "-f ogv {to}",
-            #    "ext": "ogv",
-            #},
             "thumb": {
                 "cmd": "{exec} -y -i {from} -an -ss 00:00:03 -an -r 1 "
                        "-vframes 1 {to}",
