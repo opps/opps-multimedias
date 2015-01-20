@@ -60,10 +60,10 @@ class MediaAPI(object):
     def upload(self, type, *args, **kwargs):
         raise NotImplementedError()
 
-    def delete(self, media_id):
+    def delete(self):
         raise NotImplementedError()
 
-    def get_info(self, media_id):
+    def get_info(self, media_id=None):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
                               u'tags', u'embed', u'url', u'status',
                               u'status_msg'])
@@ -274,7 +274,7 @@ class Youtube(MediaAPI):
     __NAME__ = MediaHost.HOST_YOUTUBE
 
     def __init__(self, mediahost):
-        super(Youtube, super).__init__(mediahost)
+        super(Youtube, self).__init__(mediahost)
         self.yt_service = gdata.youtube.service.YouTubeService()
 
     def authenticate(self):
@@ -456,8 +456,8 @@ class Vimeo(MediaAPI):
 
         if response.status_code != 204:
             raise MediaAPIError(
-                'Ocoured an error on delete video - {0} - {1}'.format(
-                    response.status_code, response.json().get('error')))
+                'Ocoured an error on delete video [{0}] {1}'.format(
+                    response.status_code, response.content))
 
     def get_info(self, *args, **kwargs):
         media_id = self.mediahost.host_id

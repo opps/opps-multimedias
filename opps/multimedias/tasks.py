@@ -12,6 +12,7 @@ from celery import task
 from opps.utils.text import split_tags
 
 from .models import MediaHost
+from .mediaapi import MediaAPIError
 
 
 # Get an instance of a logger
@@ -141,5 +142,11 @@ def delete_mediahost():
     for mediahost in mediahosts:
         api = mediahost.api
         if hasattr(api, 'delete'):
-            api.delete()
-        mediahost.delete()
+            try:
+                api.delete()
+            except NotImplementedError:
+                pass
+            except MediaAPIError as e:
+                logger.exception(e.message)
+            else:
+                mediahost.delete()
