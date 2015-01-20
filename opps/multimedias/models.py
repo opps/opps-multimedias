@@ -255,6 +255,14 @@ class Media(Article):
         else:
             return "<p>TODO</p>"
 
+    def cleanup_mediahost(self):
+        related_mh = self.get_related_mediahost_fields()
+        for i in related_mh:
+            field = getattr(self, i, None)
+            if field:
+                field.to_delete()
+                setattr(self, i, None)
+
     def save(self, *args, **kwargs):
         def available(mh):
             available_hosts = settings.OPPS_MULTIMEDIAS_ENGINES or ['local']
@@ -270,11 +278,7 @@ class Media(Article):
             old_media = self.__class__.objects.get(pk=self.pk)
             updated_media = old_media.media_file != self.media_file
             if updated_media:
-                for i in related_mh:
-                    field = getattr(self, i, None)
-                    if field:
-                        field.to_delete()
-                        setattr(self, i, None)
+                self.cleanup_mediahost()
 
         if updated_media:
             self.published = False
@@ -370,3 +374,14 @@ class Audio(Media):
         ordering = ['-date_available', 'title', 'channel_long_slug']
         verbose_name = _('Audio')
         verbose_name_plural = _('Audios')
+
+
+def prepare_delete(sender, instance, *args, **kwargs):
+    """
+    Cleanup all mediahosts and move to delete queue
+    """
+    instance.cleanup_mediahost()
+    instance.save()
+
+models.signals.pre_delete.connect(prepare_delete, sender=Video)
+models.signals.pre_delete.connect(prepare_delete, sender=Audio)
