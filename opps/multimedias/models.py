@@ -5,7 +5,6 @@ import random
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.template.loader import render_to_string
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
@@ -75,7 +74,7 @@ class MediaHost(models.Model):
     def __unicode__(self):
         return u'{} - {}'.format(self.get_host_display(), self.media)
 
-    #def __getattribute__(self, name):
+    # def __getattribute__(self, name):
     #    # Dynamic access for local video embed.
     #    if name == 'embed':
     #        api = self.api
@@ -154,6 +153,7 @@ class Media(Article):
 
     TYPE = None
 
+    content = models.TextField(_(u"Content"), null=True, blank=True)
     uolmais = models.OneToOneField(
         MediaHost, verbose_name=_(u'UOL Mais'),
         related_name=u'uolmais_%(class)s',

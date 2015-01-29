@@ -1,7 +1,13 @@
+# -*- coding: utf-8 -*-
+
 from django import forms
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from .models import Audio, Video, MediaHost
+
+from opps.core.widgets import OppsEditor
 from opps.containers.forms import ContainerAdminForm
+
+from .models import Audio, Video, MediaHost
 
 
 class MediaAdminForm(ContainerAdminForm):
@@ -35,9 +41,19 @@ class VideoAdminForm(MediaAdminForm):
     class Meta:
         model = Video
 
+        if not settings.OPPS_MULTIMEDIAS_USE_CONTENT_FIELD:
+            exclude = ['content']
+        else:
+            widgets = {'content': OppsEditor()}
+
 
 class AudioAdminForm(MediaAdminForm):
     ALLOWED_EXTENSIONS = ('MP3', 'WMA', 'WAV', 'AAC')
 
     class Meta:
         model = Audio
+
+        if not settings.OPPS_MULTIMEDIAS_USE_CONTENT_FIELD:
+            exclude = ['content']
+        else:
+            widgets = {'content': OppsEditor()}
