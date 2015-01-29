@@ -48,7 +48,6 @@ class MediaAdmin(ContainerAdmin):
     )
 
     if not settings.OPPS_MULTIMEDIAS_USE_CONTENT_FIELD:
-        print fieldsets[1][1]['fields']
         fieldsets[1][1]['fields'].remove('content')
         search_fields.remove('content')
 
