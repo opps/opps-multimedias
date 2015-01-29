@@ -92,5 +92,9 @@ class OppsMultimediasConf(AppConf):
             },
         })
 
+    USE_CONTENT_FIELD = getattr(
+        settings, 'OPPS_MULTIMEDIAS_USE_CONTENT_FIELD', False
+    )
+
     class Meta:
         prefix = 'opps_multimedias'

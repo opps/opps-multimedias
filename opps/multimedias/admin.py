@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import escapejs
 
@@ -23,7 +24,8 @@ class MediaAdmin(ContainerAdmin):
     actions = ContainerAdmin.actions[:]
     actions += ['resend_uolmais', ]
 
-    search_fields = ['title', 'headline', 'slug', 'channel_name', 'tags']
+    search_fields = ['title', 'headline', 'slug', 'channel_name', 'content',
+                     'tags']
     # search_fields = ['title', 'slug', 'channel_name']
 
     raw_id_fields = ContainerAdmin.raw_id_fields[:]
@@ -34,9 +36,9 @@ class MediaAdmin(ContainerAdmin):
             'fields': ('site', 'title', 'slug', 'get_http_absolute_url',
                        'short_url', ('main_image', 'image_thumb'))}),
         (_(u'Content'), {
-            'fields': ('short_title', 'hat',
-                       'headline', 'json', 'media_file', 'tags',
-                       'related_posts')}),
+            'fields': ['short_title', 'hat',
+                       'headline', 'json', 'media_file', 'content', 'tags',
+                       'related_posts']}),
         (_(u'Relationships'), {
             'fields': ('channel', 'mirror_channel',)}),
         (_(u'Publication'), {
@@ -44,6 +46,10 @@ class MediaAdmin(ContainerAdmin):
             'fields': ('published', 'date_available',
                        'show_on_root_channel')}),
     )
+
+    if not settings.OPPS_MULTIMEDIAS_USE_CONTENT_FIELD:
+        fieldsets[1][1]['fields'].remove('content')
+        search_fields.remove('content')
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
