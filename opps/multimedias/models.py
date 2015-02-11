@@ -261,7 +261,8 @@ class Media(Article):
 
         super(Media, self).save(*args, **kwargs)
 
-        if hasattr(self, 'local') and not self.local and \
+        # Only videos are processed by the local engine
+        if self.TYPE == 'video' and not self.local and \
                 MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES
                                          or [u'local']):
             self.local = MediaHost.objects.create(
