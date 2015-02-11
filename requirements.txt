@@ -1,1 +1,4 @@
--e git+https://github.com/opps/opps.git#egg=opps
+Django>=1.5,<1.7
+opps>=0.2.9
+django-celery
+PyVimeo==0.2.0

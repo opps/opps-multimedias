@@ -1,14 +1,22 @@
 # -*- encoding: utf-8 -*-
 import datetime
 import subprocess as sp
+import logging
 
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 from celery import task
+from opps.utils.text import split_tags
 
 from .models import MediaHost
+from .mediaapi import MediaAPIError
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 BLACKLIST = getattr(settings, 'OPPS_MULTIMEDIAS_BLACKLIST', [])
@@ -18,12 +26,6 @@ UPLOAD_MEDIA_INTERVAL = getattr(
     settings, 'OPPS_MULTIMEDIAS_UPLOAD_MEDIA_INTERVAL', 5)
 UPDATE_MEDIAHOST_INTERVAL = getattr(
     settings, 'OPPS_MULTIMEDIAS_UPDATE_MEDIAHOST_INTERVAL', 2)
-
-
-def log_it(s):
-    with open("/tmp/multimedias_upload.log", "a") as log:
-        msg = u"{} - {}\n".format(datetime.datetime.now(), s)
-        log.write(msg.encode('utf-8'))
 
 
 @task.periodic_task(run_every=timezone.timedelta(
@@ -52,15 +54,16 @@ def upload_media():
     for mediahost in mediahosts:
         try:
             media = mediahost.media
-
-            if media.tags:
-                tags = [tag.lower().strip() for tag in media.tags.split(",")]
-            else:
-                tags = []
         except:
+            mediahost.to_delete()
             continue
 
+        tags = split_tags(media.tags)
+
         if mediahost.host != MediaHost.HOST_LOCAL:
+            if mediahost.host == MediaHost.HOST_VIMEO:
+                mediahost.api.upload()
+                continue
 
             mediahost.status = MediaHost.STATUS_SENDING
             mediahost.save()
@@ -75,7 +78,7 @@ def upload_media():
                     tags
                 )
             except Exception as e:
-                log_it(u'Error on upload {}: {}'.format(
+                logger.error(u'Error on upload {}: {}'.format(
                     unicode(mediahost.media), unicode(e)
                 ))
                 if mediahost.retries < 3:
@@ -85,12 +88,11 @@ def upload_media():
                     mediahost.status = MediaHost.STATUS_ERROR
                     mediahost.status_message = _('Error on upload')
             else:
-                log_it(u'Uploaded {} - Data returned: {}'.format(
+                logger.info(u'Uploaded {} - Data returned: {}'.format(
                     unicode(mediahost.media),
                     unicode(media_info)
                 ))
                 mediahost.host_id = media_info['id']
-
                 mediahost.status = MediaHost.STATUS_PROCESSING
 
             with transaction.commit_on_success():
@@ -111,52 +113,40 @@ def upload_media():
 
 @task.periodic_task(run_every=timezone.timedelta(minutes=2))
 def update_mediahost():
-    mediahosts = MediaHost.objects.filter(
-        host_id__isnull=False
-    )
-
-    # Exclude local host
+    mediahosts = MediaHost.objects.filter(status=MediaHost.STATUS_PROCESSING)
     mediahosts = mediahosts.exclude(
-        host=MediaHost.HOST_LOCAL
-    )
-
-    # exclude blacklist
-    mediahosts = mediahosts.exclude(
-        pk__in=BLACKLIST
-    )
-
-    # Exclude ok content
-    mediahosts = mediahosts.exclude(
-        status=MediaHost.STATUS_OK,
-        url__isnull=False
-    )
-    # Exclude sending content
-    mediahosts = mediahosts.exclude(
-        status=MediaHost.STATUS_SENDING
-    )
-    # Exclude error with reason
-    mediahosts = mediahosts.exclude(
-        status=MediaHost.STATUS_ERROR,
-        status_message__isnull=False
-    )
-    # Exclude deleted content
-    mediahosts = mediahosts.exclude(
-        status=MediaHost.STATUS_DELETED,
-    )
-    # Exclude NONE host_id
-    mediahosts = mediahosts.exclude(
-        host_id='NONE'
-    )
+        Q(host_id__isnull=True) | Q(host_id=''),  # Empty host_id
+        host=MediaHost.HOST_LOCAL,                # Exclude local host
+        pk__in=BLACKLIST,                         # exclude blacklist
+        host_id='NONE')                           # Exclude NONE host_id
 
     for mediahost in mediahosts:
         try:
             if not mediahost.media:
-                mediahost.delete()
+                mediahost.to_delete()
                 continue
-        except:
-            pass
+        except Exception as e:
+            logger.exception(e.message)
+            continue
 
         try:
             mediahost.update()
-        except:
-            pass
+            continue
+        except Exception as e:
+            logger.exception(e.message)
+
+
+@task.periodic_task(run_every=timezone.timedelta(minutes=60))
+def delete_mediahost():
+    mediahosts = MediaHost.objects.filter(status=MediaHost.STATUS_DELETED)
+    for mediahost in mediahosts:
+        api = mediahost.api
+        if hasattr(api, 'delete'):
+            try:
+                api.delete()
+            except NotImplementedError:
+                pass
+            except MediaAPIError as e:
+                logger.exception(e.message)
+            else:
+                mediahost.delete()

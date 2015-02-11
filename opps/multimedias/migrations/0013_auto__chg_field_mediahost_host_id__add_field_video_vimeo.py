@@ -11,27 +11,21 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        # Changing field 'Video.media_file'
-        db.alter_column(u'multimedias_video', 'media_file', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True))
+        # Changing field 'MediaHost.host_id'
+        db.alter_column(u'multimedias_mediahost', 'host_id', self.gf('django.db.models.fields.CharField')(default='', max_length=64))
+        # Adding field 'Video.vimeo'
+        db.add_column(u'multimedias_video', 'vimeo',
+                      self.gf('django.db.models.fields.related.OneToOneField')(blank=True, related_name=u'vimeo_video', unique=True, null=True, to=orm['multimedias.MediaHost']),
+                      keep_default=False)
 
-        # Changing field 'Audio.media_file'
-        db.alter_column(u'multimedias_audio', 'media_file', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True))
 
     def backwards(self, orm):
 
-        # User chose to not deal with backwards NULL issues for 'Video.media_file'
-        raise RuntimeError("Cannot reverse this migration. 'Video.media_file' and its values cannot be restored.")
-        
-        # The following code is provided here to aid in writing a correct migration
-        # Changing field 'Video.media_file'
-        db.alter_column(u'multimedias_video', 'media_file', self.gf('django.db.models.fields.files.FileField')(max_length=100))
+        # Changing field 'MediaHost.host_id'
+        db.alter_column(u'multimedias_mediahost', 'host_id', self.gf('django.db.models.fields.CharField')(max_length=64, null=True))
+        # Deleting field 'Video.vimeo'
+        db.delete_column(u'multimedias_video', 'vimeo_id')
 
-        # User chose to not deal with backwards NULL issues for 'Audio.media_file'
-        raise RuntimeError("Cannot reverse this migration. 'Audio.media_file' and its values cannot be restored.")
-        
-        # The following code is provided here to aid in writing a correct migration
-        # Changing field 'Audio.media_file'
-        db.alter_column(u'multimedias_audio', 'media_file', self.gf('django.db.models.fields.files.FileField')(max_length=100))
 
     models = {
         u'%s.%s' % (User._meta.app_label, User._meta.module_name): {
@@ -181,6 +175,29 @@ class Migration(SchemaMigration):
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['%s.%s']" % (User._meta.app_label, User._meta.object_name)}),
             'valign': ('django.db.models.fields.CharField', [], {'default': 'False', 'max_length': '6', 'null': 'True', 'blank': 'True'})
         },
+        u'localidades.city': {
+            'Meta': {'ordering': "('state', 'name')", 'unique_together': "(('name', 'state'),)", 'object_name': 'City'},
+            'date_insert': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'date_update': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
+            'state': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['localidades.State']"})
+        },
+        u'localidades.country': {
+            'Meta': {'ordering': "('name',)", 'object_name': 'Country'},
+            'abbr': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'})
+        },
+        u'localidades.state': {
+            'Meta': {'ordering': "('country', 'name')", 'unique_together': "(('name', 'country'),)", 'object_name': 'State'},
+            'abbr': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
+            'country': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['localidades.Country']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'})
+        },
         u'multimedias.audio': {
             'Meta': {'ordering': "['-date_available', 'title', 'channel_long_slug']", 'object_name': 'Audio'},
             u'container_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['containers.Container']", 'unique': 'True', 'primary_key': 'True'}),
@@ -201,7 +218,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'MediaHost'},
             'embed': ('django.db.models.fields.TextField', [], {'default': "u''"}),
             'host': ('django.db.models.fields.CharField', [], {'default': "u'local'", 'max_length': '16'}),
-            'host_id': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
+            'host_id': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'retries': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'notuploaded'", 'max_length': '16'}),
@@ -224,6 +241,7 @@ class Migration(SchemaMigration):
             'related_posts': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'video_relatedposts'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['containers.Container']"}),
             'short_title': ('django.db.models.fields.CharField', [], {'max_length': '140', 'null': 'True', 'blank': 'True'}),
             'uolmais': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "u'uolmais_video'", 'unique': 'True', 'null': 'True', 'to': u"orm['multimedias.MediaHost']"}),
+            'vimeo': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "u'vimeo_video'", 'unique': 'True', 'null': 'True', 'to': u"orm['multimedias.MediaHost']"}),
             'youtube': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "u'youtube_video'", 'unique': 'True', 'null': 'True', 'to': u"orm['multimedias.MediaHost']"})
         },
         u'sites.site': {
