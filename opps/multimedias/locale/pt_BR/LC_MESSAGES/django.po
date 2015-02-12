@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-14 02:47-0300\n"
+"POT-Creation-Date: 2015-02-12 20:17-0200\n"
 "PO-Revision-Date: 2013-05-28 23:18-0300\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
@@ -21,130 +21,150 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: admin.py:27
-msgid "Identification"
-msgstr "Identificação"
-
-#: admin.py:30
-msgid "Content"
-msgstr "Conteúdo"
-
-#: admin.py:33
-msgid "Relationships"
-msgstr "Relacionamentos"
-
-#: admin.py:35
-msgid "Publication"
-msgstr "Publicação"
-
-#: admin.py:57
 msgid "Resend UOLMais media"
 msgstr "Reenviar mídia do UOLMais"
 
-#: admin.py:74 admin.py:75
-msgid "Select"
-msgstr "Selecionar"
+#: admin.py:37
+#, fuzzy
+msgid "Resend VIMEO video"
+msgstr "Reenviar vídeo do Youtube"
 
-#: admin.py:93
+#: admin.py:49
 msgid "Resend Youtube video"
 msgstr "Reenviar vídeo do Youtube"
 
-#: forms.py:10
-msgid "Headline"
-msgstr "Cabeçalho"
+#: admin.py:72
+msgid "Identification"
+msgstr "Identificação"
 
-#: forms.py:20
+#: admin.py:75 models.py:162
+msgid "Content"
+msgstr "Conteúdo"
+
+#: admin.py:79
+msgid "Relationships"
+msgstr "Relacionamentos"
+
+#: admin.py:81
+msgid "Publication"
+msgstr "Publicação"
+
+#: admin.py:123 admin.py:124
+msgid "Select"
+msgstr "Selecionar"
+
+#: forms.py:25
 msgid "Invalid extension"
 msgstr "Extensão inválida"
 
-#: mediaapi.py:50
+#: mediaapi.py:210
 msgid "Settings UOLMAIS_USERNAME is not set"
 msgstr "Parâmetro UOLMAIS_USERNAME  não setado."
 
-#: mediaapi.py:55
+#: mediaapi.py:215
 msgid "Settings UOLMAIS_PASSWORD is not set"
 msgstr "Parâmetro UOLMAIS_PASSWORD  não setado."
 
-#: mediaapi.py:145
+#: mediaapi.py:302
 msgid "Settings YOUTUBE_AUTH_EMAIL is not set"
 msgstr "Parâmetro YOUTUBE_AUTH_EMAIL não setado."
 
-#: mediaapi.py:150
+#: mediaapi.py:307
 msgid "Settings YOUTUBE_AUTH_PASSWORD is not set"
 msgstr "Parâmetro YOUTUBE_AUTH_PASSWORD  não setado."
 
-#: mediaapi.py:155
+#: mediaapi.py:312
 msgid "Settings YOUTUBE_DEVELOPER_KEY is not set"
 msgstr "Parâmetro YOUTUBE_DEVELOPER_KEY  não setado."
 
-#: mediaapi.py:163
+#: mediaapi.py:320
 msgid "Incorrect Youtube username or password"
 msgstr "Nome de usuário ou senha do Youtube incorretos."
 
-#: models.py:31
+#: models.py:38
 msgid "OK"
 msgstr "OK"
 
-#: models.py:32
+#: models.py:39
 msgid "Sending"
 msgstr "Enviando"
 
-#: models.py:33
+#: models.py:40
 msgid "Processing"
 msgstr "Processando"
 
-#: models.py:34
+#: models.py:41
 msgid "Error"
 msgstr "Erro"
 
-#: models.py:35
+#: models.py:42
 msgid "Deleted"
 msgstr "Apagado"
 
-#: models.py:36
+#: models.py:43
 msgid "Not Uploaded"
 msgstr "Upload não realizado"
 
-#: models.py:46
+#: models.py:44
+#, fuzzy
+msgid "Encoding"
+msgstr "Enviando"
+
+#: models.py:45
+#, fuzzy
+msgid "Not Encoded"
+msgstr "Upload não realizado"
+
+#: models.py:71
 msgid "Host"
 msgstr "Host"
 
-#: models.py:50
+#: models.py:75
 msgid "Provider that will store the media"
 msgstr "Fornecedor que irá armazenar as mídias"
 
-#: models.py:53 templates/includes/mediahost-fieldset.html:7
+#: models.py:79 templates/includes/mediahost-fieldset.html:8
 msgid "Status"
 msgstr "Status"
 
-#: models.py:58
+#: models.py:85
 msgid "Host ID"
 msgstr "ID do Host"
 
-#: models.py:61
+#: models.py:88
 msgid "Updated"
 msgstr "Atualizado"
 
-#: models.py:63
+#: models.py:91
 msgid "Detailed Status Message"
 msgstr "Mensagem de status detalhada"
 
-#: models.py:116
+#: models.py:96
+msgid "Retries"
+msgstr ""
+
+#: models.py:147
 msgid "Media Host"
 msgstr "Host de mídia"
 
-#: models.py:117
+#: models.py:148
 msgid "Media Hosts"
 msgstr "Hosts de mídia"
 
-#: models.py:132
+#: models.py:164
 msgid "UOL Mais"
 msgstr "UOL Mais"
 
-#: models.py:138
+#: models.py:171
+msgid "Local"
+msgstr ""
+
+#: models.py:178 models.py:187 models.py:195 models.py:203 models.py:211
+#: models.py:219 models.py:227
 msgid "File"
 msgstr "Arquivo"
 
-#: models.py:140
+#: models.py:180
 msgid ""
 "Temporary file stored until it's not sent to final hosting server (ie: "
 "Youtube)"
@@ -152,53 +172,72 @@ msgstr ""
 "Arquivo temporário que ficará armazenado até que seja enviado ao host final "
 "(ex: Youtube)"
 
-#: models.py:146
+#: models.py:189 models.py:197 models.py:205 models.py:213 models.py:221
+msgid "Local video file storage"
+msgstr "Arquivo de vídeo local"
+
+#: models.py:229
+msgid "Local audio file storage"
+msgstr "Arquivo de áudio local"
+
+#: models.py:236
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:155
+#: models.py:244
 msgid "Media"
 msgstr "ID da mídia"
 
-#: models.py:156
+#: models.py:245
 msgid "Medias"
 msgstr "ID das mídias"
 
-#: models.py:196
+#: models.py:330
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:216
+#: models.py:338
+msgid "Vimeo"
+msgstr ""
+
+#: models.py:364
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:217
+#: models.py:365
 msgid "Videos"
 msgstr "Vídeos"
 
-#: models.py:227
+#: models.py:381
 msgid "Audio"
 msgstr "Áudio"
 
-#: models.py:228
+#: models.py:382
 msgid "Audios"
 msgstr "Áudios"
 
-#: tasks.py:36
+#: tasks.py:89
 msgid "Error on upload"
 msgstr "Erro ao enviar"
 
-#: templates/includes/mediahost-fieldset.html:13
+#: templates/includes/mediahost-fieldset.html:19
+msgid "Internal ID"
+msgstr ""
+
+#: templates/includes/mediahost-fieldset.html:30
 msgid "Media ID"
 msgstr "ID da mídia"
 
-#: templates/includes/mediahost-fieldset.html:19
+#: templates/includes/mediahost-fieldset.html:41
 msgid "URL"
 msgstr "URL"
 
-#: templates/includes/mediahost-fieldset.html:26
+#: templates/includes/mediahost-fieldset.html:52
 msgid "Embed Code"
 msgstr "Código Embed"
+
+#~ msgid "Headline"
+#~ msgstr "Cabeçalho"
 
 #~ msgid "Media box"
 #~ msgstr "Box de mídia"
