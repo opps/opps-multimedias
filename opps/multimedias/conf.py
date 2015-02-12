@@ -42,6 +42,14 @@ DEFAULT_VIDEO_FORMATS = {
     },
 }
 
+DEFAULT_AUDIO_FORMATS = {
+    "mp3_128": {
+        "quality": "128 kb/s",
+        "cmd": "{exec} -i {from} -f mp3 -ab 128k {to}",
+        "ext": "mp3",
+    },
+}
+
 
 class OppsMultimediasConf(AppConf):
     # Example: If you have this channel structure:
@@ -94,6 +102,12 @@ class OppsMultimediasConf(AppConf):
             'OPPS_MULTIMEDIAS_LOCAL_FORMATS',
             DEFAULT_VIDEO_FORMATS
         )
+    )
+
+    LOCAL_AUDIO_FORMATS = getattr(
+        settings,
+        'OPPS_MULTIMEDIAS_LOCAL_AUDIO_FORMATS',
+        DEFAULT_AUDIO_FORMATS
     )
 
     USE_CONTENT_FIELD = getattr(

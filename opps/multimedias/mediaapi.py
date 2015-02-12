@@ -25,8 +25,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
 LOCAL_VIDEO_FORMATS = getattr(settings,
-                              'OPPS_MULTIMEDIAS_LOCAL_VIDEO_FORMATS', {})
-LOCAL_TEMP_DIR = getattr(settings, 'OPPS_MULTIMEDIAS_TEMP_DIR', '/tmp')
+                              'OPPS_MULTIMEDIAS_LOCAL_VIDEO_FORMATS')
+LOCAL_AUDIO_FORMATS = getattr(settings,
+                              'OPPS_MULTIMEDIAS_LOCAL_AUDIO_FORMATS')
+LOCAL_TEMP_DIR = getattr(settings, 'OPPS_MULTIMEDIAS_LOCAL_TEMP_DIR')
 
 
 class MediaAPIError(Exception):
@@ -110,7 +112,14 @@ class Local(MediaAPI):
         media = mediahost.media
         media_file = media.media_file
 
-        for i, cnf in LOCAL_VIDEO_FORMATS.items():
+        if media.TYPE == 'video':
+            available_formats = LOCAL_VIDEO_FORMATS
+        elif media.TYPE == 'audio':
+            available_formats = LOCAL_AUDIO_FORMATS
+        else:
+            raise Exception('Invalid media type: {}'.format(media.TYPE))
+
+        for i, cnf in available_formats.items():
             if formats and i not in formats:
                 continue
 
@@ -136,22 +145,30 @@ class Local(MediaAPI):
                     setattr(media, model_field, File(f))
                     media.save()
 
+    def get_url(self, mediahost):
+        fields = ['ffmpeg_file_ogv', 'ffmpeg_file_flv', 'ffmpeg_file_mp4_sd',
+                  'ffmpeg_file_mp4_hd', 'ffmpeg_file_mp3_128']
+        url = ''
+        for name in fields:
+            field = getattr(mediahost.media, name)
+            if field:
+                url = field.url
+        return url
+
     def get_info(self, mediahost):
         tags = self.tags or [] + DEFAULT_TAGS
-
-        if mediahost.media.ffmpeg_file_mp4_sd:
-            url = mediahost.media.ffmpeg_file_mp4_sd.url
-        elif mediahost.media.ffmpeg_file_flv:
-            url = mediahost.media.ffmpeg_file_flv.url
-        else:
-            url = ''
+        url = self.get_url(mediahost)
 
         mediahost.status = u'ok'
         mediahost.url = url
-        mediahost.embed = render_to_string(
-            'multimedias/video_embed.html', {
-                'url': url,
-                'mediahost': mediahost})
+
+        embed_template = 'multimedias/{}_embed.html'.format(
+                                                        mediahost.media.TYPE)
+        embed_context = {
+            'url': url,
+            'mediahost': mediahost
+        }
+        mediahost.embed = render_to_string(embed_template, embed_context)
         mediahost.updated = True
         mediahost.save()
 
