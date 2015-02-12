@@ -301,6 +301,8 @@ class Media(Article):
                     host=MediaHost.HOST_UOLMAIS
                 )
 
+        super(Media, self).save(*args, **kwargs)
+
         # Only videos are processed by the local engine
         if self.TYPE == 'video' and not self.local and \
                 MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES
@@ -309,8 +311,8 @@ class Media(Article):
                 host=MediaHost.HOST_LOCAL,
                 host_id=self.pk
             )
+            self.save()
 
-        super(Media, self).save(*args, **kwargs)
 
 
 class Video(Media):

@@ -78,16 +78,16 @@ class Local(MediaAPI):
     def upload(self, type, tags=None, formats=None, force=False):
         self.tags = tags
 
-        self.mediahost.status = mediahost.STATUS_PROCESSING
+        self.mediahost.status = MediaHost.STATUS_PROCESSING
         self.mediahost.save()
 
         try:
-            self.process(mediahost, formats, force)
+            self.process(self.mediahost, formats, force)
             self.mediahost.media.published = True
             self.mediahost.media.save()
             return self.get_info(self.mediahost)
         except Exception as e:
-            self.mediahost.status = mediahost.STATUS_ERROR
+            self.mediahost.status = MediaHost.STATUS_ERROR
             self.mediahost.media.published = False
             self.mediahost.status_message = str(e)[:150]
             self.mediahost.save()
