@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.files import File
-from django.conf import settings
+from .conf import settings
 
 from .models import MediaHost
 
@@ -24,7 +24,8 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_TAGS = getattr(settings, 'OPPS_MULTIMEDIAS_DEFAULT_TAGS', [])
-LOCAL_FORMATS = getattr(settings, 'OPPS_MULTIMEDIAS_LOCAL_FORMATS', {})
+LOCAL_VIDEO_FORMATS = getattr(settings,
+                              'OPPS_MULTIMEDIAS_LOCAL_VIDEO_FORMATS', {})
 LOCAL_TEMP_DIR = getattr(settings, 'OPPS_MULTIMEDIAS_TEMP_DIR', '/tmp')
 
 
@@ -109,7 +110,7 @@ class Local(MediaAPI):
         media = mediahost.media
         media_file = media.media_file
 
-        for i, cnf in LOCAL_FORMATS.items():
+        for i, cnf in LOCAL_VIDEO_FORMATS.items():
             if formats and i not in formats:
                 continue
 
