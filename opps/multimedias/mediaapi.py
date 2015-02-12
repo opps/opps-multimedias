@@ -155,11 +155,11 @@ class Local(MediaAPI):
         mediahost.updated = True
         mediahost.save()
 
-        try:
+        if mediahost.media.ffmpeg_file_thumb:
             thumbnail = mediahost.media.ffmpeg_file_thumb.url
-        except:
-            thumbnail = mediahost.media.archive.url
-        finally:
+        elif mediahost.media.main_image:
+            thumbnail = mediahost.media.main_image.url
+        else:
             thumbnail = ''
 
         return {'id': mediahost.media.id,
