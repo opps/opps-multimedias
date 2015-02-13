@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from opps.articles.models import Article
 from opps.core.managers import PublishableManager
-from django.conf import settings
+from .conf import settings
 
 app_namespace = getattr(
     settings,
@@ -223,6 +223,14 @@ class Media(Article):
         null=True
     )
 
+    ffmpeg_file_mp3_128 = models.FileField(
+        _('File'),
+        upload_to=upload_dest,
+        help_text=_('Local audio file storage'),
+        blank=True,
+        null=True
+    )
+
     posts = models.ManyToManyField(
         'articles.Post',
         verbose_name=_('Posts'),
@@ -303,8 +311,7 @@ class Media(Article):
 
         super(Media, self).save(*args, **kwargs)
 
-        # Only videos are processed by the local engine
-        if self.TYPE == 'video' and not self.local and \
+        if not self.local and \
                 MediaHost.HOST_LOCAL in (settings.OPPS_MULTIMEDIAS_ENGINES
                                          or [u'local']):
             self.local = MediaHost.objects.create(
@@ -368,11 +375,6 @@ class Audio(Media):
     )
 
     objects = PublishableManager()
-
-    def save(self, *args, **kwargs):
-        if 'local' in settings.OPPS_MULTIMEDIAS_AUDIO_ENGINES:
-            self.published = True
-        super(Audio, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['-date_available', 'title', 'channel_long_slug']

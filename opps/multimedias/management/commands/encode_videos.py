@@ -6,11 +6,11 @@ from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
-from django.conf import settings
+from opps.multimedias.conf import settings
 from opps.multimedias.models import Video
 
 
-LOCAL_FORMATS = settings.OPPS_MULTIMEDIAS_LOCAL_FORMATS
+LOCAL_VIDEO_FORMATS = settings.OPPS_MULTIMEDIAS_LOCAL_VIDEO_FORMATS
 
 
 class Command(BaseCommand):
@@ -34,7 +34,7 @@ class Command(BaseCommand):
         make_option('--format',
                     type='choice',
                     action="append",
-                    choices=LOCAL_FORMATS.keys(),
+                    choices=LOCAL_VIDEO_FORMATS.keys(),
                     dest='format',
                     help='Formats to (re)encode'),
         make_option('--rebuild',
