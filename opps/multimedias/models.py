@@ -231,6 +231,13 @@ class Media(Article):
         null=True
     )
 
+    duration = models.TimeField(
+        verbose_name=_('Duration'),
+        help_text=_('Media duration in the following format HH:MM:SS'),
+        blank=True,
+        null=True
+    )
+
     posts = models.ManyToManyField(
         'articles.Post',
         verbose_name=_('Posts'),

@@ -3,8 +3,8 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
@@ -13,27 +13,27 @@ User = get_user_model()
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Video.ffmpeg_file_mp3_128'
-        db.add_column(u'multimedias_video', 'ffmpeg_file_mp3_128',
-                      self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True, blank=True),
+        # Adding field 'Video.duration'
+        db.add_column(u'multimedias_video', 'duration',
+                      self.gf('django.db.models.fields.TimeField')(null=True, blank=True),
                       keep_default=False)
 
-        # Adding field 'Audio.ffmpeg_file_mp3_128'
-        db.add_column(u'multimedias_audio', 'ffmpeg_file_mp3_128',
-                      self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True, blank=True),
+        # Adding field 'Audio.duration'
+        db.add_column(u'multimedias_audio', 'duration',
+                      self.gf('django.db.models.fields.TimeField')(null=True, blank=True),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'Video.ffmpeg_file_mp3_128'
-        db.delete_column(u'multimedias_video', 'ffmpeg_file_mp3_128')
+        # Deleting field 'Video.duration'
+        db.delete_column(u'multimedias_video', 'duration')
 
-        # Deleting field 'Audio.ffmpeg_file_mp3_128'
-        db.delete_column(u'multimedias_audio', 'ffmpeg_file_mp3_128')
+        # Deleting field 'Audio.duration'
+        db.delete_column(u'multimedias_audio', 'duration')
 
 
     models = {
-        settings.AUTH_USER_MODEL: {
+        u'%s.%s' % (User._meta.app_label, User._meta.module_name): {
             'Meta': {'object_name': User.__name__},
         },
         u'articles.album': {
@@ -184,6 +184,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "[u'-date_available', u'title', u'channel_long_slug']", 'object_name': 'Audio'},
             u'container_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['containers.Container']", 'unique': 'True', 'primary_key': 'True'}),
             'content': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'duration': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
             'ffmpeg_file_flv': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'ffmpeg_file_mp3_128': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'ffmpeg_file_mp4_hd': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
@@ -214,6 +215,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "[u'-date_available', u'title', u'channel_long_slug']", 'object_name': 'Video'},
             u'container_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['containers.Container']", 'unique': 'True', 'primary_key': 'True'}),
             'content': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'duration': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
             'ffmpeg_file_flv': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'ffmpeg_file_mp3_128': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'ffmpeg_file_mp4_hd': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),

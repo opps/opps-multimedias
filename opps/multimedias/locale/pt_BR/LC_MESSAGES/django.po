@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opps\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-12 20:17-0200\n"
+"POT-Creation-Date: 2015-02-18 16:46-0200\n"
 "PO-Revision-Date: 2013-05-28 23:18-0300\n"
 "Last-Translator: Davi Oliveira <davi@tracy.com.br>\n"
 "Language-Team: Portuguese (Brazil) <opps-developers@googlegroups.com>\n"
@@ -25,9 +25,8 @@ msgid "Resend UOLMais media"
 msgstr "Reenviar mídia do UOLMais"
 
 #: admin.py:37
-#, fuzzy
 msgid "Resend VIMEO video"
-msgstr "Reenviar vídeo do Youtube"
+msgstr "Reenviar vídeo do VIMEO"
 
 #: admin.py:49
 msgid "Resend Youtube video"
@@ -57,27 +56,27 @@ msgstr "Selecionar"
 msgid "Invalid extension"
 msgstr "Extensão inválida"
 
-#: mediaapi.py:210
+#: mediaapi.py:223
 msgid "Settings UOLMAIS_USERNAME is not set"
 msgstr "Parâmetro UOLMAIS_USERNAME  não setado."
 
-#: mediaapi.py:215
+#: mediaapi.py:228
 msgid "Settings UOLMAIS_PASSWORD is not set"
 msgstr "Parâmetro UOLMAIS_PASSWORD  não setado."
 
-#: mediaapi.py:302
+#: mediaapi.py:315
 msgid "Settings YOUTUBE_AUTH_EMAIL is not set"
 msgstr "Parâmetro YOUTUBE_AUTH_EMAIL não setado."
 
-#: mediaapi.py:307
+#: mediaapi.py:320
 msgid "Settings YOUTUBE_AUTH_PASSWORD is not set"
 msgstr "Parâmetro YOUTUBE_AUTH_PASSWORD  não setado."
 
-#: mediaapi.py:312
+#: mediaapi.py:325
 msgid "Settings YOUTUBE_DEVELOPER_KEY is not set"
 msgstr "Parâmetro YOUTUBE_DEVELOPER_KEY  não setado."
 
-#: mediaapi.py:320
+#: mediaapi.py:333
 msgid "Incorrect Youtube username or password"
 msgstr "Nome de usuário ou senha do Youtube incorretos."
 
@@ -106,14 +105,12 @@ msgid "Not Uploaded"
 msgstr "Upload não realizado"
 
 #: models.py:44
-#, fuzzy
 msgid "Encoding"
-msgstr "Enviando"
+msgstr "Codificando"
 
 #: models.py:45
-#, fuzzy
 msgid "Not Encoded"
-msgstr "Upload não realizado"
+msgstr "Não codificado"
 
 #: models.py:71
 msgid "Host"
@@ -180,39 +177,47 @@ msgstr "Arquivo de vídeo local"
 msgid "Local audio file storage"
 msgstr "Arquivo de áudio local"
 
+#: models.py:235
+msgid "Duration"
+msgstr "Duração"
+
 #: models.py:236
+msgid "Media duration in the following format HH:MM:SS"
+msgstr "Duração no formato HH:MM:SS"
+
+#: models.py:243
 msgid "Posts"
 msgstr "Publicações"
 
-#: models.py:244
+#: models.py:251
 msgid "Media"
 msgstr "ID da mídia"
 
-#: models.py:245
+#: models.py:252
 msgid "Medias"
 msgstr "ID das mídias"
 
-#: models.py:330
+#: models.py:337
 msgid "Youtube"
 msgstr "Youtube"
 
-#: models.py:338
+#: models.py:345
 msgid "Vimeo"
 msgstr ""
 
-#: models.py:364
+#: models.py:371
 msgid "Video"
 msgstr "Vídeo"
 
-#: models.py:365
+#: models.py:372
 msgid "Videos"
 msgstr "Vídeos"
 
-#: models.py:381
+#: models.py:388
 msgid "Audio"
 msgstr "Áudio"
 
-#: models.py:382
+#: models.py:389
 msgid "Audios"
 msgstr "Áudios"
 
