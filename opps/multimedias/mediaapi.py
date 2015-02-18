@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
 import re
-import subprocess as sp
-from os import path
-from exceptions import NotImplementedError
 import logging
+from os import path
+import subprocess as sp
+from datetime import time
+from exceptions import NotImplementedError
 
 import pytz
 import gdata.youtube.service
@@ -71,6 +72,9 @@ class MediaAPI(object):
                               u'tags', u'embed', u'url', u'status',
                               u'status_msg'])
 
+    def get_duration(self):
+        raise NotImplementedError()
+
 
 class Local(MediaAPI):
     __NAME__ = MediaHost.HOST_LOCAL
@@ -87,6 +91,7 @@ class Local(MediaAPI):
         try:
             self.process(self.mediahost, formats, force)
             self.mediahost.media.published = True
+            self.mediahost.media.duration = self.get_duration()
             self.mediahost.media.save()
             return self.get_info(self.mediahost)
         except Exception as e:
@@ -188,6 +193,17 @@ class Local(MediaAPI):
                 'url': mediahost.url,
                 'status': u'ok',
                 'status_msg': u'ok'}
+
+    def get_duration(self):
+        cmd = 'ffprobe -i {} -show_entries format=duration -v quiet -of '\
+              'csv="p=0"'.format(self.mediahost.media.media_file.path)
+        try:
+            duration = int(float(sp.check_output(cmd, shell=True).strip()))
+        except sp.CalledProcessError as error:
+            return None
+
+        split_time = str(timezone.timedelta(seconds=duration)).split(':')
+        return time(int(split_time[0]), int(split_time[1]), int(split_time[2]))
 
 
 class UOLMais(MediaAPI):
