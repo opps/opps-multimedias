@@ -82,7 +82,7 @@ class MediaHost(models.Model):
         default=STATUS_NOT_UPLOADED
     )
 
-    host_id = models.CharField(_('Host ID'), max_length=64, blank=True)
+    host_id = models.CharField(_('Host ID'), max_length=64, blank=True, null=True)
     url = models.URLField(max_length=255, null=True)
     embed = models.TextField(default='')
     updated = models.BooleanField(_('Updated'), default=False)
