@@ -238,11 +238,15 @@ class UOLMais(MediaAPI):
 
         self.authenticate()
 
-        saopaulo_tz = pytz.timezone('America/Sao_Paulo')
+        pub_date = timezone.now()
+        if settings.USE_TZ:
+            local_timezone = pytz.timezone(settings.TIME_ZONE)
+            pub_date = timezone.localtime(pub_date, local_timezone)
+
         with open(media_path, 'rb') as f:
             media_args = {
                 'f': f,
-                'pub_date': timezone.localtime(timezone.now(), saopaulo_tz),
+                'pub_date': pub_date,
                 'title': title,
                 'description': description,
                 'tags': u','.join(tags),
