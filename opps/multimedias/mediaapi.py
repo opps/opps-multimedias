@@ -267,7 +267,7 @@ class UOLMais(MediaAPI):
         public_info = self._lib.get_public_info(media_id)
 
         # Public information are available only when file are fully processed
-        if public_info and public_info['duration']:
+        if public_info and public_info.get('duration'):
             duration = public_info['duration'].split(':')
 
             if len(duration) == 3:
