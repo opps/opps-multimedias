@@ -136,6 +136,10 @@ class MediaHost(models.Model):
             self.embed = media_info['embed']
             changed = True
 
+        if media_info['duration'] and not self.media.duration:
+            self.media.duration = media_info['duration']
+            self.media.save()
+
         if changed:
             self.save()
 

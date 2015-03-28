@@ -70,7 +70,7 @@ class MediaAPI(object):
     def get_info(self, media_id=None):
         return dict.fromkeys([u'id', u'title', u'description', u'thumbnail',
                               u'tags', u'embed', u'url', u'status',
-                              u'status_msg'])
+                              u'status_msg', u'duration'])
 
     def get_duration(self):
         raise NotImplementedError()
@@ -268,6 +268,19 @@ class UOLMais(MediaAPI):
         result['id'] = media_id
 
         info = self._lib.get_private_info(media_id)
+        public_info = self._lib.get_public_info(media_id)
+
+        # Public information are available only when file are fully processed
+        if public_info and public_info.get('duration'):
+            duration = public_info['duration'].split(':')
+
+            if len(duration) == 3:
+                hours, minutes, seconds = duration
+            else:
+                minutes, seconds = duration
+                hours = 0
+
+            result['duration'] = time(int(hours), int(minutes), int(seconds))
 
         if info['status'] in self.SUCCESS_CODES:
             # Embed for audio
