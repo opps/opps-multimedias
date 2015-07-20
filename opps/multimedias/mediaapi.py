@@ -278,8 +278,10 @@ class UOLMais(MediaAPI):
                 hours, minutes, seconds = duration
             else:
                 minutes, seconds = duration
+                minutes = int(minutes)
                 hours = 0
-
+                if minutes >= 60:
+                     hours, minutes = divmod(minutes, 60)
             result['duration'] = time(int(hours), int(minutes), int(seconds))
 
         if info['status'] in self.SUCCESS_CODES:
