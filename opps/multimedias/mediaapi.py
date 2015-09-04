@@ -9,6 +9,7 @@ from exceptions import NotImplementedError
 import pytz
 import gdata.youtube.service
 import vimeo
+import pafy
 from gdata.service import BadAuthentication, RequestError
 
 from django.utils import timezone
@@ -381,15 +382,9 @@ class Youtube(MediaAPI):
 
         video_entry = gdata.youtube.YouTubeVideoEntry(media=my_media_group)
         video_entry = self.yt_service.InsertVideoEntry(video_entry, media_path)
-        return self._get_info(video_entry)
-
-    def _get_video_status(self, video_entry):
-        status = self.yt_service.CheckUploadStatus(video_entry)
-
-        if status is None:
-            return 'ok', None
-
-        return 'error', status[1]
+        return {
+            'id': video_entry.id.text.split('/')[-1]
+        }
 
     def _get_video_embed(self, video_id):
         return render_to_string('multimedias/youtube/video_embed.html',
@@ -398,19 +393,24 @@ class Youtube(MediaAPI):
     def _get_info(self, video_entry):
         result = {}
         if video_entry:
-            video_id = video_entry.id.text.split('/')[-1]
+            video_id = video_entry.videoid
+            hour, minute, second =  video_entry.duration.split(':')
             result.update({
                 u'id': video_id,
-                u'title': video_entry.media.title.text,
-                u'description': video_entry.media.description.text,
-                u'thumbnail': video_entry.media.thumbnail[-1].url,
-                u'tags': video_entry.media.keywords.text,
+                u'title': video_entry.title,
+                u'description': video_entry.description,
+                u'duration': time(
+                    hour=int(hour),
+                    minute=int(minute),
+                    second=int(second)
+                ),
+                u'thumbnail': video_entry.thumb,
+                u'tags': video_entry.keywords,
                 u'embed': self._get_video_embed(video_id),
-                u'url': video_entry.media.player.url,
+                u'url': video_entry.watchv_url,
+                u'status': u'ok',
+                u'status_msg': u'ok'
             })
-
-            (result['status'],
-             result['status_msg']) = self._get_video_status(video_entry)
 
         return result
 
@@ -418,10 +418,9 @@ class Youtube(MediaAPI):
         self.authenticate()
         result = super(Youtube, self).get_info(video_id)
         result['id'] = video_id
-
         try:
-            video_entry = self.yt_service.GetYouTubeVideoEntry(
-                video_id=video_id
+            video_entry = pafy.new(
+                'https://www.youtube.com/watch?v={}'.format(video_id)
             )
         except RequestError as reqerr:
             if reqerr.args[0].get('reason') == u'Not Found':

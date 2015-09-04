@@ -2,3 +2,6 @@ Django>=1.5,<1.7
 opps>=0.2.9
 django-celery
 PyVimeo==0.2.0
+-e git+https://github.com/rg3/youtube-dl.git#egg=youtube-dl
+-e git+https://github.com/mps-youtube/pafy.git#egg=pafy
+
