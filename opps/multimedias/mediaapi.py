@@ -10,7 +10,7 @@ import pytz
 import gdata.youtube.service
 import vimeo
 import pafy
-from gdata.service import BadAuthentication, RequestError
+from gdata.service import BadAuthentication
 
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -422,11 +422,8 @@ class Youtube(MediaAPI):
             video_entry = pafy.new(
                 'https://www.youtube.com/watch?v={}'.format(video_id)
             )
-        except RequestError as reqerr:
-            if reqerr.args[0].get('reason') == u'Not Found':
-                result.update({'status': u'deleted'})
-            else:
-                result.update({'status': u'error'})
+        except IOError as error:
+            result.update({'status': u'error'})
         else:
             result.update(self._get_info(video_entry))
         return result
