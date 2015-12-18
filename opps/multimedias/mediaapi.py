@@ -513,6 +513,7 @@ class Vimeo(MediaAPI):
 
         media_uri = self.video_uri(media_id)
         media_info = self.api.get(media_uri)
+
         content = media_info.json()
 
         if media_info.status_code == 200:
@@ -522,7 +523,9 @@ class Vimeo(MediaAPI):
                 u'description': content.get('description'),
                 u'tags': u'',
                 u'embed': self.embed(),
-                u'url': content.get('link')}
+                u'url': content.get('link'),
+                u'duration': content.get('duration')
+            }
 
             if content.get('pictures') and content['pictures']['active']:
                 data.update({
