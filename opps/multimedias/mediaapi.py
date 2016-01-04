@@ -524,8 +524,15 @@ class Vimeo(MediaAPI):
                 u'tags': u'',
                 u'embed': self.embed(),
                 u'url': content.get('link'),
-                u'duration': content.get('duration')
             }
+            duration = content.get('duration')
+            if duration:
+                seconds = int(duration)
+                minutes, seconds = divmod(seconds, 60)
+                hours = 0
+                if minutes >= 60:
+                     hours, minutes = divmod(minutes, 60)
+                data[u'duration'] = time(hours, minutes, seconds)
 
             if content.get('pictures') and content['pictures']['active']:
                 data.update({
