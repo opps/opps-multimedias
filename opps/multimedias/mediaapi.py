@@ -19,6 +19,7 @@ from django.core.files import File
 from .conf import settings
 
 from .models import MediaHost
+from .timeout import Timeout
 
 
 # Get an instance of a logger
@@ -31,6 +32,9 @@ LOCAL_VIDEO_FORMATS = getattr(settings,
 LOCAL_AUDIO_FORMATS = getattr(settings,
                               'OPPS_MULTIMEDIAS_LOCAL_AUDIO_FORMATS')
 LOCAL_TEMP_DIR = getattr(settings, 'OPPS_MULTIMEDIAS_LOCAL_TEMP_DIR')
+
+VIMEO_UPLOAD_TIMEOUT = getattr(settings,
+                               'OPPS_MULTIMEDIAS_VIMEO_UPLOAD_TIMEOUT')
 
 
 class MediaAPIError(Exception):
@@ -471,9 +475,12 @@ class Vimeo(MediaAPI):
             if not path.exists(media_path):
                 raise MediaAPIError('Source file {0} not found.'.format(
                     media_path))
-
             # Upload a video.
-            video_uri = self.api.upload(media_path)
+            if VIMEO_UPLOAD_TIMEOUT:
+                with Timeout(VIMEO_UPLOAD_TIMEOUT):
+                    video_uri = self.api.upload(media_path)
+            else:
+                video_uri = self.api.upload(media_path)
         except Exception as e:
             self.mediahost.status = MediaHost.STATUS_ERROR
             self.mediahost.status_msg = str(e)[:150]
