@@ -33,8 +33,9 @@ LOCAL_AUDIO_FORMATS = getattr(settings,
                               'OPPS_MULTIMEDIAS_LOCAL_AUDIO_FORMATS')
 LOCAL_TEMP_DIR = getattr(settings, 'OPPS_MULTIMEDIAS_LOCAL_TEMP_DIR')
 
-VIMEO_UPLOAD_TIMEOUT = getattr(settings,
-                               'OPPS_MULTIMEDIAS_VIMEO_UPLOAD_TIMEOUT')
+VIMEO_UPLOAD_TIMEOUT = getattr(
+    settings, 'OPPS_MULTIMEDIAS_VIMEO_UPLOAD_TIMEOUT', None
+)
 
 
 class MediaAPIError(Exception):
