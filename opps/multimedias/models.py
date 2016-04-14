@@ -269,6 +269,10 @@ class Media(Article):
     def get_media_embed(self):
         if self.uolmais:
             return self.uolmais.embed
+        if self.vimeo:
+            return self.vimeo.embed
+        if self.youtube:
+            return self.youtube.embed
         elif self.local:
             return self.local.embed
         else:
